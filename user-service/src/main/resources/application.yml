@@ -3,4 +3,6 @@ spring:
     name: user-service
 
   config:
-    import: optional:configserver:https://localhost:8888
+    import:
+      - "optional:file:.env[.properties]"
+      - "optional:configserver:http://localhost:8888"
