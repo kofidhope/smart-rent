@@ -14,7 +14,7 @@ public class AuthController {
 
     private final AuthService authService;
 
-    @PostMapping("/token")
+    @PostMapping("/generate")
     public ResponseEntity<AuthResponse> generateToken(@Valid @RequestBody TokenRequest request) {
         AuthResponse response = authService.generateToken(
                 request.getUserId(),
