@@ -1,7 +1,7 @@
 package com.kofi.userservice.service;
 
-import com.kofi.userservice.dto.RegistrationRequest;
-import com.kofi.userservice.dto.UserResponse;
+import com.kofi.userservice.config.AuthClient;
+import com.kofi.userservice.dto.*;
 import com.kofi.userservice.model.Role;
 import com.kofi.userservice.model.User;
 import com.kofi.userservice.repository.UserRepository;
@@ -15,6 +15,7 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
+    private final AuthClient authClient;
 
     public UserResponse register(RegistrationRequest request) {
         //check if email exist
@@ -37,6 +38,26 @@ public class UserService {
                 .build();
         User saved = userRepository.save(user);
         return mapToResponse(saved);
+    }
+
+    public AuthResponse login(LoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        //check password
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Password Do Not Match");
+        }
+        // check if user is enabled
+        if (!user.isEnabled()){
+            throw new RuntimeException("User is Disabled");
+        }
+        // call auth service for tokens
+        GenerateTokenRequest tokenRequest = new GenerateTokenRequest();
+        tokenRequest.setUserId(user.getId());
+        tokenRequest.setEmail(user.getEmail());
+        tokenRequest.setRole(user.getRole().name());
+
+        return authClient.generateToken(tokenRequest);
     }
 
     public UserResponse getUserById(Long id) {
