@@ -25,6 +25,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints
                         .requestMatchers("/users/register").permitAll()
+                        .requestMatchers("/users/login").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         // Everything else requires authentication
                         .anyRequest().authenticated()

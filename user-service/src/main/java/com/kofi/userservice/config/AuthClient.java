@@ -6,7 +6,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "AUTH-SERVICE")
+@FeignClient(name = "auth-service")
 public interface AuthClient {
     @PostMapping("/auth/generate")
     AuthResponse generateToken(@RequestBody GenerateTokenRequest request);
