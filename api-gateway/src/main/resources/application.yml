@@ -3,4 +3,6 @@ spring:
     name: api-gateway
 
   config:
-    import: optional:configserver:http://localhost:8888
+    import:
+      - "optional:file:.env[.properties]"
+      - "optional:configserver:http://localhost:8888"
