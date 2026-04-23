@@ -6,6 +6,8 @@ import com.kofi.authservice.model.RefreshToken;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -13,7 +15,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
 
-    public AuthResponse generateToken(Long userId, String email, String role) {
+    public AuthResponse generateToken(UUID userId, String email, String role) {
 
         String accessToken = jwtService.generateAccessToken(userId, email, role);
 

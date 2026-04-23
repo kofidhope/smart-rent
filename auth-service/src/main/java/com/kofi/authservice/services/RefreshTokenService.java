@@ -20,7 +20,7 @@ public class RefreshTokenService {
 
     private static final String PREFIX = "refresh_tokens:";
 
-    public RefreshToken createRefreshToken(Long userId,String email,String role) {
+    public RefreshToken createRefreshToken(UUID userId,String email,String role) {
         String token = UUID.randomUUID().toString();
         RefreshToken refreshToken = RefreshToken.builder()
                 .token(token)

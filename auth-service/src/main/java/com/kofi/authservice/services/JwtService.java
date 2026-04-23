@@ -10,6 +10,7 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class JwtService {
@@ -20,7 +21,7 @@ public class JwtService {
     @Value("${jwt.expiration}")
     private long tokenExpiration;
 
-    public String generateAccessToken(Long userId, String email, String role) {
+    public String generateAccessToken(UUID userId, String email, String role) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
         claims.put("role", role);
@@ -47,8 +48,8 @@ public class JwtService {
         return extractAllClaims(token).getSubject();
     }
 
-    public Long extractUserId(String token) {
-        return extractAllClaims(token).get("userId", Long.class);
+    public UUID extractUserId(String token) {
+        return extractAllClaims(token).get("userId", UUID.class);
     }
 
     public String extractRole(String token) {
