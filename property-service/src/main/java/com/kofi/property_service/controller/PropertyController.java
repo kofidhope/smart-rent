@@ -55,6 +55,18 @@ public class PropertyController {
                 propertyService.updateProperty(id, request, requesterId));
     }
 
+    @PutMapping("/{id}/status/rent")
+    public ResponseEntity<Void> markAsRented(@PathVariable UUID id) {
+        propertyService.markAsRented(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}/status/available")
+    public ResponseEntity<Void> markAsAvailable(@PathVariable UUID id) {
+        propertyService.markAsAvailable(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProperty(
             @PathVariable UUID id,
