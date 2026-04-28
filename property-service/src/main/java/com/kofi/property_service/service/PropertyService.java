@@ -107,6 +107,22 @@ public class PropertyService {
         log.info("Property {} unlisted by owner {}", id, requesterId);
     }
 
+    @Transactional
+    public void markAsRented(UUID id) {
+        Property property = findOrThrow(id);
+        property.setStatus(PropertyStatus.RENTED);
+        propertyRepository.save(property);
+        log.info("Property {} marked as RENTED by booking saga", id);
+    }
+
+    @Transactional
+    public void markAsAvailable(UUID id) {
+        Property property = findOrThrow(id);
+        property.setStatus(PropertyStatus.AVAILABLE);
+        propertyRepository.save(property);
+        log.info("Property {} marked as AVAILABLE by booking saga", id);
+    }
+
     private Property findOrThrow(UUID id) {
         return propertyRepository.findById(id)
                 .orElseThrow(() -> new PropertyNotFoundException("Property not found: " + id));
