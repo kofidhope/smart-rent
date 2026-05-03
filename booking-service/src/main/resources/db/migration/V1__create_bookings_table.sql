@@ -1,8 +1,8 @@
 CREATE TABLE bookings (
 id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-tenant_id           BIGINT NOT NULL,
+tenant_id           UUID  NOT NULL,
 property_id         UUID NOT NULL,
-owner_id            BIGINT NOT NULL,
+owner_id            UUID  NOT NULL,
 start_date          DATE NOT NULL,
 end_date            DATE NOT NULL,
 total_price         NUMERIC(10, 2) NOT NULL,

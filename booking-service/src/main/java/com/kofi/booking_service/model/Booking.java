@@ -48,7 +48,7 @@ public class Booking {
     @Column(name = "payment_status", nullable = false)
     private PaymentStatus paymentStatus;
 
-    @Column(name = "stripe_payment_id")
+    @Column(name = "paystack_payment_id")
     private String paystackPaymentId;
 
     @Column(name = "failure_reason")
