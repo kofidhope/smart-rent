@@ -84,7 +84,7 @@ services:
     volumes:
       - kafka-data:/var/lib/kafka/data
     networks:
-      - smartrent-network
+      - smart-rent-network
     healthcheck:
       test: [ "CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092" ]
       interval: 15s
@@ -96,7 +96,7 @@ services:
   # Zookeeper — Kafka needs this to run
   # Manages cluster metadata and leader election
   zookeeper:
-    image: confluentinc/cp-zookeeper:7.6.0
+    image: confluentinc/cp-zookeeper:latest
     container_name: smartrent-zookeeper
     restart: unless-stopped
     ports:
@@ -135,9 +135,26 @@ services:
     networks:
       - smart-rent-network
 
+  # Zipkin — distributed tracing UI
+  # See requests flowing across all services
+  # Open http://localhost:9411 in your browser
+  zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: smart-rent-zipkin
+    restart: unless-stopped
+    ports:
+      - "9411:9411"
+    networks:
+      - smart-rent-network
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:9411/health || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
 # Named volumes — data survives container restarts
 volumes:
-  postgres-data:
+  postgres_data:
   redis-data:
   kafka-data:
   zookeeper-data:
