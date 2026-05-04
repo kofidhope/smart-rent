@@ -86,5 +86,5 @@ public interface PaymentRepository extends JpaRepository<Payment, UUID> {
         WHERE p.ownerId = :ownerId
         AND p.status = 'SUCCESS'
         """)
-    BigDecimal sumSuccessfulAmountByOwnerId(@Param("ownerId") Long ownerId);
+    BigDecimal sumSuccessfulAmountByOwnerId(@Param("ownerId") UUID ownerId);
 }
