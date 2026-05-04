@@ -37,7 +37,7 @@ public class PaystackService {
             BigDecimal amount,
             String reference,
             String bookingId,
-            Long tenantId,
+            UUID tenantId,
             String propertyTitle) {
 
         log.info("Initializing Paystack transaction — " +
