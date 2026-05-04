@@ -5,6 +5,7 @@ import com.kofi.paymentservice.dto.PaystackVerifyResponse;
 import com.kofi.paymentservice.dto.PaystackWebhookPayload;
 import com.kofi.paymentservice.event.BookingConfirmedEvent;
 import com.kofi.paymentservice.event.PaymentEventPublisher;
+import com.kofi.paymentservice.exception.PaymentNotFoundException;
 import com.kofi.paymentservice.model.Payment;
 import com.kofi.paymentservice.model.PaymentStatus;
 import com.kofi.paymentservice.model.PaymentType;
