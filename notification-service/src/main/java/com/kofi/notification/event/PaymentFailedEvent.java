@@ -15,7 +15,7 @@ public class PaymentFailedEvent {
 
     private UUID bookingId;
 
-    private Long tenantId;
+    private UUID tenantId;
 
     private String reason;
 

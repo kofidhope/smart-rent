@@ -16,9 +16,9 @@ public class BookingConfirmedEvent {
 
     private UUID bookingId;
 
-    private Long tenantId;
+    private UUID tenantId;
 
-    private Long ownerId;
+    private UUID ownerId;
 
     private UUID propertyId;
 

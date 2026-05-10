@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+@Data
+@Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class PaymentSucceededEvent {
 
@@ -17,7 +20,7 @@ public class PaymentSucceededEvent {
 
     private BigDecimal amount;
 
-    private Long tenantId;
+    private UUID tenantId;
 
     private String tenantEmail;
 }

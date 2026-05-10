@@ -15,7 +15,7 @@ public class BookingCancelledEvent {
 
     private UUID bookingId;
 
-    private Long tenantId;
+    private UUID tenantId;
 
     private UUID propertyId;
 
