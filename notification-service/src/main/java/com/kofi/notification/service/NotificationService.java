@@ -179,11 +179,7 @@ public class NotificationService {
     // All four notification methods flow through here
     // Handles: skip check, log creation, Twilio call,
     //          log update on success or failure
-    private void sendAndLog(UUID bookingId,
-                            UUID tenantId,
-                            NotificationType type,
-                            UserResponse recipient,
-                            String messageBody) {
+    private void sendAndLog(UUID bookingId, UUID tenantId, NotificationType type, UserResponse recipient, String messageBody) {
 
         // Skip if no valid phone
         if (!recipient.hasValidPhone()) {
