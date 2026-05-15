@@ -1,91 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.2.5</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
-    <groupId>com.kofi</groupId>
+
+    <groupId>com.smartrent</groupId>
     <artifactId>api-gateway</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>api-gateway</name>
-    <description>api-gateway</description>
-    <url/>
-    <licenses>
-        <license/>
-    </licenses>
-    <developers>
-        <developer/>
-    </developers>
-    <scm>
-        <connection/>
-        <developerConnection/>
-        <tag/>
-        <url/>
-    </scm>
+    <description>
+        API Gateway — single entry point for all SmartRent
+        microservices. Handles JWT validation, routing,
+        rate limiting, CORS, and request enrichment.
+    </description>
+
     <properties>
         <java.version>17</java.version>
         <spring-cloud.version>2023.0.1</spring-cloud.version>
+        <jjwt.version>0.12.3</jjwt.version>
     </properties>
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-config</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-gateway</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-security</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-api</artifactId>
-            <version>0.12.6</version>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-jackson</artifactId>
-            <version>0.12.6</version>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-impl</artifactId>
-            <version>0.12.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>annotationProcessor</scope>
-        </dependency>
-    </dependencies>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -98,11 +40,216 @@
         </dependencies>
     </dependencyManagement>
 
+    <dependencies>
+
+        <!-- ─────────────────────────────────────────────── -->
+        <!-- GATEWAY CORE                                     -->
+        <!-- ─────────────────────────────────────────────── -->
+
+        <!-- Spring Cloud Gateway — the routing engine
+             Built on WebFlux and Netty (non-blocking)
+             Handles route matching, filter chains,
+             and forwarding to downstream services
+             CRITICAL: do NOT add spring-boot-starter-web
+             alongside this — they conflict. Gateway
+             uses WebFlux exclusively. -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-gateway</artifactId>
+        </dependency>
+
+        <!-- Spring WebFlux — reactive web framework
+             Gateway is built on top of this
+             Provides ServerWebExchange, WebFilter,
+             Mono, Flux used in all gateway filters
+             Already included transitively by gateway
+             but declared explicitly for clarity -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+
+        <!-- ─────────────────────────────────────────────── -->
+        <!-- SERVICE DISCOVERY                                -->
+        <!-- ─────────────────────────────────────────────── -->
+
+        <!-- Eureka client — gateway registers with Eureka
+             and discovers services by name.
+             When routing to "user-service", gateway asks
+             Eureka for a live instance address rather
+             than using a hardcoded URL.
+             Enables load balancing across multiple
+             instances of the same service. -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+
+        <!-- Config client — pulls api-gateway.yml from
+             config-server at startup.
+             Route definitions, JWT secret, CORS origins,
+             and rate limit settings all come from there.
+             Never hardcoded in the gateway itself. -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-config</artifactId>
+        </dependency>
+
+        <!-- Load balancer — works with Eureka to distribute
+             requests across multiple instances of a service.
+             When gateway routes to lb://user-service,
+             this picks one healthy instance from Eureka.
+             Required when using lb:// URI scheme in routes. -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
+
+        <!-- ─────────────────────────────────────────────── -->
+        <!-- SECURITY                                         -->
+        <!-- ─────────────────────────────────────────────── -->
+
+        <!-- Spring Security WebFlux — reactive security
+             for the gateway. Different from Spring MVC
+             security — uses SecurityWebFilterChain not
+             SecurityFilterChain. Uses ServerHttpSecurity
+             not HttpSecurity. All reactive types.
+             Used to define which routes are public
+             and which require authentication. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- JWT API — defines the JWT interfaces
+             Core JJWT interfaces and exceptions
+             Used by JwtTokenProvider for parsing claims -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>${jjwt.version}</version>
+        </dependency>
+
+        <!-- JWT implementation — runtime JWT processing
+             Implements the JJWT API interfaces
+             Handles HMAC-SHA512 signature verification
+             Must be runtime scope — loaded by the JVM
+             not needed at compile time -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- JWT Jackson integration — JSON parsing for JWT
+             Parses the JWT payload JSON into Java objects
+             Uses Jackson under the hood — already on
+             the classpath via Spring Boot -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>${jjwt.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- ─────────────────────────────────────────────── -->
+        <!-- RATE LIMITING                                    -->
+        <!-- ─────────────────────────────────────────────── -->
+
+        <!-- Spring Data Redis Reactive — reactive Redis client
+             Used by RateLimitFilter to store and increment
+             request counters per user per minute.
+             Reactive version required — gateway is
+             non-blocking and cannot use blocking Redis calls.
+             Uses Lettuce client under the hood. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
+        </dependency>
+
+        <!-- ─────────────────────────────────────────────── -->
+        <!-- OBSERVABILITY                                    -->
+        <!-- ─────────────────────────────────────────────── -->
+
+        <!-- Distributed tracing — every request through
+             the gateway gets a traceId that propagates
+             to all downstream services.
+             When a request touches gateway → booking →
+             payment, all three share the same traceId.
+             Zipkin receives and correlates the spans. -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-tracing-bridge-brave</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.zipkin.reporter2</groupId>
+            <artifactId>zipkin-reporter-brave</artifactId>
+        </dependency>
+
+        <!-- Actuator — exposes /actuator/health, /metrics
+             Used by Docker health checks and monitoring
+             systems to verify the gateway is alive -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- ─────────────────────────────────────────────── -->
+        <!-- UTILITIES                                        -->
+        <!-- ─────────────────────────────────────────────── -->
+
+        <!-- Lombok — reduces boilerplate in config classes
+             and filter constructors -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Validation — @NotBlank on config properties
+             Fails fast at startup if JWT secret or
+             internal secret is not configured -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- ─────────────────────────────────────────────── -->
+        <!-- TEST                                             -->
+        <!-- ─────────────────────────────────────────────── -->
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
     <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
             </plugin>
         </plugins>
     </build>
