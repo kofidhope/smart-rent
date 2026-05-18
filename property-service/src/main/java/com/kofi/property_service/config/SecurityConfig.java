@@ -1,6 +1,6 @@
-package com.kofi.userservice.security;
+package com.kofi.property_service.config;
 
-import com.kofi.userservice.filter.GatewayAuthFilter;
+import com.kofi.property_service.filter.GatewayAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,30 +28,29 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // Public endpoints
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/properties/search",
+                                "/api/properties/{id}")
+                        .permitAll()
 
-                        // ── Actuator
-                        // Docker health checks need this
+                        // Internal saga calls
+                        .requestMatchers(HttpMethod.PUT,
+                                "/api/properties/*/status/*")
+                        .permitAll()
+
+                        // Actuator
                         .requestMatchers(
                                 "/actuator/health",
                                 "/actuator/info")
                         .permitAll()
 
-                        // ── Internal Feign calls ──────────────
-                        // property-service, booking-service,
-                        // notification-service call these
-                        // via Feign to fetch user details
-                        // They come through the gateway so
-                        // X-Internal-Secret is present but
-                        // no X-User-Role — service-to-service
-                        .requestMatchers(HttpMethod.GET,
-                                "/api/users/{id}")
-                        .permitAll()
-
-                        // ── Everything else ───────────────────
+                        // Everything else — authenticated
                         // @PreAuthorize handles role checks
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(gatewayAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(gatewayAuthFilter, UsernamePasswordAuthenticationFilter.class
+                );
 
         return http.build();
     }

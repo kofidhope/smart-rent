@@ -1,6 +1,6 @@
-package com.kofi.userservice.security;
+package com.kofi.booking_service.security;
 
-import com.kofi.userservice.filter.GatewayAuthFilter;
+import com.kofi.booking_service.filter.GatewayAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,25 +30,29 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
 
                         // ── Actuator
-                        // Docker health checks need this
                         .requestMatchers(
                                 "/actuator/health",
                                 "/actuator/info")
                         .permitAll()
 
-                        // ── Internal Feign calls ──────────────
-                        // property-service, booking-service,
-                        // notification-service call these
-                        // via Feign to fetch user details
-                        // They come through the gateway so
-                        // X-Internal-Secret is present but
-                        // no X-User-Role — service-to-service
+                        // ── Internal scheduler call ───────────
+                        // completeBooking is called by a
+                        // scheduled job inside payment-service
+                        // not by a user — no role header
+                        .requestMatchers(HttpMethod.PATCH,
+                                "/api/bookings/*/complete")
+                        .permitAll()
+
+                        // ── Internal saga calls ───────────────
+                        // payment-service calls these via Feign
+                        // from inside a Kafka listener context
+                        // no active HTTP request — no role header
+                        // booking-service saga compensation
                         .requestMatchers(HttpMethod.GET,
-                                "/api/users/{id}")
+                                "/api/bookings/{id}/saga")
                         .permitAll()
 
                         // ── Everything else ───────────────────
-                        // @PreAuthorize handles role checks
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(gatewayAuthFilter, UsernamePasswordAuthenticationFilter.class);
