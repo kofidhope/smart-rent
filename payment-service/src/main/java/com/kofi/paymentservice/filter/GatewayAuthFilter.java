@@ -22,16 +22,6 @@ public class GatewayAuthFilter extends OncePerRequestFilter {
     @Value("${gateway.internal-secret}")
     private String internalSecret;
 
-    // Paths that bypass the internal secret check
-    private static final List<String> BYPASS_PATHS = List.of(
-            "/actuator/health",
-            "/actuator/info",
-            // Internal saga calls from booking-service
-            "/api/properties/status",
-            // Paystack webhook
-            "/api/payments/webhook"
-    );
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
@@ -74,7 +64,7 @@ public class GatewayAuthFilter extends OncePerRequestFilter {
     }
 
     private boolean shouldBypass(String path) {
-        return BYPASS_PATHS.stream().anyMatch(path::contains);
+        return path.startsWith("/actuator") || path.equals("/api/payments/webhook");
     }
 }
 
