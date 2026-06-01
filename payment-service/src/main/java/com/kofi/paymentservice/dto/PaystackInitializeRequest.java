@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 // Sent to POST https://api.paystack.co/transaction/initialize
 // Paystack responds with authorization_url tenant visits to pay
 @Data
@@ -53,7 +55,7 @@ public class PaystackInitializeRequest {
         private String bookingId;
 
         @JsonProperty("tenant_id")
-        private Long tenantId;
+        private UUID tenantId;
 
         @JsonProperty("property_title")
         private String propertyTitle;
