@@ -37,14 +37,11 @@ public class AuthController {
     }
 
     @GetMapping("/validate")
-    public ResponseEntity<TokenValidationResponse> validate(
-            @RequestHeader("Authorization") String authHeader) {
-
+    public ResponseEntity<TokenValidationResponse> validate(@RequestHeader("Authorization") String authHeader) {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.ok(TokenValidationResponse.builder()
                     .valid(false).build());
         }
-
         String token = authHeader.substring(7);
         return ResponseEntity.ok(authService.validateToken(token));
     }
