@@ -31,7 +31,7 @@ public class SecurityConfig {
                         // Public endpoints
                         .requestMatchers(HttpMethod.GET,
                                 "/api/properties/search",
-                                "/api/properties/{id}")
+                                "/api/properties/*")
                         .permitAll()
 
                         // Internal saga calls

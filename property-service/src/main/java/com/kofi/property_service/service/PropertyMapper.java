@@ -25,6 +25,17 @@ public class PropertyMapper {
                 .build();
     }
 
+    public void updateEntity(Property property, PropertyRequest request) {
+        property.setTitle(request.getTitle());
+        property.setDescription(request.getDescription());
+        property.setAddress(request.getAddress());
+        property.setCity(request.getCity());
+        property.setPrice(request.getPrice());
+        property.setType(request.getType());
+        property.setBedrooms(request.getBedrooms());
+        property.setBathrooms(request.getBathrooms());
+    }
+
     public PropertyResponse toResponse(Property property, UserResponse owner) {
         return PropertyResponse.builder()
                 .id(property.getId())

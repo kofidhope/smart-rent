@@ -56,7 +56,7 @@ public class GatewayAuthFilter extends OncePerRequestFilter {
                     new UsernamePasswordAuthenticationToken(
                             userId,
                             null,
-                            List.of(new SimpleGrantedAuthority("ROLE_" + role))
+                            List.of(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
                     );
 
             SecurityContextHolder.getContext().setAuthentication(auth);
@@ -65,7 +65,10 @@ public class GatewayAuthFilter extends OncePerRequestFilter {
     }
 
     private boolean shouldBypass(String path) {
-        return path.startsWith("/actuator") || path.contains("/status/rent") || path.contains("/status/available");
+        return path.startsWith("/actuator")
+                || path.matches("^/api/properties/[^/]+/status/rent$")
+                || path.matches("^/api/properties/[^/]+/status/available$")
+                || path.matches("^/api/properties/[^/]+$");
     }
 }
 

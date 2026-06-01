@@ -6,6 +6,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +36,16 @@ public class GlobalExceptionHandler {
         body.put("errors", fieldErrors);
         return ResponseEntity.badRequest().body(body);
     }
+    @ExceptionHandler(GatewayAccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleGatewayAccessDenied(GatewayAccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of(
+                "timestamp", Instant.now(),
+                "status", HttpStatus.FORBIDDEN.value(),
+                "error", "Access Denied",
+                "message", ex.getMessage()
+        ));
+    }
+
 
     private ResponseEntity<Map<String, Object>> buildError(HttpStatus status, String message) {
         Map<String, Object> body = new HashMap<>();

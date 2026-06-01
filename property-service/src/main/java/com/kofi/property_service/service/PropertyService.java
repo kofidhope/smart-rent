@@ -32,6 +32,11 @@ public class PropertyService {
         // Verify owner exists in user-service before creating
         UserResponse owner = userServiceClient.getUserById(ownerId);
 
+        // Check role
+        if (!"LANDLORD".equalsIgnoreCase(owner.getRole())) {
+            throw new UnauthorizedOwnerException("Only landlords can create properties");
+        }
+
         Property property = mapper.toEntity(request, ownerId);
         Property saved = propertyRepository.save(property);
 
@@ -75,22 +80,21 @@ public class PropertyService {
     public PropertyResponse updateProperty(UUID id, PropertyRequest request, UUID requesterId) {
         Property property = findOrThrow(id);
 
+        // Fetch requester once and reuse
+        UserResponse requester = userServiceClient.getUserById(requesterId);
+
         if (!property.getOwnerId().equals(requesterId)) {
             throw new UnauthorizedOwnerException("You do not own this property");
         }
+        if (!"LANDLORD".equalsIgnoreCase(requester.getRole())) {
+            throw new UnauthorizedOwnerException("Only landlords can update");
+        }
 
-        property.setTitle(request.getTitle());
-        property.setDescription(request.getDescription());
-        property.setAddress(request.getAddress());
-        property.setCity(request.getCity());
-        property.setPrice(request.getPrice());
-        property.setType(request.getType());
-        property.setBedrooms(request.getBedrooms());
-        property.setBathrooms(request.getBathrooms());
+        // Use mapper for consistency (optional improvement)
+        mapper.updateEntity(property, request);
 
         Property updated = propertyRepository.save(property);
-        UserResponse owner = userServiceClient.getUserById(requesterId);
-        return mapper.toResponse(updated, owner);
+        return mapper.toResponse(updated, requester);
     }
 
     @Transactional
@@ -100,6 +104,12 @@ public class PropertyService {
         if (!property.getOwnerId().equals(requesterId)) {
             throw new UnauthorizedOwnerException("You do not own this property");
         }
+
+        UserResponse requester = userServiceClient.getUserById(requesterId);
+        if (!"LANDLORD".equalsIgnoreCase(requester.getRole())) {
+            throw new UnauthorizedOwnerException("Only landlords can update/delete properties");
+        }
+
 
         // Soft delete — mark as unlisted, never hard delete
         property.setStatus(PropertyStatus.UNLISTED);
