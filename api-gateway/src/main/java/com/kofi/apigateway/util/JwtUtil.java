@@ -10,6 +10,7 @@ import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Component
 public class JwtUtil {
@@ -29,8 +30,8 @@ public class JwtUtil {
         return extractAllClaims(token).getSubject();
     }
 
-    public Long extractUserId(String token) {
-        return extractAllClaims(token).get("userId", Long.class);
+    public String extractUserId(String token) {
+        return extractAllClaims(token).get("userId", String.class);
     }
 
     public String extractRole(String token) {

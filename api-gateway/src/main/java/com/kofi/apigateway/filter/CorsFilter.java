@@ -37,6 +37,7 @@ public class CorsFilter implements GlobalFilter {
 
         // ── Check if origin is allowed ────────────────────────
         boolean originAllowed = gatewayConfig
+                .getCors()
                 .getAllowedOrigins()
                 .contains(origin);
 
@@ -74,21 +75,21 @@ public class CorsFilter implements GlobalFilter {
         // Never use wildcard * with credentials
         headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, origin);
         // Which HTTP methods the browser can use
-        headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, String.join(", ", gatewayConfig.getAllowedMethods()));
+        headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, String.join(", ", gatewayConfig.getCors().getAllowedMethods()));
         // Which request headers the browser can send
-        headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, String.join(", ", gatewayConfig.getAllowedHeaders()));
+        headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, String.join(", ", gatewayConfig.getCors().getAllowedHeaders()));
         // Which response headers the browser can read
         // X-Rate-Limit-Remaining needs to be here
         // or the frontend cannot read it
         headers.add(HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS, "X-Rate-Limit-Limit, X-Rate-Limit-Remaining");
         // Allow cookies and Authorization header
         // Required for JWT in Authorization header
-        if (gatewayConfig.isAllowCredentials()) {
+        if (gatewayConfig.getCors().isAllowCredentials()) {
             headers.add(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS, "true");
         }
         // How long browser caches preflight response
         // 3600 = 1 hour — browser skips preflight
         // for subsequent requests within this time
-        headers.add(HttpHeaders.ACCESS_CONTROL_MAX_AGE, String.valueOf(gatewayConfig.getMaxAge()));
+        headers.add(HttpHeaders.ACCESS_CONTROL_MAX_AGE, String.valueOf(gatewayConfig.getCors().getMaxAge()));
     }
 }

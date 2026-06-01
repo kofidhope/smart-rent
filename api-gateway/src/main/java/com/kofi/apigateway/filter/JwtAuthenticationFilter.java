@@ -74,7 +74,7 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 
         // ── Token valid — extract claims ──────────────────────
         String email  = jwtUtil.extractEmail(token);
-        Long userId   = jwtUtil.extractUserId(token);
+        String userId   = jwtUtil.extractUserId(token);
         String role   = jwtUtil.extractRole(token);
 
         log.debug("JWT valid — userId: {} role: {} path: {}", userId, role, path);
@@ -85,14 +85,10 @@ public class JwtAuthenticationFilter implements GlobalFilter {
                         // Your original headers — keep them
                         .header("X-User-Email", email)
                         .header("X-User-Id", String.valueOf(userId))
-                        .header("X-User-Role", role)
+                        .header("X-User-Role", role.toUpperCase())
                         // New — services verify this to confirm
                         // request came through the gateway
                         .header("X-Internal-Secret", gatewayConfig.getInternalSecret())
-                        // Remove raw JWT — downstream services
-                        // do not need it and should not see it
-                        // They trust X-User-Id and X-User-Role
-                        .header(HttpHeaders.AUTHORIZATION, "")
                 )
                 .build();
 

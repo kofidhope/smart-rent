@@ -69,7 +69,7 @@ public class RateLimitFilter implements GlobalFilter {
     // Rejects with 429 when limit is exceeded
     private Mono<Void> processRequest(ServerWebExchange exchange, GatewayFilterChain chain, Long count, String rateLimitKey) {
 
-        int limit = gatewayConfig.getRequestsPerMinute();
+        int limit = gatewayConfig.getRateLimit().getRequestsPerMinute();
         long remaining = Math.max(0, limit - count);
 
         // Add rate limit info headers to response
