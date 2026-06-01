@@ -35,27 +35,10 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-
-                        // ── Actuator
-                        // Docker health checks need this
-                        .requestMatchers(
-                                "/actuator/health",
-                                "/actuator/info")
-                        .permitAll()
-
-                        // ── Internal Feign calls ──────────────
-                        // property-service, booking-service,
-                        // notification-service call these
-                        // via Feign to fetch user details
-                        // They come through the gateway so
-                        // X-Internal-Secret is present but
-                        // no X-User-Role — service-to-service
-                        .requestMatchers(HttpMethod.GET,
-                                "/api/users/{id}")
-                        .permitAll()
-
-                        // ── Everything else ───────────────────
-                        // @PreAuthorize handles role checks
+                        .requestMatchers("/actuator/health", "/actuator/info").permitAll()
+                        // ── Internal Feign calls
+                        .requestMatchers(HttpMethod.GET, "/api/users/{id}").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/users/register", "/api/users/login").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(gatewayAuthFilter, UsernamePasswordAuthenticationFilter.class);
