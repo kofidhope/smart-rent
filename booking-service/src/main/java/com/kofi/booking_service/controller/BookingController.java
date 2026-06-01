@@ -23,8 +23,7 @@ public class BookingController {
     // ── Tenant only
     @PreAuthorize("hasRole('TENANT')")
     @PostMapping
-    public ResponseEntity<BookingResponse> createBooking(
-            @Valid @RequestBody BookingRequest request,
+    public ResponseEntity<BookingResponse> createBooking(@Valid @RequestBody BookingRequest request,
             @RequestHeader("X-User-Id") UUID tenantId) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -33,15 +32,13 @@ public class BookingController {
 
     @PreAuthorize("hasRole('TENANT')")
     @GetMapping("/my")
-    public ResponseEntity<List<BookingResponse>> getMyBookings(
-            @RequestHeader("X-User-Id") UUID tenantId) {
+    public ResponseEntity<List<BookingResponse>> getMyBookings(@RequestHeader("X-User-Id") UUID tenantId) {
         return ResponseEntity.ok(bookingService.getMyBookings(tenantId));
     }
 
     @PreAuthorize("hasRole('TENANT')")
     @DeleteMapping("/{id}/cancel")
-    public ResponseEntity<BookingResponse> cancelBooking(
-            @PathVariable UUID id,
+    public ResponseEntity<BookingResponse> cancelBooking(@PathVariable UUID id,
             @RequestHeader("X-User-Id") UUID requesterId) {
         return ResponseEntity.ok(bookingService.cancelBooking(id, requesterId));
     }
@@ -51,8 +48,7 @@ public class BookingController {
     // Service layer checks ownership
     @PreAuthorize("hasAnyRole('TENANT','LANDLORD')")
     @GetMapping("/{id}")
-    public ResponseEntity<BookingResponse> getBooking(
-            @PathVariable UUID id,
+    public ResponseEntity<BookingResponse> getBooking(@PathVariable UUID id,
             @RequestHeader("X-User-Id") UUID requesterId) {
         return ResponseEntity.ok(bookingService.getBookingById(id, requesterId));
     }
@@ -61,8 +57,7 @@ public class BookingController {
     // See all bookings for a specific property they own
     @PreAuthorize("hasRole('LANDLORD')")
     @GetMapping("/property/{propertyId}")
-    public ResponseEntity<List<BookingResponse>> getBookingsByProperty(
-            @PathVariable UUID propertyId,
+    public ResponseEntity<List<BookingResponse>> getBookingsByProperty(@PathVariable UUID propertyId,
             @RequestHeader("X-User-Id") UUID requesterId) {
         return ResponseEntity.ok(bookingService.getBookingsByProperty(propertyId, requesterId));
     }

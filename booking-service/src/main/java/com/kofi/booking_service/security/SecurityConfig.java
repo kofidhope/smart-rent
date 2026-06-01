@@ -49,7 +49,7 @@ public class SecurityConfig {
                         // no active HTTP request — no role header
                         // booking-service saga compensation
                         .requestMatchers(HttpMethod.GET,
-                                "/api/bookings/{id}/saga")
+                                "/api/bookings/*/saga")
                         .permitAll()
 
                         // ── Everything else ───────────────────

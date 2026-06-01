@@ -14,6 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 @Slf4j
@@ -51,11 +52,12 @@ public class GatewayAuthFilter extends OncePerRequestFilter {
         // Populate Spring Security context
         // @PreAuthorize reads from here
         if (userId != null && role != null) {
+            UUID userUuid = UUID.fromString(userId);
             UsernamePasswordAuthenticationToken auth =
                     new UsernamePasswordAuthenticationToken(
-                            userId,
+                            userUuid,
                             null,
-                            List.of(new SimpleGrantedAuthority("ROLE_" + role))
+                            List.of(new SimpleGrantedAuthority("ROLE_" + role.toUpperCase()))
                     );
 
             SecurityContextHolder.getContext().setAuthentication(auth);
@@ -64,6 +66,9 @@ public class GatewayAuthFilter extends OncePerRequestFilter {
     }
 
     private boolean shouldBypass(String path) {
-        return path.startsWith("/actuator") || path.contains("/complete") || path.contains("/saga");
+        return path.matches("^/actuator(/.*)?$")
+                || path.matches("^/api/bookings/[0-9a-fA-F\\-]+/complete$")
+                || path.matches("^/api/bookings/[0-9a-fA-F\\-]+/saga$");
     }
+
 }
