@@ -51,6 +51,12 @@ public class PropertyService {
         return mapper.toResponse(property, owner);
     }
 
+    public List<PropertyResponse> getPropertiesByIds(List<UUID> ids) {
+        return propertyRepository.findAllById(ids).stream()
+                .map(mapper::toResponse)
+                .toList();
+    }
+
     @Transactional(readOnly = true)
     public List<PropertyResponse> searchProperties(PropertySearchRequest request) {
         return propertyRepository.searchProperties(

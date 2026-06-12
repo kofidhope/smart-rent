@@ -25,6 +25,25 @@ public class PropertyMapper {
                 .build();
     }
 
+    // ── OVERLOADED METHOD FOR BULK / INTERNAL CALLS ───────
+    public PropertyResponse toResponse(Property property) {
+        return PropertyResponse.builder()
+                .id(property.getId())
+                .ownerId(property.getOwnerId())
+                // ownerName is omitted here because we don't have user context
+                .title(property.getTitle())
+                .description(property.getDescription())
+                .address(property.getAddress())
+                .city(property.getCity())
+                .price(property.getPrice())
+                .type(property.getType())
+                .status(property.getStatus())
+                .bedrooms(property.getBedrooms())
+                .bathrooms(property.getBathrooms())
+                .createdAt(property.getCreatedAt())
+                .build();
+    }
+
     public void updateEntity(Property property, PropertyRequest request) {
         property.setTitle(request.getTitle());
         property.setDescription(request.getDescription());

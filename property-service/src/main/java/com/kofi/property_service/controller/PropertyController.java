@@ -69,10 +69,14 @@ public class PropertyController {
         return ResponseEntity.noContent().build();
     }
 
-    // ── Internal — booking saga calls these ───────────────
+    // ── Internal — booking saga and service call these ───────────
     // No @PreAuthorize — permitAll in SecurityConfig
-    // Called by booking-service via Feign from
-    // inside a Kafka listener — no user context
+
+    @GetMapping("/bulk")
+    public ResponseEntity<List<PropertyResponse>> getPropertiesByIds(@RequestParam("ids") List<UUID> ids) {
+        return ResponseEntity.ok(propertyService.getPropertiesByIds(ids));
+    }
+
     @PutMapping("/{id}/status/rent")
     public ResponseEntity<Void> markAsRented(@PathVariable UUID id) {
         propertyService.markAsRented(id);
