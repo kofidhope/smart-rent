@@ -5,7 +5,9 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.List;
 import java.util.UUID;
 
 @FeignClient(
@@ -16,6 +18,10 @@ public interface PropertyServiceClient {
 
     @GetMapping("/api/properties/{id}")
     PropertyResponse getPropertyById(@PathVariable UUID id);
+
+    //BULK ENDPOINT
+    @GetMapping("/api/properties/bulk")
+    List<PropertyResponse> getPropertiesByIds(@RequestParam("ids") List<UUID> ids);
 
     @PutMapping("/api/properties/{id}/status/rent")
     void markAsRented(@PathVariable UUID id);

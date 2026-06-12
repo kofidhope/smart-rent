@@ -94,8 +94,7 @@ public class KafkaConfig {
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
 
         // Trust both our own event package and payment-service's package
-        props.put(JsonDeserializer.TRUSTED_PACKAGES,
-                "com.smartrent.booking.event,com.smartrent.payment.event");
+        props.put(JsonDeserializer.TRUSTED_PACKAGES, "com.kofi.paymentservice.event,com.kofi.bookingservice.event");
 
         // Tell the deserializer exactly which class to map JSON into
         props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, targetType.getName());
@@ -108,17 +107,14 @@ public class KafkaConfig {
         // successfully — prevents losing messages on crash
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
 
-        ConsumerFactory<String, T> consumerFactory =
-                new DefaultKafkaConsumerFactory<>(props);
+        ConsumerFactory<String, T> consumerFactory = new DefaultKafkaConsumerFactory<>(props);
 
-        ConcurrentKafkaListenerContainerFactory<String, T> factory =
-                new ConcurrentKafkaListenerContainerFactory<>();
+        ConcurrentKafkaListenerContainerFactory<String, T> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory);
 
         // Manual ack mode — offset committed only after
         // your @KafkaListener method returns without exception
-        factory.getContainerProperties()
-                .setAckMode(ContainerProperties.AckMode.RECORD);
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
 
         return factory;
     }

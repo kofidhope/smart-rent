@@ -24,7 +24,9 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -138,14 +140,29 @@ public class BookingService {
     @Transactional(readOnly = true)
     public List<BookingResponse> getMyBookings(UUID tenantId) {
 
-        log.info("Fetching bookings for tenantId: {}", tenantId);
+        // 1. Fetch all bookings for the tenant
+        List<Booking> bookings = bookingRepository.findByTenantId(tenantId);
+        if (bookings.isEmpty()) {
+            return List.of();
+        }
 
-        return bookingRepository
-                .findByTenantId(tenantId)
-                .stream()
+        // 2. Collect unique property IDs to avoid duplicate lookups
+        List<UUID> propertyIds = bookings.stream()
+                .map(Booking::getPropertyId)
+                .distinct()
+                .toList();
+
+        // 3. One single HTTP call to get all required properties
+        List<PropertyResponse> properties = propertyServiceClient.getPropertiesByIds(propertyIds);
+
+        // 4. Convert to a Map for O(1) lookups during mapping
+        Map<UUID, PropertyResponse> propertyMap = properties.stream()
+                .collect(Collectors.toMap(PropertyResponse::getId, p -> p));
+
+        // 5. Map bookings to responses gracefully
+        return bookings.stream()
                 .map(booking -> {
-                    PropertyResponse property = propertyServiceClient
-                            .getPropertyById(booking.getPropertyId());
+                    PropertyResponse property = propertyMap.get(booking.getPropertyId());
                     return mapper.toResponse(booking, property);
                 })
                 .toList();
