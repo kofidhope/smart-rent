@@ -4,12 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import java.math.BigDecimal;
-
-// Response from GET /transaction/verify/{reference}
-// Called after receiving a webhook to independently confirm
-// the transaction status directly from Paystack
-// Never trust a webhook alone — always verify
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PaystackVerifyResponse {
@@ -22,77 +16,58 @@ public class PaystackVerifyResponse {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class TransactionData {
 
+        // Paystack internal transaction ID — numeric
+        private Long id;
+
         // "success", "failed", "abandoned", "pending"
-        // This is the ground truth — what Paystack actually recorded
         private String status;
 
-        // Your reference echoed back
         private String reference;
 
-        // Amount in pesewas — divide by 100 to get GHS
-        // Compare against your payment record to detect tampering
+        // Amount in pesewas — divide by 100 for GHS
         private Long amount;
 
         private String currency;
 
-        // ISO 8601 timestamp of when payment completed
         @JsonProperty("paid_at")
         private String paidAt;
 
-        // How the tenant paid
-        // "card", "mobile_money", "bank", "ussd", "qr"
+        @JsonProperty("created_at")
+        private String createdAt;
+
         private String channel;
 
-        // Gateway response code from the card network
         @JsonProperty("gateway_response")
         private String gatewayResponse;
 
-        // Card or mobile money authorization details
-        // Contains authorization_code for future charges
         private Authorization authorization;
-
-        // Tenant details as Paystack knows them
         private Customer customer;
-
-        // Your metadata echoed back
-        // Contains bookingId and tenantId you sent originally
         private Metadata metadata;
 
         @Data
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Authorization {
 
-            // Store this — used for future charges on this tenant
-            // Format: AUTH_xxxxxxxxxx
             @JsonProperty("authorization_code")
             private String authorizationCode;
 
-            // "visa", "mastercard", "verve", "mobile_money"
             @JsonProperty("card_type")
             private String cardType;
 
-            // Last 4 digits of card — safe to store and display
             private String last4;
 
-            // Card expiry month e.g. "12"
             @JsonProperty("exp_month")
             private String expMonth;
 
-            // Card expiry year e.g. "2026"
             @JsonProperty("exp_year")
             private String expYear;
 
-            // Issuing bank name
             private String bank;
-
-            // "card", "mobile_money" etc
             private String channel;
 
-            // Whether this card can be charged again
-            // "1" = reusable, "0" = one-time only
+            // "1" = reusable, "0" = one time only
             private String reusable;
 
-            // Country code of issuing bank e.g. "GH"
             @JsonProperty("country_code")
             private String countryCode;
         }
@@ -100,7 +75,11 @@ public class PaystackVerifyResponse {
         @Data
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Customer {
+
+            // Paystack numeric ID — NOT a UUID
             private Long id;
+
+            private String email;
 
             @JsonProperty("first_name")
             private String firstName;
@@ -108,24 +87,25 @@ public class PaystackVerifyResponse {
             @JsonProperty("last_name")
             private String lastName;
 
-            private String email;
+            private String phone;
 
-            // Paystack's customer code — format: CUS_xxxxxxxxxx
             @JsonProperty("customer_code")
             private String customerCode;
-
-            private String phone;
         }
 
         @Data
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class Metadata {
 
+            // bookingId is your UUID stored as String
+            // Paystack echoes it back exactly as you sent it
             @JsonProperty("booking_id")
             private String bookingId;
 
+            // tenant_id stored as String to avoid
+            // UUID vs Long conflicts
             @JsonProperty("tenant_id")
-            private Long tenantId;
+            private String tenantId;
 
             @JsonProperty("property_title")
             private String propertyTitle;

@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
+import java.util.List;
+import java.util.UUID;
+
 // Shape of every POST Paystack sends to your webhook URL
 // Paystack sends this for: charge.success, charge.failed,
 // transfer.success, transfer.failed, refund.processed etc.
@@ -67,7 +70,7 @@ public class PaystackWebhookPayload {
 
         // Log of attempts Paystack made to charge
         // Useful for debugging failed payments
-        private java.util.List<Log> log;
+        private List<Log> log;
 
         @Data
         @JsonIgnoreProperties(ignoreUnknown = true)
@@ -121,7 +124,7 @@ public class PaystackWebhookPayload {
             private String bookingId;
 
             @JsonProperty("tenant_id")
-            private Long tenantId;
+            private String tenantId;
 
             @JsonProperty("property_title")
             private String propertyTitle;

@@ -35,46 +35,42 @@ public class BookingEventListener {
             @Header(KafkaHeaders.RECEIVED_KEY) String key,
             Acknowledgment acknowledgment) {
 
-        log.info("Received BookingConfirmedEvent — " + "bookingId: {} tenantId: {} amount: {} GHS " + "partition: {} offset: {} key: {}",
-                event.getBookingId(),
-                event.getTenantId(),
-                event.getAmount(),
-                partition,
-                offset,
-                key);
+        log.info("=== EVENT RECEIVED ===");
+        log.info("bookingId: {}", event.getBookingId());
+        log.info("tenantId: {}", event.getTenantId());
+        log.info("ownerId: {}", event.getOwnerId());
+        log.info("amount: {}", event.getAmount());
+        log.info("email: {}", event.getTenantEmail());
+        log.info("propertyTitle: {}", event.getPropertyTitle());
+        log.info("partition: {} offset: {}", partition, offset);
+        log.info("=== END EVENT ===");
 
         try {
-            // Delegate all business logic to PaymentService
-            // This class only handles Kafka mechanics —
-            // receive, delegate, acknowledge or not
             paymentService.processBookingPayment(event);
-
-            // Commit offset — message successfully processed
-            // Kafka will not redeliver this message to
-            // this consumer group again
             acknowledgment.acknowledge();
-
-            log.info("BookingConfirmedEvent acknowledged — " + "bookingId: {} partition: {} offset: {}",
-                    event.getBookingId(),
-                    partition,
-                    offset);
+            log.info("BookingConfirmedEvent acknowledged — " +
+                    "bookingId: {}", event.getBookingId());
 
         } catch (Exception e) {
+            log.error("=== PROCESSING FAILED ===");
+            log.error("Error type: {}",
+                    e.getClass().getName());
+            log.error("Error message: {}", e.getMessage());
 
-            // Do NOT acknowledge
-            // Kafka keeps the offset uncommitted
-            // Message will be redelivered when service restarts
-            // The DefaultErrorHandler in KafkaConfig retries
-            // twice before calling the error callback
-            log.error("Failed to process BookingConfirmedEvent — " +
-                            "bookingId: {} partition: {} offset: {} " +
-                            "error: {} " +
-                            "offset NOT committed — will retry",
-                    event.getBookingId(),
-                    partition,
-                    offset,
-                    e.getMessage(),
-                    e);
+            // Log full cause chain
+            Throwable cause = e.getCause();
+            int depth = 1;
+            while (cause != null) {
+                log.error("Cause {}: {} — {}",
+                        depth,
+                        cause.getClass().getName(),
+                        cause.getMessage());
+                cause = cause.getCause();
+                depth++;
+            }
+
+            log.error("Full stack trace:", e);
+            log.error("=== END FAILED ===");
         }
     }
 }

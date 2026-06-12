@@ -238,7 +238,7 @@ public class PaystackService {
             // HMAC-SHA512 of raw body using webhook secret as key
             Mac mac = Mac.getInstance("HmacSHA512");
             SecretKeySpec keySpec = new SecretKeySpec(
-                    paystackConfig.getWebhookSecret().getBytes(StandardCharsets.UTF_8),
+                    paystackConfig.getSecretKey().getBytes(StandardCharsets.UTF_8),
                     "HmacSHA512"
             );
             mac.init(keySpec);

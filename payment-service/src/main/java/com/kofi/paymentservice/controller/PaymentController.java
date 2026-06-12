@@ -30,7 +30,7 @@ public class PaymentController {
     public ResponseEntity<Payment> getPaymentByBooking(
             @PathVariable UUID bookingId,
             @RequestHeader("X-User-Id") UUID requesterId) {
-        return ResponseEntity.ok(paymentService.getPaymentByBookingId(bookingId));
+        return ResponseEntity.ok(paymentService.getPaymentByBookingId(bookingId,requesterId));
     }
 
     // ── Tenant only ───────────────────────────────────────

@@ -72,7 +72,7 @@ public class KafkaConfig {
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        props.put(JsonDeserializer.TRUSTED_PACKAGES, "com.smartrent.payment.event," + "com.smartrent.booking.event");
+        props.put(JsonDeserializer.TRUSTED_PACKAGES, "com.kofi.paymentservice.event,com.kofi.bookingservice.event");
         props.put(JsonDeserializer.VALUE_DEFAULT_TYPE, BookingConfirmedEvent.class.getName());
         props.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, false);
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
@@ -89,7 +89,7 @@ public class KafkaConfig {
                 factory = new ConcurrentKafkaListenerContainerFactory<>();
 
         factory.setConsumerFactory(bookingConfirmedConsumerFactory());
-        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
+        factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
         factory.setConcurrency(3);
         factory.setCommonErrorHandler(errorHandler());
 
@@ -110,19 +110,24 @@ public class KafkaConfig {
 
         DefaultErrorHandler handler = new DefaultErrorHandler(
                 (consumerRecord, exception) -> {
-                    // Called after all retries are exhausted
-                    // Log the failed message for investigation
-                    // In production: publish to a dead letter topic
                     log.error(
-                            "Message processing failed after retries — " +
+                            "Message processing failed — " +
                                     "topic: {} partition: {} offset: {} " +
-                                    "key: {} error: {}",
+                                    "key: {}",
                             consumerRecord.topic(),
                             consumerRecord.partition(),
                             consumerRecord.offset(),
-                            consumerRecord.key(),
-                            exception.getMessage()
+                            consumerRecord.key()
                     );
+                    // Log full cause chain
+                    Throwable cause = exception;
+                    while (cause != null) {
+                        log.error("Caused by: {} — {}",
+                                cause.getClass().getName(),
+                                cause.getMessage());
+                        cause = cause.getCause();
+                    }
+                    log.error("Full stack:", exception);
                 },
                 backOff
         );

@@ -6,6 +6,7 @@ import com.kofi.paymentservice.dto.PaystackWebhookPayload;
 import com.kofi.paymentservice.event.BookingConfirmedEvent;
 import com.kofi.paymentservice.event.PaymentEventPublisher;
 import com.kofi.paymentservice.exception.PaymentNotFoundException;
+import com.kofi.paymentservice.exception.UnauthorizedAccessException;
 import com.kofi.paymentservice.model.Payment;
 import com.kofi.paymentservice.model.PaymentStatus;
 import com.kofi.paymentservice.model.PaymentType;
@@ -93,8 +94,6 @@ public class PaymentService {
 
     // HANDLE WEBHOOK
     // Called by PaystackWebhookController after signature
-    // verification passes.
-    // Routes to the correct handler based on event type.
     @Transactional
     public void handleWebhook(PaystackWebhookPayload payload) {
 
@@ -139,15 +138,16 @@ public class PaymentService {
         }
     }
 
-    // GET PAYMENT BY BOOKING ID
-    // Called by PaymentController — tenant or owner checking
-    // their payment status
     @Transactional(readOnly = true)
-    public Payment getPaymentByBookingId(UUID bookingId) {
-        return paymentRepository
-                .findByBookingId(bookingId)
-                .orElseThrow(() ->
-                        new PaymentNotFoundException("Payment not found for " + "bookingId: " + bookingId));
+    public Payment getPaymentByBookingId(UUID bookingId, UUID requesterId) {
+        Payment payment = paymentRepository.findByBookingId(bookingId)
+                .orElseThrow(() -> new PaymentNotFoundException("Payment not found for bookingId: " + bookingId));
+
+        // Enforce Access Control
+        if (!payment.getTenantId().equals(requesterId) && !payment.getOwnerId().equals(requesterId)) {
+            throw new UnauthorizedAccessException("You do not have permission to view this payment record.");
+        }
+        return payment;
     }
 
     // GET TENANT PAYMENT HISTORY

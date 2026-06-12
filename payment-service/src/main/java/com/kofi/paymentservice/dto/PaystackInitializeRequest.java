@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.UUID;
 
 // Sent to POST https://api.paystack.co/transaction/initialize
@@ -62,7 +63,7 @@ public class PaystackInitializeRequest {
 
         // Custom fields array Paystack displays on receipts
         @JsonProperty("custom_fields")
-        private java.util.List<CustomField> customFields;
+        private List<CustomField> customFields;
 
         @Data
         @Builder
