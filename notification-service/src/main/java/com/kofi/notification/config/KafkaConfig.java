@@ -6,6 +6,7 @@ import com.kofi.notification.event.PaymentFailedEvent;
 import com.kofi.notification.event.PaymentSucceededEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -64,9 +65,9 @@ public class KafkaConfig {
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
 
         props.put(JsonDeserializer.TRUSTED_PACKAGES,
-                "com.smartrent.notification.event," +
-                        "com.smartrent.booking.event," +
-                        "com.smartrent.payment.event");
+                "com.kofi.smartrent.notification.event," +
+                        "com.kofi.smartrent.booking.event," +
+                        "com.kofi.smartrent.payment.event");
 
         props.put(JsonDeserializer.USE_TYPE_INFO_HEADERS, false);
 
@@ -196,6 +197,5 @@ public class KafkaConfig {
     }
 
     // Slf4j logger for error handler lambda
-    private static final org.slf4j.Logger log =
-            org.slf4j.LoggerFactory.getLogger(KafkaConfig.class);
+    private static final org.slf4j.Logger log = LoggerFactory.getLogger(KafkaConfig.class);
 }
