@@ -47,8 +47,11 @@ public class AuthService {
                 refreshToken.getRole()
         );
 
-        // Rotate refresh token
+        // Revoke old token before deleting
+        refreshTokenService.revokeToken(refreshTokenStr);
         refreshTokenService.deleteToken(refreshTokenStr);
+
+        // Create new refresh token
         RefreshToken newRefreshToken = refreshTokenService.createRefreshToken(
                 refreshToken.getUserId(),
                 refreshToken.getEmail(),
@@ -64,6 +67,8 @@ public class AuthService {
     }
 
     public void logout(String refreshTokenStr) {
+        // revoke before delete for audit safety
+        refreshTokenService.revokeToken(refreshTokenStr);
         refreshTokenService.deleteToken(refreshTokenStr);
     }
 

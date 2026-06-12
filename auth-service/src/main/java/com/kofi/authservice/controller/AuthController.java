@@ -26,12 +26,19 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<AuthResponse> refresh(@Valid @RequestBody RefreshRequest request) {
+        // Ensure refreshToken is not blank
+        if (request.getRefreshToken() == null || request.getRefreshToken().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
         AuthResponse response = authService.refresh(request.getRefreshToken());
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@Valid @RequestBody RefreshRequest request) {
+        if (request.getRefreshToken() == null || request.getRefreshToken().isBlank()) {
+            return ResponseEntity.badRequest().build();
+        }
         authService.logout(request.getRefreshToken());
         return ResponseEntity.noContent().build();
     }

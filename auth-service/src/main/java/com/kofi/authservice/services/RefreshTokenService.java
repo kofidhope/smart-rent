@@ -28,7 +28,7 @@ public class RefreshTokenService {
                 .email(email)
                 .role(role)
                 .revoked(false)
-                .expiration(refreshExpiration / 1000) // convert ms to seconds
+                .expiration(refreshExpiration) // convert ms to seconds
                 .build();
 
         redisTemplate.opsForValue().set(
