@@ -1,9 +1,7 @@
 package com.kofi.paymentservice.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kofi.paymentservice.model.Payment;
 import com.kofi.paymentservice.service.PaymentService;
-import com.kofi.paymentservice.service.PaystackService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
