@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -14,7 +15,7 @@ import java.util.UUID;
 public class PropertyResponse {
     private UUID id;
     private UUID ownerId;
-    private String ownerName;   // fetched from user-service via Feign
+    private String ownerName;
     private String title;
     private String description;
     private String address;
@@ -25,4 +26,11 @@ public class PropertyResponse {
     private Integer bedrooms;
     private Integer bathrooms;
     private LocalDateTime createdAt;
+
+    // Primary image URL — shown in search results
+    // null if no images uploaded yet
+    private String primaryImageUrl;
+
+    // All images — shown on property detail page
+    private List<PropertyImageResponse> images;
 }

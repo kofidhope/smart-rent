@@ -1,5 +1,6 @@
 package com.kofi.property_service.controller;
 
+import com.kofi.property_service.dto.PageResponse;
 import com.kofi.property_service.dto.PropertyRequest;
 import com.kofi.property_service.dto.PropertyResponse;
 import com.kofi.property_service.dto.PropertySearchRequest;
@@ -23,9 +24,14 @@ public class PropertyController {
 
     // ── Public — no auth needed
     @GetMapping("/search")
-    public ResponseEntity<List<PropertyResponse>> search(
-            PropertySearchRequest request) {
-        return ResponseEntity.ok(propertyService.searchProperties(request));
+    public ResponseEntity<PageResponse<PropertyResponse>> search(
+            PropertySearchRequest request,
+            @RequestParam(defaultValue = "0")
+            int page,
+            @RequestParam(defaultValue = "10")
+            int size)
+    {
+        return ResponseEntity.ok(propertyService.searchProperties(request, page, size));
     }
 
     @GetMapping("/{id}")
@@ -73,9 +79,13 @@ public class PropertyController {
     // No @PreAuthorize — permitAll in SecurityConfig
 
     @GetMapping("/bulk")
-    public ResponseEntity<List<PropertyResponse>> getPropertiesByIds(@RequestParam("ids") List<UUID> ids) {
-        return ResponseEntity.ok(propertyService.getPropertiesByIds(ids));
+    public ResponseEntity<PageResponse<PropertyResponse>> getPropertiesByIds(
+            @RequestParam("ids") List<UUID> ids,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(propertyService.getPropertiesByIds(ids, page, size));
     }
+
 
     @PutMapping("/{id}/status/rent")
     public ResponseEntity<Void> markAsRented(@PathVariable UUID id) {

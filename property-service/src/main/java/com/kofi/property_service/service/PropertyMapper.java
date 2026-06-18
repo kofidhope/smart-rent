@@ -1,14 +1,23 @@
 package com.kofi.property_service.service;
 
+import com.kofi.property_service.dto.PropertyImageResponse;
 import com.kofi.property_service.dto.PropertyRequest;
 import com.kofi.property_service.dto.PropertyResponse;
 import com.kofi.property_service.dto.UserResponse;
 import com.kofi.property_service.model.Property;
+import com.kofi.property_service.model.PropertyImage;
 import com.kofi.property_service.model.PropertyStatus;
+import com.kofi.property_service.repository.PropertyImageRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
+@RequiredArgsConstructor
 public class PropertyMapper {
+
+    private final PropertyImageRepository imageRepository;
 
     public Property toEntity(PropertyRequest request, java.util.UUID ownerId) {
         return Property.builder()
@@ -56,6 +65,30 @@ public class PropertyMapper {
     }
 
     public PropertyResponse toResponse(Property property, UserResponse owner) {
+
+        // Fetch images — primary first
+        List<PropertyImage> images = imageRepository
+                .findByPropertyIdOrderByDisplayOrderAsc(property.getId());
+
+        String primaryImageUrl = images.stream()
+                .filter(PropertyImage::getIsPrimary)
+                .map(PropertyImage::getImageUrl)
+                .findFirst()
+                .orElse(null);
+
+        List<PropertyImageResponse> imageResponses =
+                images.stream()
+                        .map(img -> PropertyImageResponse
+                                .builder()
+                                .id(img.getId())
+                                .propertyId(img.getPropertyId())
+                                .imageUrl(img.getImageUrl())
+                                .isPrimary(img.getIsPrimary())
+                                .displayOrder(img.getDisplayOrder())
+                                .createdAt(img.getCreatedAt())
+                                .build())
+                        .toList();
+
         return PropertyResponse.builder()
                 .id(property.getId())
                 .ownerId(property.getOwnerId())
@@ -70,6 +103,8 @@ public class PropertyMapper {
                 .bedrooms(property.getBedrooms())
                 .bathrooms(property.getBathrooms())
                 .createdAt(property.getCreatedAt())
+                .primaryImageUrl(primaryImageUrl)
+                .images(imageResponses)
                 .build();
     }
 }

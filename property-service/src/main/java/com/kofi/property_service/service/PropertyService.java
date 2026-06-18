@@ -1,10 +1,7 @@
 package com.kofi.property_service.service;
 
 import com.kofi.property_service.client.UserServiceClient;
-import com.kofi.property_service.dto.PropertyRequest;
-import com.kofi.property_service.dto.PropertyResponse;
-import com.kofi.property_service.dto.PropertySearchRequest;
-import com.kofi.property_service.dto.UserResponse;
+import com.kofi.property_service.dto.*;
 import com.kofi.property_service.exception.PropertyNotFoundException;
 import com.kofi.property_service.exception.UnauthorizedOwnerException;
 import com.kofi.property_service.model.Property;
@@ -12,6 +9,10 @@ import com.kofi.property_service.model.PropertyStatus;
 import com.kofi.property_service.repository.PropertyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,26 +52,37 @@ public class PropertyService {
         return mapper.toResponse(property, owner);
     }
 
-    public List<PropertyResponse> getPropertiesByIds(List<UUID> ids) {
-        return propertyRepository.findAllById(ids).stream()
-                .map(mapper::toResponse)
-                .toList();
-    }
-
     @Transactional(readOnly = true)
-    public List<PropertyResponse> searchProperties(PropertySearchRequest request) {
-        return propertyRepository.searchProperties(
+    public PageResponse<PropertyResponse> getPropertiesByIds(List<UUID> ids, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        // Fetch entities
+        Page<Property> propertiesPage = propertyRepository.findAllByIdIn(ids, pageable);
+        // Convert to Page<PropertyResponse>
+        Page<PropertyResponse> dtoPage = propertiesPage.map(mapper::toResponse);
+        // Now pass the DTO page to your PageResponse.of()
+        return PageResponse.of(dtoPage);
+    }
+    
+    @Transactional(readOnly = true)
+    public PageResponse<PropertyResponse> searchProperties(PropertySearchRequest request, int page, int size) {
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+        Page<Property> propertyPage = propertyRepository.searchProperties(
                         request.getCity(),
                         request.getType(),
                         request.getMinPrice(),
                         request.getMaxPrice(),
-                        request.getMinBedrooms()
-                ).stream()
-                .map(p -> {
+                        request.getMinBedrooms(),
+                        pageable
+                );
+
+        Page<PropertyResponse> responsePage = propertyPage.map(p -> {
                     UserResponse owner = userServiceClient.getUserById(p.getOwnerId());
                     return mapper.toResponse(p, owner);
-                })
-                .toList();
+                });
+
+        return PageResponse.of(responsePage);
     }
 
     @Transactional(readOnly = true)

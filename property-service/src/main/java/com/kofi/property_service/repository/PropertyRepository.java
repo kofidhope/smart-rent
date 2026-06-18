@@ -3,6 +3,8 @@ package com.kofi.property_service.repository;
 import com.kofi.property_service.model.Property;
 import com.kofi.property_service.model.PropertyStatus;
 import com.kofi.property_service.model.PropertyType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -19,6 +21,8 @@ public interface PropertyRepository extends JpaRepository<Property, UUID> {
 
     List<Property> findByStatus(PropertyStatus status);
 
+    Page<Property> findAllByIdIn(List<UUID> ids, Pageable pageable);
+
     @Query("""
         SELECT p FROM Property p
         WHERE p.status = 'AVAILABLE'
@@ -28,11 +32,12 @@ public interface PropertyRepository extends JpaRepository<Property, UUID> {
         AND (:maxPrice IS NULL OR p.price <= :maxPrice)
         AND (:minBedrooms IS NULL OR p.bedrooms >= :minBedrooms)
         """)
-    List<Property> searchProperties(
+    Page<Property> searchProperties(
             @Param("city") String city,
             @Param("type") PropertyType type,
             @Param("minPrice") BigDecimal minPrice,
             @Param("maxPrice") BigDecimal maxPrice,
-            @Param("minBedrooms") Integer minBedrooms
+            @Param("minBedrooms") Integer minBedrooms,
+            Pageable pageable
     );
 }
