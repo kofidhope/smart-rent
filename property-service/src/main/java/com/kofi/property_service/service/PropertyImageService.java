@@ -1,6 +1,7 @@
 package com.kofi.property_service.service;
 
 import com.cloudinary.Cloudinary;
+import com.cloudinary.Transformation;
 import com.cloudinary.utils.ObjectUtils;
 import com.kofi.property_service.dto.PropertyImageResponse;
 import com.kofi.property_service.exception.ResourceNotFoundException;
@@ -236,13 +237,13 @@ public class PropertyImageService {
                             "resource_type", "image",
                             // Auto quality and format
                             "quality", "auto",
-                            "fetch_format", "auto",
-                            // Resize to max 1200px wide
-                            // preserving aspect ratio
-                            "transformation",
-                            ObjectUtils.asMap(
-                                    "width", 1200, "crop", "limit"
-                            )
+                            "fetch_format", "auto"
+//                            // Resize to max 1200px wide
+//                            // preserving aspect ratio
+//                            "transformation",
+//                            new Transformation<>()
+//                                    .width(1200)
+//                                    .crop("limit")
                     )
             );
         } catch (IOException e) {
