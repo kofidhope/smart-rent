@@ -2,6 +2,8 @@ package com.kofi.userservice.controller;
 
 import com.kofi.userservice.dto.*;
 import com.kofi.userservice.service.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -24,8 +26,32 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest request) {
-        return ResponseEntity.ok(userService.login(request));
+    public ResponseEntity<UserResponse> login(@RequestBody LoginRequest request, HttpServletResponse response) {
+
+        // userService.login() calls auth-service and
+        // gets back AuthResponse with tokens
+        AuthResponse authResponse = userService.login(request);
+
+        // Set access token as httpOnly cookie
+        Cookie accessCookie = new Cookie("access_token", authResponse.getAccessToken());
+        accessCookie.setHttpOnly(true);
+        accessCookie.setSecure(false); // true in prod
+        accessCookie.setPath("/");
+        accessCookie.setMaxAge(900); // 15 min
+        response.addCookie(accessCookie);
+
+        // Set refresh token as httpOnly cookie
+        Cookie refreshCookie = new Cookie("refresh_token", authResponse.getRefreshToken());
+        refreshCookie.setHttpOnly(true);
+        refreshCookie.setSecure(false);
+        refreshCookie.setPath("/");
+        refreshCookie.setMaxAge(604800); // 7 days
+        response.addCookie(refreshCookie);
+
+        // Fetch and return user profile
+        // Client gets name, email, role — no tokens
+        UserResponse userResponse = userService.getUserById(authResponse.getUserId());
+        return ResponseEntity.ok(userResponse);
     }
 
     // ── Internal — no @PreAuthorize
