@@ -2,10 +2,7 @@ package com.kofi.notification.service;
 
 import com.kofi.notification.client.UserServiceClient;
 import com.kofi.notification.dto.UserResponse;
-import com.kofi.notification.event.BookingCancelledEvent;
-import com.kofi.notification.event.BookingConfirmedEvent;
-import com.kofi.notification.event.PaymentFailedEvent;
-import com.kofi.notification.event.PaymentSucceededEvent;
+import com.kofi.notification.event.*;
 import com.kofi.notification.model.NotificationChannel;
 import com.kofi.notification.model.NotificationLog;
 import com.kofi.notification.model.NotificationStatus;
@@ -16,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Service
@@ -27,7 +25,7 @@ public class NotificationService {
     private final TwilioService twilioService;
     private final UserServiceClient userServiceClient;
 
-    // BOOKING INITIATED
+    // BOOKING INITIATED    
     // Triggered by BookingConfirmedEvent from Kafka
     // Sent when booking saga initiates payment
     // Tells tenant to complete their payment
@@ -175,6 +173,35 @@ public class NotificationService {
         );
     }
 
+    @Transactional
+    public void notifyBookingCompleted(BookingCompletedEvent event) {
+        log.info("Processing BOOKING_COMPLETED notification — bookingId: {} tenantId: {}",
+                event.getBookingId(), event.getTenantId());
+
+        // Idempotency check
+        if (alreadySent(event.getBookingId(), NotificationType.BOOKING_COMPLETED)) {
+            return;
+        }
+
+        // Fetch tenant phone/email
+        UserResponse tenant = userServiceClient.getUserById(event.getTenantId());
+
+        // Build message
+        String message = buildBookingCompletedMessage(
+                tenant.getDisplayName(),
+                event.getEndDate()
+        );
+
+        // Send and log
+        sendAndLog(
+                event.getBookingId(),
+                event.getTenantId(),
+                NotificationType.BOOKING_COMPLETED,
+                tenant,
+                message
+        );
+    }
+
     // SEND AND LOG — core private method
     // All four notification methods flow through here
     // Handles: skip check, log creation, Twilio call,
@@ -304,6 +331,14 @@ public class NotificationService {
                         "Reason: %s. " +
                         "Please try again or contact support. - SmartRent",
                 name, reason
+        );
+    }
+
+    private String buildBookingCompletedMessage(String name, LocalDate endDate) {
+        return String.format(
+                "Hi %s, your booking has been marked as COMPLETED on %s. " +
+                        "We hope you enjoyed your stay! - SmartRent",
+                name, endDate
         );
     }
 

@@ -53,4 +53,15 @@ public class NotificationEventListener {
         log.info("Notification listener received PaymentFailedEvent: {}", event.getBookingId());
         notificationService.notifyPaymentFailed(event);
     }
+
+    @KafkaListener(
+            topics = KafkaConfig.BOOKING_COMPLETED_TOPIC,
+            groupId = "notification-service-group",
+            containerFactory = "bookingCompletedListenerFactory"
+    )
+    public void onBookingCompleted(BookingCompletedEvent event) {
+        log.info("Notification listener received BookingCompletedEvent: {}", event.getBookingId());
+        notificationService.notifyBookingCompleted(event);
+    }
+
 }

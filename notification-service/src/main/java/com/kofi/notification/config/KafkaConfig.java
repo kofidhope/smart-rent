@@ -1,9 +1,6 @@
 package com.kofi.notification.config;
 
-import com.kofi.notification.event.BookingCancelledEvent;
-import com.kofi.notification.event.BookingConfirmedEvent;
-import com.kofi.notification.event.PaymentFailedEvent;
-import com.kofi.notification.event.PaymentSucceededEvent;
+import com.kofi.notification.event.*;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.LoggerFactory;
@@ -33,6 +30,7 @@ public class KafkaConfig {
     public static final String BOOKING_CANCELLED_TOPIC  = "booking.cancelled";
     public static final String PAYMENT_SUCCEEDED_TOPIC  = "payment.succeeded";
     public static final String PAYMENT_FAILED_TOPIC     = "payment.failed";
+    public static final String BOOKING_COMPLETED_TOPIC = "booking-completed-topic";
 
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServers;
@@ -157,6 +155,11 @@ public class KafkaConfig {
     public ConcurrentKafkaListenerContainerFactory<String,
             PaymentFailedEvent> paymentFailedListenerFactory() {
         return buildListenerFactory(PaymentFailedEvent.class);
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, BookingCompletedEvent> bookingCompletedListenerFactory() {
+        return buildListenerFactory(BookingCompletedEvent.class);
     }
 
     // -------------------------------------------------------

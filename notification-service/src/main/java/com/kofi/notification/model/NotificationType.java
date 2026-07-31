@@ -31,6 +31,8 @@ public enum NotificationType {
     //       Allow 3-5 business days."
     PAYMENT_REFUNDED,
 
+    BOOKING_COMPLETED,
+
     // Future use — reminder before check-in
     BOOKING_REMINDER,
 
