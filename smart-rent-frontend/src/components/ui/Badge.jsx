@@ -25,6 +25,7 @@ const statusMap = {
     PAID:              'green',
     SUCCESS:           'green',
     PROCESSING:        'yellow',
+    UNPAID:            'yellow',
     FAILED:            'red',
     REFUNDED:          'blue',
 

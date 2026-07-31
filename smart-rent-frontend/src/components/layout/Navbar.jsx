@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate, useLocation } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import {Home, Building2, CalendarDays, CreditCard, LogOut, Menu, X, User, Shield,} from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
 import Button from '../ui/Button'
@@ -7,7 +7,6 @@ import Button from '../ui/Button'
 export default function Navbar() {
     const {user, isAuthenticated, isTenant, isLandlord, isAdmin, logout,} = useAuth()
 
-    const navigate = useNavigate()
     const location = useLocation()
     const [mobileOpen, setMobileOpen] = useState(false)
     const [loggingOut, setLoggingOut] = useState(false)

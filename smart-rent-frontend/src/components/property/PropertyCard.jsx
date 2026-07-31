@@ -100,7 +100,7 @@ export default function PropertyCard({ property }) {
                 <div className="flex items-center justify-between">
                     <div>
                         <span className="text-xl font-bold text-brand-green">
-                          GHS {property.price.toLocaleString()}
+                          GHS {Number(property.price || 0).toLocaleString()}
                         </span><span className="text-gray-400 text-sm">
                             /month
                         </span>

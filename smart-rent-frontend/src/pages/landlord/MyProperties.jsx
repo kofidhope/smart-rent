@@ -25,7 +25,7 @@ export default function MyProperties() {
     try {
       const data = await PropertyService
           .getMyProperties()
-      setProperties(data)
+      setProperties(Array.isArray(data) ? data : [])
     } catch (err) {
       toast.error(err.message)
     } finally {
@@ -148,7 +148,7 @@ export default function MyProperties() {
                               mb-3">
                         {property.city} ·{' '}
                         {property.bedrooms} bed ·{' '}
-                        GHS {property.price.toLocaleString()}
+                        GHS {Number(property.price || 0).toLocaleString()}
                         /month
                       </p>
 
@@ -165,6 +165,19 @@ export default function MyProperties() {
                         >
                           <CalendarDays className="h-3.5 w-3.5" />
                           Bookings
+                        </Button>
+
+                        <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() =>
+                                navigate(
+                                    `/landlord/properties/${property.id}/edit`
+                                )
+                            }
+                        >
+                          <Edit className="h-3.5 w-3.5" />
+                          Edit
                         </Button>
 
                         <Button

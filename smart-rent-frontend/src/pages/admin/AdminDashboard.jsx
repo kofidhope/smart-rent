@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {Users, CheckCircle, ArrowRight, Shield,} from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
-import api, { getErrorMessage } from '../../services/api'
+import api from '../../services/api'
 import Button from '../../components/ui/Button'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 
@@ -16,14 +16,20 @@ export default function AdminDashboard() {
   useEffect(() => {
     const load = async () => {
       try {
-        const [usersRes, pendingRes] = await Promise.all([
+        const [usersResult, pendingResult] = await Promise.allSettled([
           api.get('/api/users'),
           api.get('/api/verification/pending'),
         ])
-        setUsers(usersRes.data)
-        setPending(pendingRes.data)
-      } catch {
-        // Fail silently
+
+        if (usersResult.status === 'fulfilled') {
+          setUsers(Array.isArray(usersResult.value.data) ? usersResult.value.data : [])
+        }
+
+        if (pendingResult.status === 'fulfilled') {
+          setPending(
+            Array.isArray(pendingResult.value.data) ? pendingResult.value.data : []
+          )
+        }
       } finally {
         setLoading(false)
       }

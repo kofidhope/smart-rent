@@ -128,7 +128,8 @@ const PropertyService = {
                 formData,
                 {
                     headers: {
-                        'Content-Type': 'multipart/form-data',
+                        // Let the browser set multipart boundary
+                        'Content-Type': undefined,
                     },
                 }
             )

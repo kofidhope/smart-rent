@@ -16,7 +16,9 @@ import axios from 'axios'
 // ─────────────────────────────────────────────────────
 
 const api = axios.create({
-    baseURL: '',
+    // Use VITE_API_URL in production/staging.
+    // In local Vite dev an empty value keeps using the proxy in vite.config.js.
+    baseURL: import.meta.env.VITE_API_URL || '',
     timeout: 15000,
     withCredentials: true,
     headers: {
@@ -125,8 +127,18 @@ api.interceptors.response.use((response) => response,
         const url = originalRequest.url || ''
         if (
             url.includes('/auth/refresh') ||
-            url.includes('/users/login')
+            url.includes('/users/login') ||
+            url.includes('/users/register')
         ) {
+            return Promise.reject(error)
+        }
+
+        // ── Guests have no session to refresh ─────────────
+        // Session restore calls /users/profile on every page
+        // load. Without a cached user that 401 means
+        // "not logged in" — do not refresh or force /login,
+        // or public pages bounce guests away.
+        if (!UserStorage.get()) {
             return Promise.reject(error)
         }
 

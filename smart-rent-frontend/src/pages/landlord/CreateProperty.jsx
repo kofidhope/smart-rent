@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { Upload, X, Image } from 'lucide-react'
+import { Upload, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 import PropertyService from '../../services/property.service'
 import Button from '../../components/ui/Button'
@@ -22,7 +22,16 @@ export default function CreateProperty() {
   const [error, setError] = useState('')
   const [images, setImages] = useState([])
   const [uploading, setUploading] = useState(false)
-  const [createdId, setCreatedId] = useState(null)
+  const imagePreviewUrls = useMemo(
+    () => images.map((file) => URL.createObjectURL(file)),
+    [images]
+  )
+
+  useEffect(() => {
+    return () => {
+      imagePreviewUrls.forEach((url) => URL.revokeObjectURL(url))
+    }
+  }, [imagePreviewUrls])
 
   const {
     register,
@@ -43,6 +52,13 @@ export default function CreateProperty() {
 
   const onSubmit = async (data) => {
     setError('')
+
+    if (images.length === 0) {
+      setError('Please add at least one property photo')
+      toast.error('At least one photo is required')
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -53,22 +69,23 @@ export default function CreateProperty() {
         bathrooms: Number(data.bathrooms),
       })
 
-      setCreatedId(property.id)
-
-      // Upload images if any were selected
-      if (images.length > 0) {
-        setUploading(true)
-        for (const file of images) {
-          try {
-            await PropertyService.uploadImage(
-                property.id,
-                file
-            )
-          } catch {
-            // Continue even if one image fails
-          }
+      setUploading(true)
+      let uploadedCount = 0
+      for (const file of images) {
+        try {
+          await PropertyService.uploadImage(property.id, file)
+          uploadedCount += 1
+        } catch (uploadErr) {
+          toast.error(uploadErr.message || 'One photo failed to upload')
         }
-        setUploading(false)
+      }
+      setUploading(false)
+
+      if (uploadedCount === 0) {
+        setError('Property was created but photo upload failed. Edit the property and add photos.')
+        toast.error('Photo upload failed')
+        navigate('/landlord/properties')
+        return
       }
 
       toast.success('Property created successfully!')
@@ -78,6 +95,7 @@ export default function CreateProperty() {
       setError(err.message)
     } finally {
       setLoading(false)
+      setUploading(false)
     }
   }
 
@@ -243,26 +261,28 @@ export default function CreateProperty() {
           <div className="card space-y-4">
             <h2 className="section-title">
               Photos
-              <span className="text-sm font-normal
-                             text-gray-400 ml-2">
-              (optional, max 10)
-            </span>
+              <span className="text-sm font-normal text-red-500 ml-2">
+                (required, max 10)
+              </span>
             </h2>
 
             {/* Upload area */}
-            <label className="block border-2 border-dashed
-                            border-gray-200 rounded-xl
+            <label className={`block border-2 border-dashed rounded-xl
                             p-6 text-center cursor-pointer
                             hover:border-brand-green
                             hover:bg-brand-light/20
-                            transition-colors">
+                            transition-colors ${
+                              images.length === 0
+                                ? 'border-red-200'
+                                : 'border-gray-200'
+                            }`}>
               <Upload className="h-8 w-8 text-gray-300
                                mx-auto mb-2" />
               <p className="text-sm text-gray-500">
                 Click to upload photos
               </p>
               <p className="text-xs text-gray-400 mt-1">
-                JPG, PNG or WebP, max 5MB each
+                JPG, PNG or WebP, max 5MB each. At least 1 required.
               </p>
               <input
                   type="file"
@@ -272,6 +292,11 @@ export default function CreateProperty() {
                   onChange={handleImageSelect}
               />
             </label>
+            {images.length === 0 && (
+              <p className="error-text">
+                At least one photo is required
+              </p>
+            )}
 
             {/* Selected images preview */}
             {images.length > 0 && (
@@ -279,13 +304,13 @@ export default function CreateProperty() {
                             sm:grid-cols-4 gap-3">
                   {images.map((file, i) => (
                       <div
-                          key={i}
+                          key={`${file.name}-${file.lastModified}-${i}`}
                           className="relative group
                              rounded-lg overflow-hidden
                              aspect-square"
                       >
                         <img
-                            src={URL.createObjectURL(file)}
+                            src={imagePreviewUrls[i]}
                             alt=""
                             className="w-full h-full
                                object-cover"

@@ -42,21 +42,23 @@ export default function LoginPage() {
 
       toast.success(`Welcome back, ${user.firstName}!`)
 
-      // Redirect based on role
-      // If they were trying to access a specific page
-      // send them there, otherwise role dashboard
-      if (from) {
-        navigate(from, { replace: true })
-        return
-      }
+      const roleHome =
+        user.role === 'LANDLORD'
+          ? '/landlord/dashboard'
+          : user.role === 'ADMIN'
+            ? '/admin/dashboard'
+            : '/tenant/dashboard'
 
-      if (user.role === 'LANDLORD') {
-        navigate('/landlord/dashboard', { replace: true })
-      } else if (user.role === 'ADMIN') {
-        navigate('/admin/dashboard', { replace: true })
-      } else {
-        navigate('/tenant/dashboard', { replace: true })
-      }
+      // Only honor saved "from" paths that this role can access
+      const canReturnToFrom =
+        from &&
+        (from === '/' ||
+          from.startsWith('/properties') ||
+          (user.role === 'TENANT' && from.startsWith('/tenant')) ||
+          (user.role === 'LANDLORD' && from.startsWith('/landlord')) ||
+          (user.role === 'ADMIN' && from.startsWith('/admin')))
+
+      navigate(canReturnToFrom ? from : roleHome, { replace: true })
 
     } catch (err) {
       setError(err.message)
@@ -124,8 +126,8 @@ export default function LoginPage() {
                     {...register('password', {
                       required: 'Password is required',
                       minLength: {
-                        value: 6,
-                        message: 'Password must be at least 6 characters',
+                        value: 8,
+                        message: 'Password must be at least 8 characters',
                       },
                     })}
                 />

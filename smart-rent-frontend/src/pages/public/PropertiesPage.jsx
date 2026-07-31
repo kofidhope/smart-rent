@@ -82,17 +82,24 @@ export default function PropertiesPage() {
     }
   }, [])
 
-  // Fetch on mount and when page changes
+  // Fetch on mount, page change, and when URL query changes
+  // (e.g. HomePage search navigates to /properties?city=Accra)
   useEffect(() => {
-    fetchProperties(filters, currentPage)
-  }, [currentPage])
-  // eslint-disable-next-line
-
+    const nextFilters = {
+      city: searchParams.get('city') || '',
+      type: searchParams.get('type') || '',
+      minPrice: searchParams.get('minPrice') || '',
+      maxPrice: searchParams.get('maxPrice') || '',
+      minBedrooms: searchParams.get('minBedrooms') || '',
+    }
+    setFilters(nextFilters)
+    fetchProperties(nextFilters, currentPage)
+  }, [currentPage, searchParams, fetchProperties])
   const handleSearch = (e) => {
     e.preventDefault()
     setCurrentPage(0)
 
-    // Sync filters to URL params
+    // Sync filters to URL params — the URL effect loads results
     const params = {}
     if (filters.city) params.city = filters.city
     if (filters.type) params.type = filters.type
@@ -102,23 +109,19 @@ export default function PropertiesPage() {
       params.minBedrooms = filters.minBedrooms
     }
     setSearchParams(params)
-
-    fetchProperties(filters, 0)
     setShowFilters(false)
   }
 
   const handleClearFilters = () => {
-    const cleared = {
+    setFilters({
       city: '',
       type: '',
       minPrice: '',
       maxPrice: '',
       minBedrooms: '',
-    }
-    setFilters(cleared)
+    })
     setSearchParams({})
     setCurrentPage(0)
-    fetchProperties(cleared, 0)
   }
 
   const hasActiveFilters = Object.values(filters)

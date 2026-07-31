@@ -1,12 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import {
-  Building2,
-  TrendingUp,
-  CalendarDays,
-  Plus,
-  ArrowRight,
-} from 'lucide-react'
+import {Building2, TrendingUp, Plus, ArrowRight,} from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
 import PropertyService from '../../services/property.service'
 import PaymentService from '../../services/payment.service'

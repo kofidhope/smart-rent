@@ -1,17 +1,6 @@
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 import {useNavigate} from 'react-router-dom'
-import {
-    Search,
-    MapPin,
-    Shield,
-    Clock,
-    Star,
-    ArrowRight,
-    Building2,
-    Users,
-    CheckCircle,
-    ChevronDown,
-} from 'lucide-react'
+import {Search, MapPin, Shield, Clock, Star, ArrowRight, Building2, Users, CheckCircle, ChevronDown,} from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
 import PropertyService from '../../services/property.service'
 import PropertyCard from '../../components/property/PropertyCard'
@@ -27,7 +16,7 @@ export default function HomePage() {
     const [loadingFeatured, setLoadingFeatured] = useState(true)
 
     // Load featured properties on mount
-    useState(() => {
+    useEffect(() => {
         const loadFeatured = async () => {
             try {
                 const result = await PropertyService.search({

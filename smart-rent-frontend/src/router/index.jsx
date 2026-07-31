@@ -13,6 +13,7 @@ import MyPayments from '../pages/tenant/MyPayments'
 import LandlordDashboard from '../pages/landlord/LandlordDashboard'
 import MyProperties from '../pages/landlord/MyProperties'
 import CreateProperty from '../pages/landlord/CreateProperty'
+import EditProperty from '../pages/landlord/EditProperty'
 import PropertyBookings from '../pages/landlord/PropertyBookings'
 import AdminDashboard from '../pages/admin/AdminDashboard'
 import VerificationRequests from '../pages/admin/VerificationRequests'
@@ -215,6 +216,10 @@ const router = createBrowserRouter([
                             {
                                 path: '/landlord/properties/new',
                                 element: <CreateProperty />,
+                            },
+                            {
+                                path: '/landlord/properties/:id/edit',
+                                element: <EditProperty />,
                             },
                             {
                                 path: '/landlord/properties/:propertyId/bookings',
