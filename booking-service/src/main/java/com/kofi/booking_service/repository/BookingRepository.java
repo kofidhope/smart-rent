@@ -16,6 +16,8 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
 
     List<Booking> findByPropertyId(UUID propertyId);
 
+    List<Booking> findByBookingStatusAndEndDateBefore(BookingStatus status, LocalDate date);
+
     List<Booking> findByTenantIdAndBookingStatus(UUID tenantId, BookingStatus status);
 
     boolean existsByPropertyIdAndBookingStatusInAndStartDateLessThanEqualAndEndDateGreaterThanEqual(

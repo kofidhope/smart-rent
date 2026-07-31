@@ -3,6 +3,7 @@ package com.kofi.booking_service.saga;
 import com.kofi.booking_service.client.PropertyServiceClient;
 import com.kofi.booking_service.config.KafkaConfig;
 import com.kofi.booking_service.event.BookingCancelledEvent;
+import com.kofi.booking_service.event.BookingCompletedEvent;
 import com.kofi.booking_service.event.BookingConfirmedEvent;
 import com.kofi.booking_service.model.Booking;
 import com.kofi.booking_service.model.BookingStatus;
@@ -160,6 +161,17 @@ public class BookingSaga {
         );
 
         log.info("booking {} CANCELLED, " + "BookingCancelledEvent published", bookingId);
+    }
+
+    public void publishBookingCompleted(Booking booking) {
+        BookingCompletedEvent event = new BookingCompletedEvent(
+                booking.getId(),
+                booking.getTenantId(),
+                booking.getPropertyId(),
+                booking.getEndDate()
+        );
+        log.info("Publishing BookingCompletedEvent for booking {}", booking.getId());
+        kafkaTemplate.send("booking-completed-topic", event);
     }
 
     // Private helpers
