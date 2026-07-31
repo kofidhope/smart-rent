@@ -78,9 +78,14 @@ public class GatewayConfig {
     // -------------------------------------------------------
 
     public boolean isPublicPath(String path) {
+        if (publicPaths != null && publicPaths.stream().anyMatch(path::startsWith)) {
+            return true;
+        }
 
-        return publicPaths.stream()
-                .anyMatch(path::startsWith);
+        // Public property browse/detail/image GETs
+        // (cannot use startsWith /api/properties/ — that would open create/update)
+        return path.matches("^/api/properties/[0-9a-fA-F\\-]{36}$")
+                || path.matches("^/api/properties/[0-9a-fA-F\\-]{36}/images(/.*)?$");
     }
 
     public boolean isWebhookPath(String path) {
