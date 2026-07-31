@@ -66,6 +66,9 @@ public class GatewayAuthFilter extends OncePerRequestFilter {
 
     private boolean shouldBypass(String path) {
         return path.startsWith("/actuator")
+                || path.equals("/api/properties/search")
+                || path.matches("^/api/properties/[0-9a-fA-F\\-]{36}$")
+                || path.matches("^/api/properties/[0-9a-fA-F\\-]{36}/images(/.*)?$")
                 || path.matches("^/api/properties/[^/]+/status/rent$")
                 || path.matches("^/api/properties/[^/]+/status/available$");
     }

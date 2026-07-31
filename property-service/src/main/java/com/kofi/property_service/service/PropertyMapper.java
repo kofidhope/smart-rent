@@ -92,7 +92,10 @@ public class PropertyMapper {
         return PropertyResponse.builder()
                 .id(property.getId())
                 .ownerId(property.getOwnerId())
-                .ownerName(owner.getFirstName() + " " + owner.getLastName())
+                .ownerName(
+                        ((owner.getFirstName() == null ? "" : owner.getFirstName()) + " " +
+                         (owner.getLastName() == null ? "" : owner.getLastName())).trim()
+                )
                 .title(property.getTitle())
                 .description(property.getDescription())
                 .address(property.getAddress())

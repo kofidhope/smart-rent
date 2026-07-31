@@ -34,6 +34,23 @@ public class PropertyController {
         return ResponseEntity.ok(propertyService.searchProperties(request, page, size));
     }
 
+    // Static paths MUST be declared before /{id}, otherwise
+    // Spring treats "my" / "bulk" as UUID path variables.
+    @PreAuthorize("hasRole('LANDLORD')")
+    @GetMapping("/my")
+    public ResponseEntity<List<PropertyResponse>> myProperties(
+            @RequestHeader("X-User-Id") UUID ownerId) {
+        return ResponseEntity.ok(propertyService.getMyProperties(ownerId));
+    }
+
+    @GetMapping("/bulk")
+    public ResponseEntity<PageResponse<PropertyResponse>> getPropertiesByIds(
+            @RequestParam("ids") List<UUID> ids,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(propertyService.getPropertiesByIds(ids, page, size));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<PropertyResponse> getProperty(@PathVariable UUID id) {
         return ResponseEntity.ok(propertyService.getPropertyById(id));
@@ -48,13 +65,6 @@ public class PropertyController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(propertyService.createProperty(request, ownerId));
-    }
-
-    @PreAuthorize("hasRole('LANDLORD')")
-    @GetMapping("/my")
-    public ResponseEntity<List<PropertyResponse>> myProperties(
-            @RequestHeader("X-User-Id") UUID ownerId) {
-        return ResponseEntity.ok(propertyService.getMyProperties(ownerId));
     }
 
     @PreAuthorize("hasRole('LANDLORD')")
@@ -77,15 +87,6 @@ public class PropertyController {
 
     // ── Internal — booking saga and service call these ───────────
     // No @PreAuthorize — permitAll in SecurityConfig
-
-    @GetMapping("/bulk")
-    public ResponseEntity<PageResponse<PropertyResponse>> getPropertiesByIds(
-            @RequestParam("ids") List<UUID> ids,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(propertyService.getPropertiesByIds(ids, page, size));
-    }
-
 
     @PutMapping("/{id}/status/rent")
     public ResponseEntity<Void> markAsRented(@PathVariable UUID id) {

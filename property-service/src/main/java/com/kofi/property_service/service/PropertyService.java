@@ -66,32 +66,65 @@ public class PropertyService {
     @Transactional(readOnly = true)
     public PageResponse<PropertyResponse> searchProperties(PropertySearchRequest request, int page, int size) {
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page, size);
 
-        Page<Property> propertyPage = propertyRepository.searchProperties(
-                        request.getCity(),
-                        request.getType(),
+        String city = request.getCity();
+        if (city != null && city.isBlank()) {
+            city = null;
+        }
+
+        String type = request.getType() != null ? request.getType().name() : null;
+
+        boolean noFilters = city == null
+                && type == null
+                && request.getMinPrice() == null
+                && request.getMaxPrice() == null
+                && request.getMinBedrooms() == null;
+
+        Page<Property> propertyPage = noFilters
+                ? propertyRepository.findByStatus(PropertyStatus.AVAILABLE, pageable)
+                : propertyRepository.searchProperties(
+                        city,
+                        type,
                         request.getMinPrice(),
                         request.getMaxPrice(),
                         request.getMinBedrooms(),
                         pageable
                 );
 
-        Page<PropertyResponse> responsePage = propertyPage.map(p -> {
-                    UserResponse owner = userServiceClient.getUserById(p.getOwnerId());
-                    return mapper.toResponse(p, owner);
-                });
-
+        Page<PropertyResponse> responsePage = propertyPage.map(this::toResponseSafe);
         return PageResponse.of(responsePage);
     }
 
     @Transactional(readOnly = true)
     public List<PropertyResponse> getMyProperties(UUID ownerId) {
+        // Landlords should see all their properties (available, rented, etc.)
         return propertyRepository
-                .findByOwnerIdAndStatus(ownerId, PropertyStatus.AVAILABLE)
+                .findByOwnerIdOrderByCreatedAtDesc(ownerId)
                 .stream()
-                .map(p -> mapper.toResponse(p, userServiceClient.getUserById(ownerId)))
+                .map(this::toResponseSafe)
                 .toList();
+    }
+
+    private PropertyResponse toResponseSafe(Property property) {
+        UserResponse owner;
+        try {
+            owner = userServiceClient.getUserById(property.getOwnerId());
+        } catch (Exception ex) {
+            log.warn("Could not load owner {} for property {}: {}",
+                    property.getOwnerId(), property.getId(), ex.getMessage());
+            owner = null;
+        }
+
+        if (owner == null) {
+            owner = new UserResponse();
+            owner.setId(property.getOwnerId());
+            owner.setFirstName("Unknown");
+            owner.setLastName("Owner");
+            owner.setEmail("");
+        }
+
+        return mapper.toResponse(property, owner);
     }
 
     @Transactional
