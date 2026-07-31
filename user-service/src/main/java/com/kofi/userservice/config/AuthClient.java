@@ -8,6 +8,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @FeignClient(name = "auth-service")
 public interface AuthClient {
-    @PostMapping("/auth/generate")
+    @PostMapping("/api/auth/generate")
     AuthResponse generateToken(@RequestBody GenerateTokenRequest request);
 }
