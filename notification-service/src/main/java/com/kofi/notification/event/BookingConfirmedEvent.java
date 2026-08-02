@@ -27,4 +27,5 @@ public class BookingConfirmedEvent {
     private String tenantEmail;
 
     private String propertyTitle;
+    private UUID unitId;
 }
