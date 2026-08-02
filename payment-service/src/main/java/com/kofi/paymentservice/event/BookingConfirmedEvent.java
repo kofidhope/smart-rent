@@ -29,4 +29,5 @@ public class BookingConfirmedEvent {
     private BigDecimal amount;
     private String tenantEmail;
     private String propertyTitle;
+    private UUID unitId;
 }
