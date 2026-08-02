@@ -70,7 +70,9 @@ public class GatewayAuthFilter extends OncePerRequestFilter {
                 || path.matches("^/api/properties/[0-9a-fA-F\\-]{36}$")
                 || path.matches("^/api/properties/[0-9a-fA-F\\-]{36}/images(/.*)?$")
                 || path.matches("^/api/properties/[^/]+/status/rent$")
-                || path.matches("^/api/properties/[^/]+/status/available$");
+                || path.matches("^/api/properties/[^/]+/status/available$")
+                || path.matches("^/api/properties/[^/]+/units/[^/]+/status/rent$")
+                || path.matches("^/api/properties/[^/]+/units/[^/]+/status/available$");
     }
 }
 

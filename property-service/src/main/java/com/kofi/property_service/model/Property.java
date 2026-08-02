@@ -10,6 +10,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -49,6 +51,14 @@ public class Property {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PropertyStatus status;
+
+    @OneToMany(
+            mappedBy = "property",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY
+    )
+    @Builder.Default
+    private List<Unit> units = new ArrayList<>();
 
     private Integer bedrooms;
     private Integer bathrooms;

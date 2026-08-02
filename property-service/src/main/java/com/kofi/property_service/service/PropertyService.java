@@ -27,6 +27,7 @@ public class PropertyService {
     private final PropertyRepository propertyRepository;
     private final UserServiceClient userServiceClient;
     private final PropertyMapper mapper;
+    private final UnitService unitService;
 
     @Transactional
     public PropertyResponse createProperty(PropertyRequest request, UUID ownerId) {
@@ -42,6 +43,10 @@ public class PropertyService {
         Property saved = propertyRepository.save(property);
 
         log.info("Property created: {} by owner: {}", saved.getId(), ownerId);
+        // ── NEW: create default unit ──────────────────────
+        // Every new property gets one unit automatically
+        // Landlord can add more units later
+        unitService.createDefaultUnit(saved);
         return mapper.toResponse(saved, owner);
     }
 
