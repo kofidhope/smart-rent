@@ -31,6 +31,9 @@ public class Booking {
     @Column(name = "owner_id", nullable = false)
     private UUID ownerId;
 
+    @Column(name = "unit_id")
+    private UUID unitId;
+
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
 

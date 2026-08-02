@@ -2,10 +2,7 @@ package com.kofi.booking_service.service;
 
 import com.kofi.booking_service.client.PropertyServiceClient;
 import com.kofi.booking_service.client.UserServiceClient;
-import com.kofi.booking_service.dto.BookingRequest;
-import com.kofi.booking_service.dto.BookingResponse;
-import com.kofi.booking_service.dto.PropertyResponse;
-import com.kofi.booking_service.dto.UserResponse;
+import com.kofi.booking_service.dto.*;
 import com.kofi.booking_service.exception.BookingNotFoundException;
 import com.kofi.booking_service.exception.PropertyNotAvailableException;
 import com.kofi.booking_service.exception.UnauthorizedAccessException;
@@ -63,10 +60,17 @@ public class BookingService {
             throw new PropertyNotAvailableException("You cannot book your own property");
         }
 
+        UUID resolvedUnitId = request.getUnitId();
+        if (resolvedUnitId == null) {
+            // Backwards compatible — no unit specified
+            UnitResponse defaultUnit = propertyServiceClient.getDefaultUnit(request.getPropertyId());
+            resolvedUnitId = defaultUnit.getId();
+        }
+
         // 3. Check date overlap with existing bookings
         boolean overlaps = bookingRepository
-                .existsByPropertyIdAndBookingStatusInAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
-                        request.getPropertyId(),
+                .existsByUnitIdAndBookingStatusInAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+                        resolvedUnitId,
                         List.of(BookingStatus.PENDING,
                                 BookingStatus.PAYMENT_INITIATED,
                                 BookingStatus.CONFIRMED),
@@ -75,8 +79,7 @@ public class BookingService {
                 );
 
         if (overlaps) {
-            throw new PropertyNotAvailableException(
-                    "Property is already booked for these dates");
+            throw new PropertyNotAvailableException("Property is already booked for these dates");
         }
 
         // 4.Price calculation

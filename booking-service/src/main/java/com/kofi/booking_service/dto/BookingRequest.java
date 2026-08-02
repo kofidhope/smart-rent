@@ -17,6 +17,8 @@ public class BookingRequest {
     @Future(message = "Start date must be in the future")
     private LocalDate startDate;
 
+    private UUID unitId;
+
     @NotNull(message = "End date is required")
     @Future(message = "End date must be in the future")
     private LocalDate endDate;

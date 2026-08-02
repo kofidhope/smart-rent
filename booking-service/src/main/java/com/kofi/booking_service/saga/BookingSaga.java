@@ -57,6 +57,7 @@ public class BookingSaga {
                 .amount(booking.getTotalPrice())
                 .tenantEmail(tenantEmail)
                 .propertyTitle(propertyTitle)
+                .unitId(booking.getUnitId())
                 .build();
 
         // Publish — bookingId is the Kafka message key

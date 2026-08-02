@@ -1,6 +1,7 @@
 package com.kofi.booking_service.client;
 
 import com.kofi.booking_service.dto.PropertyResponse;
+import com.kofi.booking_service.dto.UnitResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,4 +29,16 @@ public interface PropertyServiceClient {
 
     @PutMapping("/api/properties/{id}/status/available")
     void markAsAvailable(@PathVariable UUID id);
+
+    @GetMapping("/api/properties/{propertyId}/units")
+    List<UnitResponse> getUnitsForProperty(@PathVariable UUID propertyId);
+
+    // Gets the first unit — default for single-unit properties
+    default UnitResponse getDefaultUnit(UUID propertyId) {
+        List<UnitResponse> units = getUnitsForProperty(propertyId);
+        if (units == null || units.isEmpty()) {
+            throw new RuntimeException("No units found for property: " + propertyId);
+        }
+        return units.get(0);
+    }
 }

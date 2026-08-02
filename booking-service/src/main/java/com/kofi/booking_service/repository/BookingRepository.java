@@ -26,4 +26,11 @@ public interface BookingRepository extends JpaRepository<Booking, UUID> {
             LocalDate endDate,
             LocalDate startDate
     );
+    boolean existsByUnitIdAndBookingStatusInAndStartDateLessThanEqualAndEndDateGreaterThanEqual(
+            UUID unitId,
+            List<BookingStatus> statuses,
+            LocalDate endDate,
+            LocalDate startDate
+    );
+
 }
