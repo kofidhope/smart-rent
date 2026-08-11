@@ -1,6 +1,7 @@
 package com.kofi.booking_service.client;
 
 import com.kofi.booking_service.dto.PropertyResponse;
+import com.kofi.booking_service.dto.UnitResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -38,5 +39,10 @@ public class PropertyServiceClientFallback implements PropertyServiceClient {
         log.error("CRITICAL fallback: property-service unavailable. " +
                 "Property {} NOT marked as available. " +
                 "Manual intervention required.", id);
+    }
+
+    @Override
+    public List<UnitResponse> getUnitsForProperty(UUID propertyId) {
+        return List.of();
     }
 }

@@ -10,3 +10,5 @@ Thumbs.db
 # Environment / Secrets
 **/.env
 *.env
+
+.claude
