@@ -2,24 +2,45 @@ import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { ChevronLeft, CalendarDays } from 'lucide-react'
 import BookingService from '../../services/booking.service'
+import PropertyService from '../../services/property.service'
 import Badge from '../../components/ui/Badge'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import ErrorMessage from '../../components/ui/ErrorMessage'
+import EmptyState from '../../components/ui/EmptyState'
 
 export default function PropertyBookings() {
   const { propertyId } = useParams()
   const navigate = useNavigate()
 
   const [bookings, setBookings] = useState([])
+  const [propertyTitle, setPropertyTitle] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
   useEffect(() => {
+    // Fetch property and bookings in parallel. Either
+    // can fail independently — we degrade gracefully:
+    // a missing title just leaves the page heading on
+    // "Property bookings" instead of the title.
     const load = async () => {
+      setLoading(true)
       try {
-        const data = await BookingService
-            .getByProperty(propertyId)
-        setBookings(data)
+        const [bookingsResult, propertyResult] =
+            await Promise.allSettled([
+              BookingService.getByProperty(propertyId),
+              PropertyService.getById(propertyId),
+            ])
+
+        if (bookingsResult.status === 'fulfilled') {
+          setBookings(bookingsResult.value)
+        } else {
+          setError(bookingsResult.reason?.message
+              || 'Failed to load bookings')
+        }
+
+        if (propertyResult.status === 'fulfilled') {
+          setPropertyTitle(propertyResult.value.title || '')
+        }
       } catch (err) {
         setError(err.message)
       } finally {
@@ -51,23 +72,20 @@ export default function PropertyBookings() {
           Back to properties
         </button>
 
-        <h1 className="page-title">Property bookings</h1>
+        <h1 className="page-title">
+          {propertyTitle
+              ? `${propertyTitle} — bookings`
+              : 'Property bookings'}
+        </h1>
 
         <ErrorMessage message={error} className="mb-6" />
 
         {bookings.length === 0 ? (
-            <div className="text-center py-20">
-              <CalendarDays className="h-16 w-16
-                                   text-gray-200
-                                   mx-auto mb-4" />
-              <h3 className="text-lg font-semibold
-                         text-gray-900 mb-2">
-                No bookings yet
-              </h3>
-              <p className="text-gray-500 text-sm">
-                Bookings for this property will appear here
-              </p>
-            </div>
+            <EmptyState
+              icon={CalendarDays}
+              title="No bookings yet"
+              description="Bookings for this property will appear here"
+            />
         ) : (
             <div className="space-y-4">
               {bookings.map(booking => (

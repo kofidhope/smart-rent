@@ -1,11 +1,26 @@
 import {useState, useEffect} from 'react'
 import {useNavigate} from 'react-router-dom'
-import {Search, MapPin, Shield, Clock, Star, ArrowRight, Building2, Users, CheckCircle, ChevronDown,} from 'lucide-react'
+import {motion} from 'framer-motion'
+import {
+    Search,
+    MapPin,
+    Shield,
+    Clock,
+    Star,
+    ArrowRight,
+    Building2,
+    Users,
+    CheckCircle,
+    ChevronDown,
+} from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
 import PropertyService from '../../services/property.service'
 import PropertyCard from '../../components/property/PropertyCard'
 import Button from '../../components/ui/Button'
+import Badge from '../../components/ui/Badge'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
+import EmptyState from '../../components/ui/EmptyState'
+import {Stagger, StaggerItem} from '../../components/ui/Stagger'
 
 export default function HomePage() {
     const navigate = useNavigate()
@@ -37,7 +52,10 @@ export default function HomePage() {
 
     const handleSearch = (e) => {
         e.preventDefault()
-        navigate(`/properties${searchCity ? `?city=${encodeURIComponent(searchCity)}` : ''}`
+        navigate(
+            `/properties${
+                searchCity ? `?city=${encodeURIComponent(searchCity)}` : ''
+            }`
         )
     }
 
@@ -57,12 +75,33 @@ export default function HomePage() {
             <section
                 className="relative bg-gradient-to-br from-brand-green via-brand-dark to-gray-900 text-white overflow-hidden">
 
-                {/* Background pattern */}
-                <div className="absolute inset-0 opacity-10">
-                    <div
-                        className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"/>
-                    <div
-                        className="absolute bottom-0 right-0 w-64 h-64 bg-white rounded-full translate-x-1/2 translate-y-1/2"/>
+                {/* Background pattern — slow drift, very subtle.
+                    Reduced-motion users see a static pair of circles. */}
+                <div className="absolute inset-0 opacity-10 pointer-events-none">
+                    <motion.div
+                        className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"
+                        animate={{
+                            x: ['-50%', '-40%', '-50%'],
+                            y: ['-50%', '-40%', '-50%'],
+                        }}
+                        transition={{
+                            duration: 14,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
+                        }}
+                    />
+                    <motion.div
+                        className="absolute bottom-0 right-0 w-64 h-64 bg-white rounded-full translate-x-1/2 translate-y-1/2"
+                        animate={{
+                            x: ['50%', '40%', '50%'],
+                            y: ['50%', '40%', '50%'],
+                        }}
+                        transition={{
+                            duration: 18,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
+                        }}
+                    />
                 </div>
 
                 <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
@@ -80,8 +119,8 @@ export default function HomePage() {
                         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
                             Find your perfect
                             <span className="block text-yellow-300">
-                  home in Ghana
-                </span>
+                                home in Ghana
+                            </span>
                         </h1>
 
                         <p className="text-lg sm:text-xl text-white/80 mb-10 max-w-xl leading-relaxed">
@@ -101,30 +140,33 @@ export default function HomePage() {
                                     type="text"
                                     placeholder="Search by city — Accra, Kumasi..."
                                     value={searchCity}
-                                    onChange={(e) => setSearchCity(e.target.value)}
+                                    onChange={(e) =>
+                                        setSearchCity(e.target.value)}
                                     className="w-full pl-12 pr-4 py-4
-                             rounded-xl text-gray-900
-                             text-sm bg-white
-                             focus:outline-none
-                             focus:ring-2
-                             focus:ring-yellow-300
-                             shadow-lg"
+                                        rounded-xl text-gray-900
+                                        text-sm bg-white
+                                        focus:outline-none
+                                        focus:ring-2
+                                        focus:ring-yellow-300
+                                        shadow-lg"
                                     list="cities"
                                 />
                                 <datalist id="cities">
-                                    {cities.map(city => (<option key={city} value={city}/>))}
+                                    {cities.map(city => (
+                                        <option key={city} value={city}/>
+                                    ))}
                                 </datalist>
                             </div>
 
                             <button
                                 type="submit"
                                 className="flex items-center
-                           justify-center gap-2
-                           bg-yellow-400 hover:bg-yellow-300
-                           text-gray-900 font-semibold
-                           px-8 py-4 rounded-xl
-                           transition-colors duration-200
-                           shadow-lg"
+                                    justify-center gap-2
+                                    bg-yellow-400 hover:bg-yellow-300
+                                    text-gray-900 font-semibold
+                                    px-8 py-4 rounded-xl
+                                    transition-colors duration-200
+                                    shadow-lg"
                             >
                                 <Search className="h-5 w-5"/>
                                 Search
@@ -133,9 +175,9 @@ export default function HomePage() {
 
                         {/* Quick city links */}
                         <div className="flex flex-wrap gap-2 mt-4">
-                <span className="text-white/60 text-sm self-center">
-                  Popular:
-                </span>
+                            <span className="text-white/60 text-sm self-center">
+                                Popular:
+                            </span>
                             {cities.map(city => (
                                 <button
                                     key={city}
@@ -143,9 +185,9 @@ export default function HomePage() {
                                         navigate(`/properties?city=${city}`)
                                     }
                                     className="text-sm text-white/80
-                             hover:text-white
-                             underline underline-offset-2
-                             transition-colors"
+                                        hover:text-white
+                                        underline underline-offset-2
+                                        transition-colors"
                                 >
                                     {city}
                                 </button>
@@ -164,7 +206,10 @@ export default function HomePage() {
             {/* ── STATS SECTION ─────────────────────────── */}
             <section className="bg-white border-b border-gray-100">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                    <Stagger
+                        className="grid grid-cols-2 md:grid-cols-4 gap-8"
+                        itemDelay={0.05}
+                    >
                         {[
                             {
                                 value: '2,000+',
@@ -187,20 +232,22 @@ export default function HomePage() {
                                 icon: Star,
                             },
                         ].map(({value, label, icon: Icon}) => (
-                            <div key={label} className="text-center">
-                                <div
-                                    className="inline-flex items-center justify-center w-12 h-12 bg-brand-light rounded-xl mb-3">
-                                    <Icon className="h-6 w-6 text-brand-green"/>
+                            <StaggerItem key={label}>
+                                <div className="text-center">
+                                    <div
+                                        className="inline-flex items-center justify-center w-12 h-12 bg-brand-light rounded-xl mb-3">
+                                        <Icon className="h-6 w-6 text-brand-green"/>
+                                    </div>
+                                    <p className="text-2xl sm:text-3xl font-bold text-gray-900">
+                                        {value}
+                                    </p>
+                                    <p className="text-sm text-gray-500 mt-1">
+                                        {label}
+                                    </p>
                                 </div>
-                                <p className="text-2xl sm:text-3xl font-bold text-gray-900">
-                                    {value}
-                                </p>
-                                <p className="text-sm text-gray-500 mt-1">
-                                    {label}
-                                </p>
-                            </div>
+                            </StaggerItem>
                         ))}
-                    </div>
+                    </Stagger>
                 </div>
             </section>
 
@@ -222,10 +269,10 @@ export default function HomePage() {
                         <button
                             onClick={() => navigate('/properties')}
                             className="hidden sm:flex items-center
-                         gap-1 text-brand-green
-                         hover:text-brand-dark
-                         font-medium text-sm
-                         transition-colors"
+                                gap-1 text-brand-green
+                                hover:text-brand-dark
+                                font-medium text-sm
+                                transition-colors"
                         >
                             View all
                             <ArrowRight className="h-4 w-4"/>
@@ -237,26 +284,26 @@ export default function HomePage() {
                             <LoadingSpinner size="lg"/>
                         </div>
                     ) : featuredProperties.length > 0 ? (
-                        <div className="grid grid-cols-1
-                            sm:grid-cols-2
-                            lg:grid-cols-3 gap-6">
+                        <Stagger
+                            className="grid grid-cols-1
+                                sm:grid-cols-2
+                                lg:grid-cols-3 gap-6"
+                            itemDelay={0.05}
+                        >
                             {featuredProperties.map(property => (
-                                <PropertyCard
-                                    key={property.id}
-                                    property={property}
-                                />
+                                <StaggerItem key={property.id}>
+                                    <PropertyCard property={property}/>
+                                </StaggerItem>
                             ))}
-                        </div>
+                        </Stagger>
                     ) : (
-                        <div className="text-center py-16">
-                            <Building2 className="h-12 w-12
-                                    text-gray-300
-                                    mx-auto mb-3"/>
-                            <p className="text-gray-500">
-                                No properties yet.
-                                Check back soon.
-                            </p>
-                        </div>
+                        <EmptyState
+                            icon={Building2}
+                            title="No properties yet"
+                            description="Check back soon for new listings"
+                            actionLabel="Browse properties"
+                            onAction={() => navigate('/properties')}
+                        />
                     )}
 
                     {/* Mobile view all button */}
@@ -290,8 +337,11 @@ export default function HomePage() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1
-                          md:grid-cols-3 gap-8">
+                    <Stagger
+                        className="grid grid-cols-1
+                          md:grid-cols-3 gap-8"
+                        itemDelay={0.08}
+                    >
                         {[
                             {
                                 step: '01',
@@ -330,39 +380,37 @@ export default function HomePage() {
                                    icon: Icon,
                                    color,
                                }) => (
-                            <div
-                                key={step}
-                                className="relative text-center
-                           p-6"
-                            >
-                                {/* Step number */}
-                                <div className="text-6xl font-black
-                                text-gray-100 mb-4
-                                leading-none">
-                                    {step}
-                                </div>
+                            <StaggerItem key={step}>
+                                <div className="relative text-center p-6">
+                                    {/* Step number */}
+                                    <div className="text-6xl font-black
+                                    text-gray-100 mb-4
+                                    leading-none">
+                                        {step}
+                                    </div>
 
-                                {/* Icon */}
-                                <div className={`
-                  inline-flex items-center
-                  justify-center w-14 h-14
-                  rounded-2xl mb-4 -mt-8
-                  ${color}
-                `}>
-                                    <Icon className="h-7 w-7"/>
-                                </div>
+                                    {/* Icon */}
+                                    <div className={`
+                                        inline-flex items-center
+                                        justify-center w-14 h-14
+                                        rounded-2xl mb-4 -mt-8
+                                        ${color}
+                                    `}>
+                                        <Icon className="h-7 w-7"/>
+                                    </div>
 
-                                <h3 className="text-lg font-semibold
-                               text-gray-900 mb-2">
-                                    {title}
-                                </h3>
-                                <p className="text-gray-500 text-sm
-                              leading-relaxed">
-                                    {description}
-                                </p>
-                            </div>
+                                    <h3 className="text-lg font-semibold
+                                   text-gray-900 mb-2">
+                                        {title}
+                                    </h3>
+                                    <p className="text-gray-500 text-sm
+                                  leading-relaxed">
+                                        {description}
+                                    </p>
+                                </div>
+                            </StaggerItem>
                         ))}
-                    </div>
+                    </Stagger>
 
                 </div>
             </section>
@@ -442,22 +490,23 @@ export default function HomePage() {
                                     </p>
                                     <Button
                                         onClick={() => navigate('/register')}
-                                        className="bg-white text-brand-green hover:bg-gray-100 focus:ring-white" >
-                                            Get started free
+                                        className="bg-white text-brand-green hover:bg-gray-100 focus:ring-white"
+                                    >
+                                        Get started free
                                         <ArrowRight className="h-4 w-4"/>
                                     </Button>
                                 </div>
                             )}
 
                             {/* ── BECOME A LANDLORD ────────────────
-                  Placeholder for future landlord
-                  onboarding flow.
-                  When implemented this will:
-                  1. Take user to a landlord application form
-                  2. They upload property documents
-                  3. Admin reviews and approves
-                  4. Role is promoted to LANDLORD
-                  ──────────────────────────────────── */}
+                                Placeholder for future landlord
+                                onboarding flow. When implemented
+                                this will:
+                                1. Take user to a landlord application form
+                                2. They upload property documents
+                                3. Admin reviews and approves
+                                4. Role is promoted to LANDLORD
+                            ──────────────────────────────────── */}
                             <div className="card border-2 border-dashed border-brand-green/40 bg-brand-light/30">
                                 <div className="flex items-start justify-between gap-4">
                                     <div>
@@ -467,8 +516,7 @@ export default function HomePage() {
                                                 Own a property?
                                             </h3>
                                         </div>
-                                        <p className="text-gray-500
-                                  text-sm mb-4">
+                                        <p className="text-gray-500 text-sm mb-4">
                                             List your property on SmartRent
                                             and reach thousands of tenants
                                             across Ghana.
@@ -480,17 +528,18 @@ export default function HomePage() {
                                             className="opacity-70"
                                         >
                                             Become a landlord
-                                            <span className="ml-2 badge-yellow
-                                       text-xs px-1.5
-                                       py-0.5 rounded-full">
-                        Coming soon
-                      </span>
+                                            <Badge
+                                                variant="warning"
+                                                label="Coming soon"
+                                                className="ml-2"
+                                            />
                                         </Button>
                                     </div>
                                 </div>
 
                                 <p className="text-xs text-gray-400 mt-4">
-                                    Currently becoming a landlord requires admin approval. Email{' '}
+                                    Currently becoming a landlord requires
+                                    admin approval. Email{' '}
                                     <a
                                         href="mailto:support@smartrent.com"
                                         className="text-brand-green hover:underline"
@@ -499,81 +548,75 @@ export default function HomePage() {
                                     </a>{' '}
                                     to get started.
                                 </p>
+                            </div>
+
+                            {/* Already a landlord — show dashboard link */}
+                            {isLandlord && (
+                                <div className="card bg-brand-light
+                                border-brand-green/20">
+                                    <h3 className="font-semibold
+                                 text-gray-900 mb-1">
+                                        Welcome back, Landlord!
+                                    </h3>
+                                    <p className="text-gray-500
+                                text-sm mb-3">
+                                        Manage your properties and
+                                        view bookings.
+                                    </p>
+                                    <Button
+                                        onClick={() =>
+                                            navigate('/landlord/dashboard')
+                                        }
+                                    >
+                                        Go to dashboard
+                                        <ArrowRight className="h-4 w-4"/>
+                                    </Button>
+                                </div>
+                            )}
+
                         </div>
 
-                        {/* Already a landlord — show dashboard link */}
-                        {isLandlord && (
-                            <div className="card bg-brand-light
-                                border-brand-green/20">
-                                <h3 className="font-semibold
-                                 text-gray-900 mb-1">
-                                    Welcome back, Landlord!
-                                </h3>
-                                <p className="text-gray-500
-                                text-sm mb-3">
-                                    Manage your properties and
-                                    view bookings.
-                                </p>
-                                <Button
-                                    onClick={() =>
-                                        navigate('/landlord/dashboard')
-                                    }
-                                >
-                                    Go to dashboard
-                                    <ArrowRight className="h-4 w-4"/>
-                                </Button>
-                            </div>
-                        )}
-
                     </div>
 
-                </div>
-        </div>
-</section>
-
-    {/* ── FINAL CTA ─────────────────────────────── */
-    }
-    {
-        !isAuthenticated && (
-            <section className="py-16 bg-gray-900 text-white">
-                <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <h2 className="text-2xl sm:text-3xl font-bold mb-4">
-                        Start your search today
-                    </h2>
-                    <p className="text-gray-400 mb-8 text-sm sm:text-base">
-                        Join thousands of Ghanaians who found
-                        their home on SmartRent.
-                        Free to register, no hidden fees.
-                    </p>
-                    <div className="flex flex-col
-                            sm:flex-row gap-3
-                            justify-center">
-                        <Button
-                            onClick={() => navigate('/register')}
-                            className="bg-brand-green
-                           hover:bg-brand-dark
-                           focus:ring-brand-green
-                           text-white"
-                            size="lg"
-                        >
-                            Create free account
-                            <ArrowRight className="h-5 w-5"/>
-                        </Button>
-                        <Button
-                            onClick={() => navigate('/properties')}
-                            variant="secondary"
-                            size="lg"
-                            className="bg-white/10 border-white/20
-                           text-white hover:bg-white/20"
-                        >
-                            Browse properties
-                        </Button>
-                    </div>
                 </div>
             </section>
-        )
-    }
 
-</div>
-)
+            {/* ── FINAL CTA ─────────────────────────────── */}
+            {!isAuthenticated && (
+                <section className="py-16 bg-gray-900 text-white">
+                    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                        <h2 className="text-2xl sm:text-3xl font-bold mb-4">
+                            Start your search today
+                        </h2>
+                        <p className="text-gray-400 mb-8 text-sm sm:text-base">
+                            Join thousands of Ghanaians who found
+                            their home on SmartRent.
+                            Free to register, no hidden fees.
+                        </p>
+                        <div className="flex flex-col
+                            sm:flex-row gap-3
+                            justify-center">
+                            <Button
+                                onClick={() => navigate('/register')}
+                                size="lg"
+                            >
+                                Create free account
+                                <ArrowRight className="h-5 w-5"/>
+                            </Button>
+                            <Button
+                                onClick={() => navigate('/properties')}
+                                variant="secondary"
+                                size="lg"
+                                className="bg-white/10 border-white/20
+                           text-white hover:bg-white/20"
+                            >
+                                Browse properties
+                            </Button>
+                        </div>
+                    </div>
+                </section>
+            )}
+
+        </div>
+    )
 }

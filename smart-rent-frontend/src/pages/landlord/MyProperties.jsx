@@ -13,12 +13,16 @@ import PropertyService from '../../services/property.service'
 import Badge from '../../components/ui/Badge'
 import Button from '../../components/ui/Button'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
+import EmptyState from '../../components/ui/EmptyState'
+import ConfirmDialog from '../../components/ui/ConfirmDialog'
 
 export default function MyProperties() {
   const navigate = useNavigate()
   const [properties, setProperties] = useState([])
   const [loading, setLoading] = useState(true)
   const [deleting, setDeleting] = useState(null)
+  const [propertyPendingDelete, setPropertyPendingDelete] =
+      useState(null)
 
   const load = async () => {
     setLoading(true)
@@ -35,11 +39,7 @@ export default function MyProperties() {
 
   useEffect(() => { load() }, [])
 
-  const handleDelete = async (id) => {
-    if (!confirm(
-        'Delete this property? This cannot be undone.'
-    )) return
-
+  const performDelete = async (id) => {
     setDeleting(id)
     try {
       await PropertyService.delete(id)
@@ -49,6 +49,7 @@ export default function MyProperties() {
       toast.error(err.message)
     } finally {
       setDeleting(null)
+      setPropertyPendingDelete(null)
     }
   }
 
@@ -65,7 +66,7 @@ export default function MyProperties() {
       <div className="page-container">
 
         <div className="flex items-center
-                      justify-between mb-6">
+                      justify-between mb-6 gap-3">
           <h1 className="page-title mb-0">
             My properties
           </h1>
@@ -80,26 +81,14 @@ export default function MyProperties() {
         </div>
 
         {properties.length === 0 ? (
-            <div className="text-center py-20">
-              <Building2 className="h-16 w-16 text-gray-200
-                                 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold
-                         text-gray-900 mb-2">
-                No properties yet
-              </h3>
-              <p className="text-gray-500 text-sm mb-6">
-                Add your first property to start receiving
-                bookings
-              </p>
-              <Button
-                  onClick={() =>
-                      navigate('/landlord/properties/new')
-                  }
-              >
-                <Plus className="h-4 w-4" />
-                Add property
-              </Button>
-            </div>
+            <EmptyState
+              icon={Building2}
+              title="No properties yet"
+              description="Add your first property to start receiving bookings"
+              actionLabel="Add property"
+              onAction={() =>
+                  navigate('/landlord/properties/new')}
+            />
         ) : (
             <div className="grid grid-cols-1
                         md:grid-cols-2
@@ -110,7 +99,7 @@ export default function MyProperties() {
                       className="card overflow-hidden p-0"
                   >
                     {/* Image */}
-                    <div className="h-40 bg-gray-100
+                    <div className="h-48 bg-gray-100
                               relative">
                       {property.primaryImageUrl ? (
                           <img
@@ -127,8 +116,8 @@ export default function MyProperties() {
                                   text-gray-300">
                             <Building2 className="h-10 w-10 mb-1" />
                             <span className="text-xs">
-                      No image
-                    </span>
+                                No image
+                            </span>
                           </div>
                       )}
                       <div className="absolute top-2 right-2">
@@ -152,7 +141,9 @@ export default function MyProperties() {
                         /month
                       </p>
 
-                      {/* Actions */}
+                      {/* Actions — reflows to two rows on
+                          narrow cards so the delete button
+                          never collides with the label. */}
                       <div className="flex gap-2 flex-wrap">
                         <Button
                             variant="ghost"
@@ -198,8 +189,9 @@ export default function MyProperties() {
                             size="sm"
                             loading={deleting === property.id}
                             onClick={() =>
-                                handleDelete(property.id)
+                                setPropertyPendingDelete(property)
                             }
+                            aria-label={`Delete ${property.title}`}
                         >
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
@@ -209,6 +201,30 @@ export default function MyProperties() {
               ))}
             </div>
         )}
+
+        {/* ── Delete confirmation ───────────────────── */}
+        <ConfirmDialog
+          open={!!propertyPendingDelete}
+          title="Delete this property?"
+          message={
+            propertyPendingDelete
+                ? `"${propertyPendingDelete.title}" will be ` +
+                  'permanently removed. Any active bookings ' +
+                  'will need to be cancelled separately.'
+                : ''
+          }
+          confirmLabel="Delete property"
+          cancelLabel="Keep property"
+          variant="danger"
+          loading={
+            deleting === propertyPendingDelete?.id
+          }
+          onConfirm={() =>
+              propertyPendingDelete &&
+              performDelete(propertyPendingDelete.id)
+          }
+          onCancel={() => setPropertyPendingDelete(null)}
+        />
       </div>
   )
 }

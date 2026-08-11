@@ -89,6 +89,35 @@ export default {
       // ── Transitions ───────────────────────────────
       transitionTimingFunction: {
         'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
+        'out':    'cubic-bezier(0.0, 0, 0.2, 1)',
+        'in':     'cubic-bezier(0.4, 0, 1, 1)',
+      },
+
+      // ── Spacing scale ────────────────────────────
+      // Tokenized spacing stops so pages don't reach
+      // for arbitrary `mt-[13px]` values mid-flight.
+      spacing: {
+        '1':  '0.25rem',
+        '2':  '0.5rem',
+        '3':  '0.75rem',
+        '4':  '1rem',
+        '5':  '1.25rem',
+        '6':  '1.5rem',
+        '8':  '2rem',
+        '10': '2.5rem',
+        '12': '3rem',
+        '16': '4rem',
+      },
+
+      // ── Z-index scale ────────────────────────────
+      // Centralised so nothing reaches for z-[9999].
+      zIndex: {
+        'base':    '0',
+        'raised':  '10',
+        'sticky':  '20',
+        'overlay': '40',
+        'modal':   '50',
+        'toast':   '60',
       },
     },
   },

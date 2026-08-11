@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import {AnimatePresence, motion} from 'framer-motion'
 import {MapPin, BedDouble, Bath, User, ChevronLeft, ChevronRight, Building2, CheckCircle,
 } from 'lucide-react'
 import { useForm } from 'react-hook-form'
@@ -38,7 +39,9 @@ export default function PropertyDetailPage() {
   const startDate = watch('startDate')
   const endDate = watch('endDate')
 
-  // Calculate total price from selected dates
+  // Calculate total price from selected dates.
+  // Listings are priced per month but tenants can book
+  // for any number of days, so we normalise to months.
   const calculateTotal = () => {
     if (!startDate || !endDate || !property) return null
     const start = new Date(startDate)
@@ -48,6 +51,7 @@ export default function PropertyDetailPage() {
     const months = nights / 30
     return {
       nights,
+      months,
       total: (property.price * months).toFixed(2),
     }
   }
@@ -159,13 +163,21 @@ export default function PropertyDetailPage() {
                           bg-gray-100">
               {images ? (
                   <div className="relative">
-                    {/* Main image */}
-                    <img
-                        src={images[activeImage]?.imageUrl}
-                        alt={property.title}
-                        className="w-full h-64 sm:h-80
+                    {/* Main image — crossfade on swap */}
+                    <AnimatePresence mode="wait" initial={false}>
+                      <motion.img
+                          key={images[activeImage]?.id
+                              || activeImage}
+                          src={images[activeImage]?.imageUrl}
+                          alt={property.title}
+                          className="w-full h-64 sm:h-80
                              lg:h-96 object-cover"
-                    />
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                      />
+                    </AnimatePresence>
 
                     {/* Navigation arrows */}
                     {images.length > 1 && (
@@ -180,11 +192,12 @@ export default function PropertyDetailPage() {
                               }
                               className="absolute left-3
                                  top-1/2 -translate-y-1/2
-                                 w-8 h-8 bg-black/40
+                                 w-9 h-9 bg-black/50
                                  rounded-full flex
                                  items-center justify-center
-                                 text-white hover:bg-black/60
+                                 text-white hover:bg-black/70
                                  transition-colors"
+                              aria-label="Previous image"
                           >
                             <ChevronLeft className="h-4 w-4" />
                           </button>
@@ -198,11 +211,12 @@ export default function PropertyDetailPage() {
                               }
                               className="absolute right-3
                                  top-1/2 -translate-y-1/2
-                                 w-8 h-8 bg-black/40
+                                 w-9 h-9 bg-black/50
                                  rounded-full flex
                                  items-center justify-center
-                                 text-white hover:bg-black/60
+                                 text-white hover:bg-black/70
                                  transition-colors"
+                              aria-label="Next image"
                           >
                             <ChevronRight className="h-4 w-4" />
                           </button>
@@ -218,6 +232,9 @@ export default function PropertyDetailPage() {
                                     onClick={() =>
                                         setActiveImage(i)
                                     }
+                                    aria-label={`Show image ${i + 1}`}
+                                    aria-current={i === activeImage
+                                        ? 'true' : undefined}
                                     className={`
                             w-2 h-2 rounded-full
                             transition-colors
@@ -257,12 +274,15 @@ export default function PropertyDetailPage() {
                         <button
                             key={img.id}
                             onClick={() => setActiveImage(i)}
+                            aria-label={`Show image ${i + 1}`}
+                            aria-current={i === activeImage
+                                ? 'true' : undefined}
                             className={`
                       flex-shrink-0 w-16 h-12
                       rounded-lg overflow-hidden
                       transition-all
                       ${i === activeImage
-                                ? 'ring-2 ring-brand-green'
+                                ? 'ring-2 ring-brand-green scale-105'
                                 : 'opacity-60 hover:opacity-100'
                             }
                     `}
@@ -365,17 +385,19 @@ export default function PropertyDetailPage() {
 
           {/* ── RIGHT COLUMN — BOOKING PANEL ─────────── */}
           <div className="lg:col-span-1">
-            <div className="card sticky top-20">
+            <div className="card sticky top-24
+                      max-h-[calc(100dvh-7rem)]
+                      overflow-y-auto">
 
               {/* Price */}
               <div className="mb-4">
-              <span className="text-3xl font-bold
+                <span className="text-3xl font-bold
                                text-brand-green">
-                GHS {property.price.toLocaleString()}
-              </span>
+                  GHS {property.price.toLocaleString()}
+                </span>
                 <span className="text-gray-400 text-sm">
-                /month
-              </span>
+                  /month
+                </span>
               </div>
 
               {property.status !== 'AVAILABLE' ? (
@@ -398,6 +420,7 @@ export default function PropertyDetailPage() {
                     <form
                         onSubmit={handleSubmit(onBookingSubmit)}
                         className="space-y-3"
+                        noValidate
                     >
                       {/* Start date */}
                       <DatePicker
@@ -438,10 +461,14 @@ export default function PropertyDetailPage() {
                                     p-3 text-sm space-y-1">
                             <div className="flex justify-between
                                       text-gray-600">
-                        <span>
-                          GHS {property.price}/month ×{' '}
-                          {priceCalc.nights} days
-                        </span>
+                              <span>
+                                GHS {property.price.toLocaleString()}
+                                /month × {(priceCalc.months)
+                                  .toFixed(1)} months
+                              </span>
+                              <span className="text-gray-400">
+                                {priceCalc.nights} days
+                              </span>
                             </div>
                             <div className="flex justify-between
                                       font-semibold
@@ -450,8 +477,8 @@ export default function PropertyDetailPage() {
                                       pt-1 mt-1">
                               <span>Total</span>
                               <span className="text-brand-green">
-                          GHS {priceCalc.total}
-                        </span>
+                                GHS {priceCalc.total}
+                              </span>
                             </div>
                           </div>
                       )}
