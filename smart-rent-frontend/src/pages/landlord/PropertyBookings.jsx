@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ChevronLeft, CalendarDays } from 'lucide-react'
 import BookingService from '../../services/booking.service'
 import Badge from '../../components/ui/Badge'
-import Button from '../../components/ui/Button'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import ErrorMessage from '../../components/ui/ErrorMessage'
 

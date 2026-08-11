@@ -1,69 +1,83 @@
-// ─────────────────────────────────────────────────────
-// BADGE COMPONENT
-//
-// Small coloured pill for status labels.
-// Maps booking status, payment status, property
-// status to appropriate colours automatically.
-//
-// Usage:
-//   <Badge status="CONFIRMED" />
-//   <Badge status="AVAILABLE" />
-//   <Badge status="PAID" />
-//   <Badge variant="green" label="Active" />
-// ─────────────────────────────────────────────────────
-
-// Automatic status → colour mapping
+// Status → semantic variant mapping
 const statusMap = {
-    // Booking statuses
-    CONFIRMED:         'green',
-    PAYMENT_INITIATED: 'yellow',
-    PENDING:           'yellow',
-    CANCELLED:         'red',
-    COMPLETED:         'blue',
+    // Booking
+    CONFIRMED:         'success',
+    PAYMENT_INITIATED: 'warning',
+    PENDING:           'warning',
+    CANCELLED:         'danger',
+    COMPLETED:         'info',
 
-    // Payment statuses
-    PAID:              'green',
-    SUCCESS:           'green',
-    PROCESSING:        'yellow',
-    UNPAID:            'yellow',
-    FAILED:            'red',
-    REFUNDED:          'blue',
+    // Payment
+    PAID:              'success',
+    SUCCESS:           'success',
+    PROCESSING:        'warning',
+    FAILED:            'danger',
+    REFUNDED:          'info',
 
-    // Property statuses
-    AVAILABLE:         'green',
-    RENTED:            'blue',
-    MAINTENANCE:       'yellow',
+    // Property
+    AVAILABLE:         'success',
+    RENTED:            'info',
+    MAINTENANCE:       'warning',
 
-    // Verification statuses
-    APPROVED:          'green',
-    REJECTED:          'red',
+    // Verification
+    APPROVED:          'success',
+    REJECTED:          'danger',
     NONE:              'gray',
 
-    // Role badges
-    LANDLORD:          'blue',
+    // Roles
+    LANDLORD:          'info',
     TENANT:            'gray',
-    ADMIN:             'red',
+    ADMIN:             'danger',
 }
 
+// Dot colors per variant
+const dotColors = {
+    success: 'bg-success-icon',
+    warning: 'bg-warning-icon',
+    danger:  'bg-danger-icon',
+    info:    'bg-info-icon',
+    gray:    'bg-gray-400',
+}
+
+// Badge wrapper classes per variant
 const variantClasses = {
-    green:  'badge-green',
-    yellow: 'badge-yellow',
-    red:    'badge-red',
-    blue:   'badge-blue',
-    gray:   'badge-gray',
+    success: 'badge-success',
+    warning: 'badge-warning',
+    danger:  'badge-danger',
+    info:    'badge-info',
+    gray:    'badge-gray',
 }
 
-export default function Badge({status, label, variant,}) {
-    // Determine colour from status or explicit variant
-    const colour = variant || statusMap[status] || 'gray'
+export default function Badge({
+                                  status,
+                                  label,
+                                  variant,
+                                  className = '',
+                              }) {
+    const resolvedVariant = variant
+        || statusMap[status]
+        || 'gray'
 
-    // Display text — use label if provided,
-    // otherwise format the status string
-    const text = label || status?.replace(/_/g, ' ') || ''
+    const text = label
+        || status?.replace(/_/g, ' ')
+        || ''
 
     return (
-        <span className={variantClasses[colour]}>
+        <span
+            className={`${variantClasses[resolvedVariant]} ${
+                className}`}
+            // role="status" for live regions
+            // so screen readers announce status changes
+            role="status"
+        >
+      {/* Colored dot — visible to color-blind users */}
+            <span
+                className={`badge-dot ${
+                    dotColors[resolvedVariant]
+                }`}
+                aria-hidden="true"
+            />
             {text}
-        </span>
+    </span>
     )
 }

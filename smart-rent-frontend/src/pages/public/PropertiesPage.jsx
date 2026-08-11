@@ -162,36 +162,75 @@ export default function PropertiesPage() {
 
         <div className="flex gap-6">
 
-          {/* ── FILTER SIDEBAR ──────────────────────── */}
-          <aside className={`
-          ${showFilters ? 'block' : 'hidden'}
-          sm:block w-full sm:w-64 flex-shrink-0
-        `}>
-            <div className="card sticky top-20">
+          {/* ── MOBILE FILTER BUTTON ──────────────── */}
+          <div className="sm:hidden flex items-center
+                justify-between mb-4">
+            <p className="text-meta text-gray-500">
+              {!loading && `${totalElements} properties`}
+            </p>
+            <button
+                onClick={() => setShowFilters(true)}
+                className="flex items-center gap-2 px-3 py-2
+               rounded-lg border border-gray-300
+               text-body font-medium text-gray-700
+               bg-white hover:bg-gray-50
+               transition-colors"
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+              Filters
+              {hasActiveFilters && (
+                  <span className="w-2 h-2 bg-brand-green
+                       rounded-full" />
+              )}
+            </button>
+          </div>
+
+          {/* ── MOBILE BOTTOM SHEET DRAWER ────────── */}
+          {/* Overlay */}
+          {showFilters && (
+              <div
+                  className="overlay sm:hidden"
+                  onClick={() => setShowFilters(false)}
+                  aria-hidden="true"
+              />
+          )}
+
+          {/* Drawer */}
+          <div
+              className={`
+    drawer-bottom sm:hidden
+    ${showFilters
+                  ? 'translate-y-0'
+                  : 'translate-y-full'
+              }
+  `}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Filter properties"
+          >
+            {/* Drag handle */}
+            <div className="drawer-handle" />
+
+            <div className="px-5 pb-6">
               <div className="flex items-center
-                            justify-between mb-4">
-                <h2 className="font-semibold text-gray-900">
+                    justify-between mb-4">
+                <h2 className="text-card-title text-gray-900">
                   Filters
                 </h2>
-                {hasActiveFilters && (
-                    <button
-                        onClick={handleClearFilters}
-                        className="text-xs text-red-500
-                             hover:text-red-700
-                             flex items-center gap-1"
-                    >
-                      <X className="h-3 w-3" />
-                      Clear all
-                    </button>
-                )}
+                <button
+                    onClick={() => setShowFilters(false)}
+                    className="btn-icon"
+                    aria-label="Close filters"
+                >
+                  <X className="h-5 w-5" />
+                </button>
               </div>
 
+              {/* Same filter form fields as desktop */}
               <form
                   onSubmit={handleSearch}
-                  className="space-y-5"
+                  className="space-y-4"
               >
-
-                {/* City */}
                 <div>
                   <label className="label">City</label>
                   <input
@@ -200,25 +239,20 @@ export default function PropertiesPage() {
                       value={filters.city}
                       onChange={(e) =>
                           setFilters(f => ({
-                            ...f,
-                            city: e.target.value,
+                            ...f, city: e.target.value,
                           }))
                       }
                       className="input"
                   />
                 </div>
 
-                {/* Property type */}
                 <div>
-                  <label className="label">
-                    Property type
-                  </label>
+                  <label className="label">Property type</label>
                   <select
                       value={filters.type}
                       onChange={(e) =>
                           setFilters(f => ({
-                            ...f,
-                            type: e.target.value,
+                            ...f, type: e.target.value,
                           }))
                       }
                       className="input"
@@ -233,7 +267,6 @@ export default function PropertiesPage() {
                   </select>
                 </div>
 
-                {/* Price range */}
                 <div>
                   <label className="label">
                     Price range (GHS/month)
@@ -245,12 +278,10 @@ export default function PropertiesPage() {
                         value={filters.minPrice}
                         onChange={(e) =>
                             setFilters(f => ({
-                              ...f,
-                              minPrice: e.target.value,
+                              ...f, minPrice: e.target.value,
                             }))
                         }
                         className="input"
-                        min="0"
                     />
                     <input
                         type="number"
@@ -258,27 +289,21 @@ export default function PropertiesPage() {
                         value={filters.maxPrice}
                         onChange={(e) =>
                             setFilters(f => ({
-                              ...f,
-                              maxPrice: e.target.value,
+                              ...f, maxPrice: e.target.value,
                             }))
                         }
                         className="input"
-                        min="0"
                     />
                   </div>
                 </div>
 
-                {/* Bedrooms */}
                 <div>
-                  <label className="label">
-                    Min bedrooms
-                  </label>
+                  <label className="label">Min bedrooms</label>
                   <select
                       value={filters.minBedrooms}
                       onChange={(e) =>
                           setFilters(f => ({
-                            ...f,
-                            minBedrooms: e.target.value,
+                            ...f, minBedrooms: e.target.value,
                           }))
                       }
                       className="input"
@@ -292,53 +317,182 @@ export default function PropertiesPage() {
                   </select>
                 </div>
 
-                <Button type="submit" fullWidth>
-                  Apply filters
-                </Button>
+                <div className="flex gap-3 pt-2">
+                  {hasActiveFilters && (
+                      <button
+                          type="button"
+                          onClick={handleClearFilters}
+                          className="btn-secondary flex-1"
+                      >
+                        Clear
+                      </button>
+                  )}
+                  <button
+                      type="submit"
+                      className="btn-primary flex-1"
+                  >
+                    Apply filters
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
 
+          {/* ── DESKTOP SIDEBAR — filter form ───────────── */}
+          <aside className="hidden sm:block w-64 flex-shrink-0">
+            <div className="card sticky top-20">
+              <h2 className="text-card-title text-gray-900 mb-4">
+                Filters
+              </h2>
+
+              <form
+                  onSubmit={handleSearch}
+                  className="space-y-4"
+              >
+                <div>
+                  <label className="label">City</label>
+                  <input
+                      type="text"
+                      placeholder="e.g. Accra"
+                      value={filters.city}
+                      onChange={(e) =>
+                          setFilters(f => ({
+                            ...f, city: e.target.value,
+                          }))
+                      }
+                      className="input"
+                  />
+                </div>
+
+                <div>
+                  <label className="label">Property type</label>
+                  <select
+                      value={filters.type}
+                      onChange={(e) =>
+                          setFilters(f => ({
+                            ...f, type: e.target.value,
+                          }))
+                      }
+                      className="input"
+                  >
+                    <option value="">All types</option>
+                    {PROPERTY_TYPES.map(type => (
+                        <option key={type} value={type}>
+                          {type.charAt(0) +
+                              type.slice(1).toLowerCase()}
+                        </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="label">
+                    Price range (GHS/month)
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                        type="number"
+                        placeholder="Min"
+                        value={filters.minPrice}
+                        onChange={(e) =>
+                            setFilters(f => ({
+                              ...f, minPrice: e.target.value,
+                            }))
+                        }
+                        className="input"
+                    />
+                    <input
+                        type="number"
+                        placeholder="Max"
+                        value={filters.maxPrice}
+                        onChange={(e) =>
+                            setFilters(f => ({
+                              ...f, maxPrice: e.target.value,
+                            }))
+                        }
+                        className="input"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="label">Min bedrooms</label>
+                  <select
+                      value={filters.minBedrooms}
+                      onChange={(e) =>
+                          setFilters(f => ({
+                            ...f, minBedrooms: e.target.value,
+                          }))
+                      }
+                      className="input"
+                  >
+                    <option value="">Any</option>
+                    {[1, 2, 3, 4, 5].map(n => (
+                        <option key={n} value={n}>
+                          {n}+ bedroom{n > 1 ? 's' : ''}
+                        </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex gap-2 pt-2">
+                  {hasActiveFilters && (
+                      <button
+                          type="button"
+                          onClick={handleClearFilters}
+                          className="btn-secondary flex-1"
+                      >
+                        Clear
+                      </button>
+                  )}
+                  <button
+                      type="submit"
+                      className="btn-primary flex-1"
+                  >
+                    Apply
+                  </button>
+                </div>
               </form>
             </div>
           </aside>
 
-          {/* ── PROPERTY GRID ────────────────────────── */}
+          {/* ── RESULTS COLUMN ─────────────────────────── */}
           <div className="flex-1 min-w-0">
 
-            <ErrorMessage
-                message={error}
-                className="mb-4"
-            />
-
-            {loading ? (
-                <div className="flex justify-center py-20">
+            {/* Loading state */}
+            {loading && (
+                <div className="flex items-center
+                            justify-center py-16">
                   <LoadingSpinner size="lg" />
                 </div>
-            ) : properties.length === 0 ? (
-                <div className="text-center py-20">
-                  <Building2 className="h-16 w-16
-                                    text-gray-200
-                                    mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold
-                             text-gray-900 mb-2">
+            )}
+
+            {/* Error state */}
+            {!loading && error && (
+                <ErrorMessage message={error} className="mb-6" />
+            )}
+
+            {/* Empty state */}
+            {!loading && !error && properties.length === 0 && (
+                <div className="empty-state">
+                  <Building2 className="empty-state-icon" />
+                  <p className="empty-state-title">
                     No properties found
-                  </h3>
-                  <p className="text-gray-500 text-sm mb-4">
-                    Try adjusting your filters
                   </p>
-                  {hasActiveFilters && (
-                      <Button
-                          variant="secondary"
-                          onClick={handleClearFilters}
-                      >
-                        Clear filters
-                      </Button>
-                  )}
+                  <p className="empty-state-text">
+                    {hasActiveFilters
+                        ? 'Try adjusting your filters'
+                        : 'Check back later for new listings'}
+                  </p>
                 </div>
-            ) : (
+            )}
+
+            {/* Results grid */}
+            {!loading && !error && properties.length > 0 && (
                 <>
-                  {/* Grid */}
                   <div className="grid grid-cols-1
                               md:grid-cols-2
-                              xl:grid-cols-3 gap-5">
+                              xl:grid-cols-3 gap-6">
                     {properties.map(property => (
                         <PropertyCard
                             key={property.id}
@@ -350,7 +504,8 @@ export default function PropertiesPage() {
                   {/* Pagination */}
                   {totalPages > 1 && (
                       <div className="flex items-center
-                                justify-center gap-2 mt-8">
+                                  justify-center
+                                  gap-2 mt-8">
                         <Button
                             variant="secondary"
                             size="sm"
@@ -363,39 +518,16 @@ export default function PropertiesPage() {
                           Previous
                         </Button>
 
-                        <div className="flex items-center gap-1">
-                          {Array.from(
-                              { length: totalPages },
-                              (_, i) => i
-                          )
-                              .filter(i =>
-                                  Math.abs(i - currentPage) <= 2
-                              )
-                              .map(i => (
-                                  <button
-                                      key={i}
-                                      onClick={() =>
-                                          setCurrentPage(i)
-                                      }
-                                      className={`
-                          w-8 h-8 rounded-lg text-sm
-                          font-medium transition-colors
-                          ${i === currentPage
-                                          ? 'bg-brand-green text-white'
-                                          : 'text-gray-600 hover:bg-gray-100'
-                                      }
-                        `}
-                                  >
-                                    {i + 1}
-                                  </button>
-                              ))}
-                        </div>
+                        <span className="text-meta text-gray-500
+                                     px-3">
+                          Page {currentPage + 1} of {totalPages}
+                        </span>
 
                         <Button
                             variant="secondary"
                             size="sm"
                             disabled={
-                                currentPage === totalPages - 1
+                                currentPage >= totalPages - 1
                             }
                             onClick={() =>
                                 setCurrentPage(p => p + 1)
@@ -408,6 +540,7 @@ export default function PropertiesPage() {
                   )}
                 </>
             )}
+
           </div>
         </div>
       </div>

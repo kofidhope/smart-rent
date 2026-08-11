@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import {MapPin, BedDouble, Bath, User, ChevronLeft, ChevronRight, Calendar, CheckCircle, Building2,} from 'lucide-react'
+import {MapPin, BedDouble, Bath, User, ChevronLeft, ChevronRight, Building2, CheckCircle,
+} from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import PropertyService from '../../services/property.service'
@@ -11,6 +12,7 @@ import Button from '../../components/ui/Button'
 import Badge from '../../components/ui/Badge'
 import ErrorMessage from '../../components/ui/ErrorMessage'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
+import DatePicker from '../../components/ui/DatePicker'
 
 export default function PropertyDetailPage() {
   const { id } = useParams()
@@ -25,11 +27,13 @@ export default function PropertyDetailPage() {
   const [bookingError, setBookingError] = useState('')
 
   const {
-    register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
-  } = useForm()
+  } = useForm({
+    mode: 'onBlur',
+  })
 
   const startDate = watch('startDate')
   const endDate = watch('endDate')
@@ -396,67 +400,37 @@ export default function PropertyDetailPage() {
                         className="space-y-3"
                     >
                       {/* Start date */}
-                      <div>
-                        <label className="label">
-                          <Calendar className="inline
-                                           h-3.5 w-3.5
-                                           mr-1" />
-                          Move-in date
-                        </label>
-                        <input
-                            type="date"
-                            className={`input ${
-                                errors.startDate
-                                    ? 'input-error' : ''
-                            }`}
-                            min={
-                              new Date()
-                                  .toISOString()
-                                  .split('T')[0]
-                            }
-                            {...register('startDate', {
-                              required: 'Start date required',
-                            })}
-                        />
-                        {errors.startDate && (
-                            <p className="error-text">
-                              {errors.startDate.message}
-                            </p>
-                        )}
-                      </div>
+                      <DatePicker
+                          id="startDate"
+                          label="Move-in date"
+                          selected={startDate ? new Date(startDate) : null}
+                          onChange={(date) => {
+                            setValue('startDate',
+                                date?.toISOString().split('T')[0] || '')
+                          }}
+                          minDate={new Date()}
+                          placeholderText="Select move-in date"
+                          error={errors.startDate?.message}
+                          required
+                      />
 
                       {/* End date */}
-                      <div>
-                        <label className="label">
-                          <Calendar className="inline
-                                           h-3.5 w-3.5
-                                           mr-1" />
-                          Move-out date
-                        </label>
-                        <input
-                            type="date"
-                            className={`input ${
-                                errors.endDate ? 'input-error' : ''
-                            }`}
-                            min={startDate ||
-                                new Date()
-                                    .toISOString()
-                                    .split('T')[0]
-                            }
-                            {...register('endDate', {
-                              required: 'End date required',
-                              validate: (value) =>
-                                  !startDate ||
-                                  value > startDate ||
-                                  'End date must be after start',
-                            })}
-                        />
-                        {errors.endDate && (
-                            <p className="error-text">
-                              {errors.endDate.message}
-                            </p>
-                        )}
-                      </div>
+                      <DatePicker
+                          id="endDate"
+                          label="Move-out date"
+                          selected={endDate ? new Date(endDate) : null}
+                          onChange={(date) => {
+                            setValue('endDate',
+                                date?.toISOString().split('T')[0] || '')
+                          }}
+                          minDate={startDate
+                              ? new Date(startDate)
+                              : new Date()
+                          }
+                          placeholderText="Select move-out date"
+                          error={errors.endDate?.message}
+                          required
+                      />
 
                       {/* Price breakdown */}
                       {priceCalc && (
