@@ -124,6 +124,7 @@ export default function LoginPage() {
                     placeholder="Enter your password"
                     leftIcon={Lock}
                     error={errors.password?.message}
+                    className="pr-10"
                     {...register('password', {
                       required: 'Password is required',
                       minLength: {
@@ -132,13 +133,26 @@ export default function LoginPage() {
                       },
                     })}
                 />
-                {/* Show/hide password toggle */}
+                {/* Show/hide password toggle.
+                    inset-y-0 + flex centering means the
+                    button always sits at the input's vertical
+                    centre regardless of label/helper height. */}
                 <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-[34px] text-gray-400 hover:text-gray-600                           transition-colors"
+                    aria-label={
+                      showPassword ? 'Hide password'
+                          : 'Show password'
+                    }
+                    className="absolute inset-y-0 right-0
+                           flex items-center pr-3
+                           text-gray-400
+                           hover:text-gray-600
+                           transition-colors"
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showPassword
+                      ? <EyeOff className="h-4 w-4" />
+                      : <Eye className="h-4 w-4" />}
                 </button>
               </div>
 

@@ -9,6 +9,12 @@ import PaymentService from '../../services/payment.service'
 import Badge from '../../components/ui/Badge'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import ErrorMessage from '../../components/ui/ErrorMessage'
+import EmptyState from '../../components/ui/EmptyState'
+import MotionFadeUp from '../../components/ui/MotionFadeUp'
+
+// Both names appear in the codebase depending on
+// which service produced the payment record.
+const PAID_STATUSES = ['SUCCESS', 'PAID']
 
 export default function MyPayments() {
   const [payments, setPayments] = useState([])
@@ -29,9 +35,13 @@ export default function MyPayments() {
     load()
   }, [])
 
-  const totalPaid = payments
-      .filter(p => p.status === 'SUCCESS')
-      .reduce((sum, p) => sum + p.amount, 0)
+  const paidRecords = payments.filter(
+      p => PAID_STATUSES.includes(p.status)
+  )
+  const totalPaid = paidRecords
+      .reduce((sum, p) => sum + (p.amount || 0), 0)
+  const failedCount = payments
+      .filter(p => p.status === 'FAILED').length
 
   if (loading) {
     return (
@@ -50,60 +60,73 @@ export default function MyPayments() {
 
         {/* Summary cards */}
         {payments.length > 0 && (
-            <div className="grid grid-cols-3 gap-4 mb-6">
-              {[
-                {
-                  label: 'Total paid',
-                  value: `GHS ${totalPaid.toLocaleString()}`,
-                  icon: CheckCircle,
-                  color: 'text-success-icon bg-success-bg',
-                },
-                {
-                  label: 'Successful',
-                  value: payments.filter(
-                      p => p.status === 'SUCCESS'
-                  ).length,
-                  icon: CheckCircle,
-                  color: 'text-info-icon bg-info-bg',
-                },
-                {
-                  label: 'Failed',
-                  value: payments.filter(
-                      p => p.status === 'FAILED'
-                  ).length,
-                  icon: XCircle,
-                  color: 'text-danger-icon bg-danger-bg',
-                },
-              ].map(({ label, value, icon: Icon, color }) => (
-                  <div key={label} className="card text-center">
-                    <div className={`
-                inline-flex items-center justify-center
-                w-10 h-10 rounded-xl mb-2 ${color}
-              `}>
-                      <Icon className="h-5 w-5" />
+            <div className="grid grid-cols-1 sm:grid-cols-3
+                          gap-4 mb-6">
+              <MotionFadeUp delay={0}>
+                <div className="stat-tile">
+                  <div className="flex items-center justify-between">
+                    <span className="stat-tile-label">
+                      Total paid
+                    </span>
+                    <div className="stat-tile-icon success">
+                      <CheckCircle className="h-5 w-5" />
                     </div>
-                    <p className="text-xl font-bold
-                            text-gray-900">
-                      {value}
-                    </p>
-                    <p className="text-meta text-gray-500 mt-0.5">
-                      {label}
-                    </p>
                   </div>
-              ))}
+                  <span className="stat-tile-value">
+                    GHS {totalPaid.toLocaleString()}
+                  </span>
+                  <span className="stat-tile-hint">
+                    Across {paidRecords.length} successful
+                  </span>
+                </div>
+              </MotionFadeUp>
+
+              <MotionFadeUp delay={0.05}>
+                <div className="stat-tile">
+                  <div className="flex items-center justify-between">
+                    <span className="stat-tile-label">
+                      Successful
+                    </span>
+                    <div className="stat-tile-icon info">
+                      <CreditCard className="h-5 w-5" />
+                    </div>
+                  </div>
+                  <span className="stat-tile-value">
+                    {paidRecords.length}
+                  </span>
+                  <span className="stat-tile-hint">
+                    Payments went through
+                  </span>
+                </div>
+              </MotionFadeUp>
+
+              <MotionFadeUp delay={0.1}>
+                <div className="stat-tile">
+                  <div className="flex items-center justify-between">
+                    <span className="stat-tile-label">
+                      Failed
+                    </span>
+                    <div className="stat-tile-icon danger">
+                      <XCircle className="h-5 w-5" />
+                    </div>
+                  </div>
+                  <span className="stat-tile-value">
+                    {failedCount}
+                  </span>
+                  <span className="stat-tile-hint">
+                    Need to retry
+                  </span>
+                </div>
+              </MotionFadeUp>
             </div>
         )}
 
         {payments.length === 0 ? (
-            <div className="empty-state">
-              <CreditCard className="empty-state-icon" />
-              <p className="empty-state-title">
-                No payments yet
-              </p>
-              <p className="empty-state-text">
-                Your payment history will appear here
-              </p>
-            </div>
+            <EmptyState
+                icon={CreditCard}
+                title="No payments yet"
+                description="Your payment history will appear here"
+            />
         ) : (
             <>
               {/* ── DESKTOP — table ──────────────────── */}
@@ -130,7 +153,8 @@ export default function MyPayments() {
                         <td className="font-semibold
                                    text-gray-900">
                           GHS {payment.amount
-                            .toLocaleString()}
+                              ? payment.amount.toLocaleString()
+                              : '—'}
                         </td>
                         <td>
                           <Badge status={payment.status} />
@@ -172,7 +196,8 @@ export default function MyPayments() {
                           <p className="text-xl font-bold
                                   text-gray-900 mt-0.5">
                             GHS {payment.amount
-                              .toLocaleString()}
+                                ? payment.amount.toLocaleString()
+                                : '—'}
                           </p>
                         </div>
                         <Badge status={payment.status} />
@@ -188,21 +213,21 @@ export default function MyPayments() {
                                   text-gray-500">
                           <CreditCard className="h-3.5 w-3.5" />
                           <span className="capitalize">
-                      {payment.channel || 'Unknown'}
-                    </span>
+                            {payment.channel || 'Unknown'}
+                          </span>
                         </div>
                         <div className="flex items-center
                                   gap-1.5 text-meta
                                   text-gray-500">
                           <Clock className="h-3.5 w-3.5" />
                           <span>
-                      {payment.paidAt
-                          ? new Date(payment.paidAt)
-                              .toLocaleDateString()
-                          : new Date(payment.createdAt)
-                              .toLocaleDateString()
-                      }
-                    </span>
+                            {payment.paidAt
+                                ? new Date(payment.paidAt)
+                                    .toLocaleDateString()
+                                : new Date(payment.createdAt)
+                                    .toLocaleDateString()
+                            }
+                          </span>
                         </div>
                       </div>
 

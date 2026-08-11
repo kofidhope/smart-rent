@@ -32,9 +32,11 @@ export default function DatePicker({label, error, selected, onChange, minDate, m
                     maxDate={maxDate}
                     placeholderText={placeholderText}
                     dateFormat="dd MMM yyyy"
-                    // Prevent typing — force picker selection
-                    // so date format is always consistent
-                    onKeyDown={(e) => e.preventDefault()}
+                    // readOnly prevents typing into the field.
+                    // Picker still opens on click and arrow
+                    // keys still navigate. Avoids the
+                    // preventDefault on every keystroke.
+                    readOnly
                     className={`
             input pl-10 w-full cursor-pointer
             ${error ? 'input-error' : ''}

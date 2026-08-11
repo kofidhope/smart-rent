@@ -7,6 +7,8 @@ import PaymentService from '../../services/payment.service'
 import Badge from '../../components/ui/Badge'
 import Button from '../../components/ui/Button'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
+import MotionFadeUp from '../../components/ui/MotionFadeUp'
+import EmptyState from '../../components/ui/EmptyState'
 
 export default function LandlordDashboard() {
   const { user } = useAuth()
@@ -40,28 +42,64 @@ export default function LandlordDashboard() {
   const availableCount = properties.filter(
       p => p.status === 'AVAILABLE'
   ).length
-
   const rentedCount = properties.filter(
       p => p.status === 'RENTED'
+  ).length
+  const maintenanceCount = properties.filter(
+      p => p.status === 'MAINTENANCE'
   ).length
 
   if (loading) {
     return (
-        <div className="min-h-[60vh] flex items-center
+      <div className="min-h-[60vh] flex items-center
                       justify-center">
-          <LoadingSpinner size="lg" />
-        </div>
+        <LoadingSpinner size="lg" />
+      </div>
     )
   }
+
+  const stats = [
+    {
+      label: 'Total properties',
+      value: properties.length,
+      hint: `${availableCount} available`,
+      icon: Building2,
+      variant: 'info',
+    },
+    {
+      label: 'Available',
+      value: availableCount,
+      hint: 'Ready to rent',
+      icon: Building2,
+      variant: 'success',
+    },
+    {
+      label: 'Rented out',
+      value: rentedCount,
+      hint: maintenanceCount
+          ? `${maintenanceCount} in maintenance`
+          : 'All tenants in good standing',
+      icon: Building2,
+      variant: 'warning',
+    },
+    {
+      label: 'Total revenue',
+      value: `GHS ${Number(totalRevenue).toLocaleString()}`,
+      hint: `${revenue.length} ${revenue.length === 1
+          ? 'payment' : 'payments'}`,
+      icon: TrendingUp,
+      variant: 'success',
+    },
+  ]
 
   return (
       <div className="page-container">
 
-        <div className="flex items-center
-                      justify-between mb-8">
+        <div className="flex flex-col gap-3 sm:flex-row
+                      sm:items-center sm:justify-between
+                      mb-8">
           <div>
-            <h1 className="text-2xl font-bold
-                         text-gray-900">
+            <h1 className="text-2xl font-bold text-gray-900">
               Welcome, {user?.firstName}!
             </h1>
             <p className="text-gray-500 mt-1">
@@ -81,48 +119,20 @@ export default function LandlordDashboard() {
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4
                       gap-4 mb-8">
-          {[
-            {
-              label: 'Total properties',
-              value: properties.length,
-              icon: Building2,
-              color: 'text-blue-600 bg-blue-50',
-            },
-            {
-              label: 'Available',
-              value: availableCount,
-              icon: Building2,
-              color: 'text-green-600 bg-green-50',
-            },
-            {
-              label: 'Rented out',
-              value: rentedCount,
-              icon: Building2,
-              color: 'text-purple-600 bg-purple-50',
-            },
-            {
-              label: 'Total revenue',
-              value: `GHS ${Number(totalRevenue)
-                  .toLocaleString()}`,
-              icon: TrendingUp,
-              color: 'text-brand-green bg-brand-light',
-            },
-          ].map(({ label, value, icon: Icon, color }) => (
-              <div key={label} className="card">
-                <div className={`
-              inline-flex items-center justify-center
-              w-10 h-10 rounded-lg mb-3 ${color}
-            `}>
-                  <Icon className="h-5 w-5" />
+          {stats.map(({ label, value, hint, icon: Icon,
+                      variant }, i) => (
+              <MotionFadeUp key={label} delay={i * 0.05}>
+                <div className="stat-tile">
+                  <div className="flex items-center justify-between">
+                    <span className="stat-tile-label">{label}</span>
+                    <div className={`stat-tile-icon ${variant}`}>
+                      <Icon className="h-5 w-5"/>
+                    </div>
+                  </div>
+                  <span className="stat-tile-value">{value}</span>
+                  <span className="stat-tile-hint">{hint}</span>
                 </div>
-                <p className="text-xl font-bold
-                          text-gray-900 truncate">
-                  {value}
-                </p>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  {label}
-                </p>
-              </div>
+              </MotionFadeUp>
           ))}
         </div>
 
@@ -133,37 +143,31 @@ export default function LandlordDashboard() {
             <h2 className="section-title mb-0">
               My properties
             </h2>
-            <button
-                onClick={() =>
-                    navigate('/landlord/properties')
-                }
-                className="text-sm text-brand-green
+            {properties.length > 0 && (
+                <button
+                    onClick={() =>
+                        navigate('/landlord/properties')
+                    }
+                    className="text-sm text-brand-green
                        hover:text-brand-dark
                        flex items-center gap-1
                        font-medium"
-            >
-              View all
-              <ArrowRight className="h-4 w-4" />
-            </button>
+                >
+                  View all
+                  <ArrowRight className="h-4 w-4"/>
+                </button>
+            )}
           </div>
 
           {properties.length === 0 ? (
-              <div className="text-center py-8">
-                <Building2 className="h-12 w-12
-                                   text-gray-200
-                                   mx-auto mb-3" />
-                <p className="text-gray-500 text-sm mb-4">
-                  No properties yet
-                </p>
-                <Button
-                    onClick={() =>
-                        navigate('/landlord/properties/new')
-                    }
-                >
-                  <Plus className="h-4 w-4" />
-                  Add your first property
-                </Button>
-              </div>
+              <EmptyState
+                  icon={Building2}
+                  title="No properties yet"
+                  description="List your first property to start receiving bookings"
+                  actionLabel="Add your first property"
+                  onAction={() =>
+                      navigate('/landlord/properties/new')}
+              />
           ) : (
               <div className="space-y-3">
                 {properties.slice(0, 4).map(property => (
@@ -206,14 +210,9 @@ export default function LandlordDashboard() {
           </div>
 
           {revenue.length === 0 ? (
-              <div className="text-center py-8">
-                <TrendingUp className="h-12 w-12
-                                   text-gray-200
-                                   mx-auto mb-3" />
-                <p className="text-gray-500 text-sm">
-                  No payments received yet
-                </p>
-              </div>
+              <p className="text-meta text-gray-500 text-center py-6">
+                No payments received yet
+              </p>
           ) : (
               <div className="space-y-3">
                 {revenue.slice(0, 5).map(payment => (
@@ -238,7 +237,8 @@ export default function LandlordDashboard() {
                       <div className="flex items-center gap-3">
                   <span className="font-semibold
                                    text-brand-green">
-                    +GHS {payment.amount.toLocaleString()}
+                    +GHS {(payment.amount || 0)
+                        .toLocaleString()}
                   </span>
                         <Badge status={payment.status} />
                       </div>

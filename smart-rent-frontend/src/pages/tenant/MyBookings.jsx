@@ -13,6 +13,14 @@ import Badge from '../../components/ui/Badge'
 import Button from '../../components/ui/Button'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import ErrorMessage from '../../components/ui/ErrorMessage'
+import EmptyState from '../../components/ui/EmptyState'
+import ConfirmDialog from '../../components/ui/ConfirmDialog'
+
+// Bookings that are still in a cancellable state.
+// PENDING = awaiting landlord/auto-confirm,
+// PAYMENT_INITIATED = tenant started paying but
+// hasn't finished — both safe to cancel.
+const CANCELLABLE_STATUSES = ['PENDING', 'PAYMENT_INITIATED']
 
 export default function MyBookings() {
   const navigate = useNavigate()
@@ -20,6 +28,9 @@ export default function MyBookings() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [cancelling, setCancelling] = useState(null)
+  const [bookingPendingCancel, setBookingPendingCancel] =
+      useState(null)
+  const [payingId, setPayingId] = useState(null)
 
   const load = async () => {
     setLoading(true)
@@ -35,11 +46,7 @@ export default function MyBookings() {
 
   useEffect(() => { load() }, [])
 
-  const handleCancel = async (bookingId) => {
-    if (!confirm(
-        'Are you sure you want to cancel this booking?'
-    )) return
-
+  const performCancel = async (bookingId) => {
     setCancelling(bookingId)
     try {
       await BookingService.cancel(bookingId)
@@ -49,10 +56,15 @@ export default function MyBookings() {
       toast.error(err.message)
     } finally {
       setCancelling(null)
+      setBookingPendingCancel(null)
     }
   }
 
   const handlePay = async (bookingId) => {
+    // The button must show a spinner so the user
+    // knows we left the page — the redirect to
+    // Paystack can otherwise feel instant and confusing.
+    setPayingId(bookingId)
     try {
       const payment = await PaymentService
           .waitForPayment(bookingId)
@@ -60,9 +72,11 @@ export default function MyBookings() {
         window.location.href = payment.authorizationUrl
       } else {
         toast.error('Payment link not ready. Try again.')
+        setPayingId(null)
       }
     } catch (err) {
       toast.error(err.message)
+      setPayingId(null)
     }
   }
 
@@ -82,23 +96,13 @@ export default function MyBookings() {
         <ErrorMessage message={error} className="mb-6" />
 
         {bookings.length === 0 ? (
-            <div className="text-center py-20">
-              <CalendarDays className="h-16 w-16
-                                   text-gray-200
-                                   mx-auto mb-4" />
-              <h3 className="text-lg font-semibold
-                         text-gray-900 mb-2">
-                No bookings yet
-              </h3>
-              <p className="text-gray-500 text-sm mb-6">
-                Browse properties and make your first booking
-              </p>
-              <Button
-                  onClick={() => navigate('/properties')}
-              >
-                Browse properties
-              </Button>
-            </div>
+            <EmptyState
+              icon={CalendarDays}
+              title="No bookings yet"
+              description="Browse properties and make your first booking"
+              actionLabel="Browse properties"
+              onAction={() => navigate('/properties')}
+            />
         ) : (
             <div className="space-y-4">
               {bookings.map(booking => (
@@ -144,6 +148,7 @@ export default function MyBookings() {
                             'PAYMENT_INITIATED' && (
                                 <Button
                                     size="sm"
+                                    loading={payingId === booking.id}
                                     onClick={() =>
                                         handlePay(booking.id)
                                     }
@@ -153,9 +158,11 @@ export default function MyBookings() {
                                 </Button>
                             )}
 
-                        {/* Cancel button */}
-                        {['PENDING',
-                          'PAYMENT_INITIATED']
+                        {/* Cancel button — opens a confirmation
+                            dialog instead of using window.confirm.
+                            window.confirm is modal, ugly, and
+                            can't be styled. */}
+                        {CANCELLABLE_STATUSES
                             .includes(booking.bookingStatus) && (
                             <Button
                                 variant="danger"
@@ -164,7 +171,7 @@ export default function MyBookings() {
                                     cancelling === booking.id
                                 }
                                 onClick={() =>
-                                    handleCancel(booking.id)
+                                    setBookingPendingCancel(booking)
                                 }
                             >
                               <X className="h-3.5 w-3.5" />
@@ -177,6 +184,28 @@ export default function MyBookings() {
               ))}
             </div>
         )}
+
+        {/* ── Cancel confirmation ───────────────────── */}
+        <ConfirmDialog
+          open={!!bookingPendingCancel}
+          title="Cancel this booking?"
+          message={
+            bookingPendingCancel
+                ? `Booking #${bookingPendingCancel.id
+                  .slice(0, 8)} will be cancelled. ` +
+                  'This cannot be undone.'
+                : ''
+          }
+          confirmLabel="Cancel booking"
+          cancelLabel="Keep booking"
+          variant="danger"
+          loading={cancelling === bookingPendingCancel?.id}
+          onConfirm={() =>
+              bookingPendingCancel &&
+              performCancel(bookingPendingCancel.id)
+          }
+          onCancel={() => setBookingPendingCancel(null)}
+        />
       </div>
   )
 }

@@ -1,8 +1,16 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import {Home, Building2, CalendarDays, CreditCard, LogOut, Menu, X, User, Shield,} from 'lucide-react'
+import {Home, Building2, CalendarDays, CreditCard, LogOut, Menu, User, Shield,} from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
 import Button from '../ui/Button'
+import MobileDrawer from '../ui/MobileDrawer'
+
+// First initial of the user's first name — shown
+// inside the avatar circle when no photo is uploaded.
+function getInitial(name) {
+  if (!name) return '?'
+  return name.charAt(0).toUpperCase()
+}
 
 export default function Navbar() {
     const {user, isAuthenticated, isTenant, isLandlord, isAdmin, logout,} = useAuth()
@@ -81,7 +89,9 @@ export default function Navbar() {
 
     const links = isAdmin ? adminLinks : isLandlord ? landlordLinks : isTenant ? tenantLinks : guestLinks
 
-    const isActive = (path) => location.pathname === path || location.pathname.startsWith(path + '/')
+    const isActive = (path) =>
+        location.pathname === path
+        || location.pathname.startsWith(path + '/')
 
     return (
         <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -91,7 +101,8 @@ export default function Navbar() {
                     {/* Logo */}
                     <Link
                         to="/"
-                        className="flex items-center gap-2 flex-shrink-0">
+                        className="flex items-center gap-2 flex-shrink-0"
+                        aria-label="SmartRent home">
                         <div className="w-8 h-8 bg-brand-green rounded-lg flex items-center justify-center">
                             <span className="text-white text-sm font-bold">SR</span>
                         </div>
@@ -102,37 +113,65 @@ export default function Navbar() {
 
                     {/* Desktop links */}
                     <div className="hidden md:flex items-center gap-1">
-                        {links.map(({ to, label, icon: Icon }) => (
-                            <Link
-                                key={to}
-                                to={to}
-                                className={`
-                                            flex items-center gap-1.5 px-3 py-2
-                                            rounded-lg text-sm font-medium
-                                            transition-colors duration-150
-                                            ${isActive(to)
-                                            ? 'bg-brand-light text-brand-green'
+                        {links.map(({ to, label, icon: Icon }) => {
+                            const active = isActive(to)
+                            return (
+                                <Link
+                                    key={to}
+                                    to={to}
+                                    aria-current={active ? 'page' : undefined}
+                                    className={`
+                                        relative flex items-center
+                                        gap-1.5 px-3 py-2
+                                        rounded-lg text-sm font-medium
+                                        transition-colors duration-150
+                                        ${active
+                                            ? 'text-brand-green'
                                             : 'text-gray-600 hover:bg-gray-100'
-                                            }
-                                          `}>
-                                <Icon className="h-4 w-4" />
-                                {label}
-                            </Link>
-                        ))}
+                                        }
+                                    `}>
+                                    <Icon className="h-4 w-4" />
+                                    {label}
+                                    {/* Active indicator — small
+                                        underline at the bottom of
+                                        the link for clear visual
+                                        feedback beyond colour. */}
+                                    {active && (
+                                        <span
+                                            aria-hidden="true"
+                                            className="absolute
+                                                left-3 right-3
+                                                -bottom-0.5 h-0.5
+                                                bg-brand-green
+                                                rounded-full" />
+                                    )}
+                                </Link>
+                            )
+                        })}
                     </div>
 
                     {/* Right side */}
                     <div className="hidden md:flex items-center gap-3">
                         {isAuthenticated ? (
                             <>
-                                {/* User name and role */}
-                                <div className="text-right">
-                                    <p className="text-sm font-medium text-gray-900">
-                                        {user.firstName} {user.lastName}
-                                    </p>
-                                    <p className="text-xs text-gray-500">
-                                        {user.role}
-                                    </p>
+                                {/* Avatar circle + name */}
+                                <div className="flex items-center gap-2">
+                                    <div
+                                        aria-hidden="true"
+                                        className="w-9 h-9 bg-brand-green
+                                            rounded-full flex items-center
+                                            justify-center text-white
+                                            font-semibold text-sm">
+                                        {getInitial(user.firstName)}
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-sm font-medium text-gray-900">
+                                            {user.firstName} {user.lastName}
+                                        </p>
+                                        <p className="text-xs text-gray-500">
+                                            {user.role}
+                                        </p>
+                                    </div>
                                 </div>
 
                                 {/* Logout */}
@@ -166,73 +205,90 @@ export default function Navbar() {
                     <button
                         className="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100"
                         onClick={() => setMobileOpen(!mobileOpen)}
+                        aria-label={
+                            mobileOpen ? 'Close menu'
+                                : 'Open menu'
+                        }
+                        aria-expanded={mobileOpen}
                     >
-                        {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                        <Menu className="h-5 w-5" />
                     </button>
 
                 </div>
             </div>
 
-            {/* Mobile menu — animated open/close */}
-            {/* Using max-height transition for smooth animation */}
-            <div
-                className={`
-                             md:hidden border-t border-gray-100 bg-white
-                             overflow-hidden transition-all duration-300
-                             ease-smooth
-                   ${mobileOpen
-                    ? 'max-h-[500px] opacity-100'
-                    : 'max-h-0 opacity-0'
-                    }
-                `}
-                // aria-hidden hides from screen readers when closed
-                aria-hidden={!mobileOpen}
-            >
-                <div className="px-4 py-3 space-y-1">
+            {/* ── Mobile menu — uses MobileDrawer so the sheet
+                 always fits the viewport on small phones,
+                 closes on swipe-down and on link tap. */}
+            <MobileDrawer
+                open={mobileOpen}
+                onClose={() => setMobileOpen(false)}
+                title="Menu"
+                ariaLabel="Main menu">
+                <div className="space-y-1">
 
-                    {links.map(({ to, label, icon: Icon }) => (
-                        <Link
-                            key={to}
-                            to={to}
-                            onClick={() => setMobileOpen(false)}
-                            className={`
-                                    flex items-center gap-2.5 px-3 py-2.5
+                    {links.map(({ to, label, icon: Icon }) => {
+                        const active = isActive(to)
+                        return (
+                            <Link
+                                key={to}
+                                to={to}
+                                onClick={() => setMobileOpen(false)}
+                                aria-current={active ? 'page' : undefined}
+                                className={`
+                                    flex items-center gap-2.5
+                                    px-3 py-2.5
                                     rounded-lg text-body font-medium
                                     transition-colors duration-150
-                                    ${isActive(to)
+                                    ${active
                                         ? 'bg-brand-light text-brand-green'
                                         : 'text-gray-600 hover:bg-gray-100'
                                     }
-                            `}
-                        >
-                            <Icon className="h-4 w-4" />
-                            {label}
-                        </Link>
-                    ))}
+                                `}
+                            >
+                                <Icon className="h-4 w-4" />
+                                {label}
+                            </Link>
+                        )
+                    })}
 
                     <div className="pt-3 mt-1 border-t border-gray-100">
                         {isAuthenticated ? (
                             <>
-                                <div className="px-3 py-2">
-                                    <p className="text-body font-semibold
-                          text-gray-900">
-                                        {user.firstName} {user.lastName}
-                                    </p>
-                                    <p className="text-meta text-gray-500">
-                                        {user.role}
-                                    </p>
+                                <div className="flex items-center gap-3 px-3 py-2">
+                                    <div
+                                        aria-hidden="true"
+                                        className="w-9 h-9 bg-brand-green
+                                            rounded-full flex items-center
+                                            justify-center text-white
+                                            font-semibold text-sm">
+                                        {getInitial(user.firstName)}
+                                    </div>
+                                    <div>
+                                        <p className="text-body font-semibold
+                                            text-gray-900">
+                                            {user.firstName} {user.lastName}
+                                        </p>
+                                        <p className="text-meta text-gray-500">
+                                            {user.role}
+                                        </p>
+                                    </div>
                                 </div>
                                 <button
                                     onClick={handleLogout}
+                                    disabled={loggingOut}
                                     className="w-full flex items-center gap-2
-                       px-3 py-2.5 rounded-lg
-                       text-body font-medium
-                       text-danger-text
-                       hover:bg-danger-bg
-                       transition-colors"
+                                        px-3 py-2.5 rounded-lg
+                                        text-body font-medium
+                                        text-danger-text
+                                        hover:bg-danger-bg
+                                        disabled:opacity-60
+                                        transition-colors"
                                 >
                                     <LogOut className="h-4 w-4" />
-                                    {loggingOut ? 'Logging out...' : 'Logout'}
+                                    {loggingOut
+                                        ? 'Logging out...'
+                                        : 'Logout'}
                                 </button>
                             </>
                         ) : (
@@ -259,7 +315,7 @@ export default function Navbar() {
                         )}
                     </div>
                 </div>
-            </div>
+            </MobileDrawer>
         </nav>
     )
 }

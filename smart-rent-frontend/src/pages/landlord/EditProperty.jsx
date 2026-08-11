@@ -16,6 +16,27 @@ const PROPERTY_TYPES = [
   'OFFICE',
 ]
 
+// Field wrapper used for textarea/select — same label
+// spacing and error presentation as <Input> so the
+// two can't drift apart visually.
+function FormField({ label, required, error, htmlFor, children }) {
+  return (
+      <div className="w-full">
+        <label htmlFor={htmlFor}
+               className={`label ${required ? 'label-required' : ''}`}>
+          {label}
+        </label>
+        {children}
+        {error && (
+          <p role="alert" className="error-text">
+            <span className="w-1.5 h-1.5 rounded-full bg-danger-icon flex-shrink-0 mt-0.5" />
+            {error}
+          </p>
+        )}
+      </div>
+  )
+}
+
 export default function EditProperty() {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -100,7 +121,7 @@ export default function EditProperty() {
       <h1 className="page-title">Edit property</h1>
       <ErrorMessage message={error} className="mb-6" />
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
         <div className="card space-y-4">
           <h2 className="section-title">Basic information</h2>
 
@@ -117,11 +138,17 @@ export default function EditProperty() {
             })}
           />
 
-          <div>
-            <label className="label">Description</label>
+          <FormField
+            label="Description"
+            htmlFor="description"
+            required
+            error={errors.description?.message}
+          >
             <textarea
+              id="description"
               rows={4}
               placeholder="Describe your property — amenities, nearby places, rules..."
+              aria-invalid={errors.description ? 'true' : 'false'}
               className={`input resize-none ${
                 errors.description ? 'input-error' : ''
               }`}
@@ -133,14 +160,15 @@ export default function EditProperty() {
                 },
               })}
             />
-            {errors.description && (
-              <p className="error-text">{errors.description.message}</p>
-            )}
-          </div>
+          </FormField>
 
-          <div>
-            <label className="label">Property type</label>
+          <FormField
+            label="Property type"
+            htmlFor="type"
+            required
+          >
             <select
+              id="type"
               className="input"
               {...register('type', { required: true })}
             >
@@ -150,16 +178,18 @@ export default function EditProperty() {
                 </option>
               ))}
             </select>
-          </div>
+          </FormField>
 
-          <div>
-            <label className="label">Status</label>
-            <select className="input" {...register('status')}>
+          <FormField
+            label="Status"
+            htmlFor="status"
+          >
+            <select id="status" className="input" {...register('status')}>
               <option value="AVAILABLE">Available</option>
               <option value="RENTED">Rented</option>
               <option value="MAINTENANCE">Maintenance</option>
             </select>
-          </div>
+          </FormField>
         </div>
 
         <div className="card space-y-4">
@@ -202,26 +232,24 @@ export default function EditProperty() {
           />
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="label">Bedrooms</label>
-              <select className="input" {...register('bedrooms')}>
+            <FormField label="Bedrooms" htmlFor="bedrooms">
+              <select id="bedrooms" className="input" {...register('bedrooms')}>
                 {[1, 2, 3, 4, 5, 6].map((n) => (
                   <option key={n} value={n}>
                     {n} {n === 1 ? 'bedroom' : 'bedrooms'}
                   </option>
                 ))}
               </select>
-            </div>
-            <div>
-              <label className="label">Bathrooms</label>
-              <select className="input" {...register('bathrooms')}>
+            </FormField>
+            <FormField label="Bathrooms" htmlFor="bathrooms">
+              <select id="bathrooms" className="input" {...register('bathrooms')}>
                 {[1, 2, 3, 4].map((n) => (
                   <option key={n} value={n}>
                     {n} {n === 1 ? 'bathroom' : 'bathrooms'}
                   </option>
                 ))}
               </select>
-            </div>
+            </FormField>
           </div>
         </div>
 

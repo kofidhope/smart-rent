@@ -176,6 +176,7 @@ export default function RegisterPage() {
                     placeholder="At least 8 characters"
                     leftIcon={Lock}
                     error={errors.password?.message}
+                    className="pr-10"
                     {...register('password', {
                       required: 'Password is required',
                       minLength: {value: 8,
@@ -194,12 +195,19 @@ export default function RegisterPage() {
                 <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-[34px]
+                    aria-label={
+                      showPassword ? 'Hide password'
+                          : 'Show password'
+                    }
+                    className="absolute inset-y-0 right-0
+                           flex items-center pr-3
                            text-gray-400
                            hover:text-gray-600
                            transition-colors"
                 >
-                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showPassword
+                      ? <EyeOff className="h-4 w-4" />
+                      : <Eye className="h-4 w-4" />}
                 </button>
               </div>
 
@@ -211,6 +219,7 @@ export default function RegisterPage() {
                     placeholder="Repeat your password"
                     leftIcon={Lock}
                     error={errors.confirmPassword?.message}
+                    className="pr-10"
                     {...register('confirmPassword', {
                       required: 'Please confirm your password',
                       validate: (value) =>
@@ -221,12 +230,19 @@ export default function RegisterPage() {
                 <button
                     type="button"
                     onClick={() => setShowConfirm(!showConfirm)}
-                    className="absolute right-3 top-[34px]
+                    aria-label={
+                      showConfirm ? 'Hide password'
+                          : 'Show password'
+                    }
+                    className="absolute inset-y-0 right-0
+                           flex items-center pr-3
                            text-gray-400
                            hover:text-gray-600
                            transition-colors"
                 >
-                  {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {showConfirm
+                      ? <EyeOff className="h-4 w-4" />
+                      : <Eye className="h-4 w-4" />}
                 </button>
               </div>
 
