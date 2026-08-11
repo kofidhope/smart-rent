@@ -1,6 +1,5 @@
 import LoadingSpinner from './LoadingSpinner'
 
-
 export default function Button({
                                    children,
                                    variant = 'primary',
@@ -17,33 +16,42 @@ export default function Button({
         secondary: 'btn-secondary',
         danger:    'btn-danger',
         ghost:     'btn-ghost',
+        icon:      'btn-icon',
     }
 
     const sizes = {
-        sm: 'px-3 py-1.5 text-xs',
-        md: 'px-4 py-2 text-sm',
-        lg: 'px-6 py-3 text-base',
+        sm: 'btn-sm',
+        md: '',
+        lg: 'btn-lg',
+        xl: 'btn-xl',
     }
 
     return (
         <button
             className={`
-                        btn
-                        ${variants[variant]}
-                        ${sizes[size]}
-                        ${fullWidth ? 'w-full' : ''}
-                        ${className}
-                    `}
+        ${variants[variant]}
+        ${sizes[size]}
+        ${fullWidth ? 'w-full' : ''}
+        ${className}
+      `}
             disabled={disabled || loading}
+            // aria-busy tells screen readers the button
+            // is processing — do not activate again
+            aria-busy={loading}
             {...rest}
         >
             {loading && (
                 <LoadingSpinner
                     size="sm"
-                    color={variant === 'primary' ? 'white' : 'gray'}
+                    color={variant === 'primary'
+                        ? 'white' : 'gray'}
                 />
             )}
-            {children}
+            {/* Text stays visible during loading */}
+            {/* It just dims via opacity on the wrapper */}
+            <span className={loading ? 'opacity-60' : ''}>
+        {children}
+      </span>
         </button>
     )
 }

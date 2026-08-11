@@ -16,12 +16,10 @@ export default function RegisterPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const {
-    register,
-    handleSubmit,
-    watch,
+  const {register, handleSubmit, watch,
     formState: { errors },
   } = useForm({
+    mode: 'onBlur',
     defaultValues: {
       firstName: '',
       lastName: '',

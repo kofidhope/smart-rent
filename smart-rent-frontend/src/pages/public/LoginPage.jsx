@@ -27,6 +27,7 @@ export default function LoginPage() {
     handleSubmit,
     formState: { errors },
   } = useForm({
+    mode: 'onBlur',
     defaultValues: {
       email: '',
       password: '',

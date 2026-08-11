@@ -38,6 +38,7 @@ export default function CreateProperty() {
     handleSubmit,
     formState: { errors },
   } = useForm({
+    mode: 'onBlur',
     defaultValues: {
       title: '',
       description: '',

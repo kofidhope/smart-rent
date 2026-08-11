@@ -173,9 +173,22 @@ export default function Navbar() {
                 </div>
             </div>
 
-            {/* Mobile menu */}
-            {mobileOpen && (
-                <div className="md:hidden border-t border-gray-200 bg-white px-4 py-3 space-y-1">
+            {/* Mobile menu — animated open/close */}
+            {/* Using max-height transition for smooth animation */}
+            <div
+                className={`
+                             md:hidden border-t border-gray-100 bg-white
+                             overflow-hidden transition-all duration-300
+                             ease-smooth
+                   ${mobileOpen
+                    ? 'max-h-[500px] opacity-100'
+                    : 'max-h-0 opacity-0'
+                    }
+                `}
+                // aria-hidden hides from screen readers when closed
+                aria-hidden={!mobileOpen}
+            >
+                <div className="px-4 py-3 space-y-1">
 
                     {links.map(({ to, label, icon: Icon }) => (
                         <Link
@@ -183,51 +196,53 @@ export default function Navbar() {
                             to={to}
                             onClick={() => setMobileOpen(false)}
                             className={`
-                                        flex items-center gap-2 px-3 py-2.5
-                                        rounded-lg text-sm font-medium
-                                            ${isActive(to)
-                                            ? 'bg-brand-light text-brand-green'
-                                            : 'text-gray-600 hover:bg-gray-100'
-                                            }
-                                       `}
+                                    flex items-center gap-2.5 px-3 py-2.5
+                                    rounded-lg text-body font-medium
+                                    transition-colors duration-150
+                                    ${isActive(to)
+                                        ? 'bg-brand-light text-brand-green'
+                                        : 'text-gray-600 hover:bg-gray-100'
+                                    }
+                            `}
                         >
                             <Icon className="h-4 w-4" />
                             {label}
                         </Link>
                     ))}
 
-                    <div className="pt-2 border-t border-gray-100">
+                    <div className="pt-3 mt-1 border-t border-gray-100">
                         {isAuthenticated ? (
                             <>
-                                <p className="px-3 py-1 text-sm font-medium text-gray-900">
-                                    {user.firstName} {user.lastName}
-                                </p>
-                                <p className="px-3 text-xs text-gray-500 mb-2">
-                                    {user.role}
-                                </p>
+                                <div className="px-3 py-2">
+                                    <p className="text-body font-semibold
+                          text-gray-900">
+                                        {user.firstName} {user.lastName}
+                                    </p>
+                                    <p className="text-meta text-gray-500">
+                                        {user.role}
+                                    </p>
+                                </div>
                                 <button
                                     onClick={handleLogout}
-                                    className="w-full flex items-center
-                                                gap-2 px-3 py-2.5
-                                                rounded-lg text-sm
-                                                font-medium text-red-600
-                                                hover:bg-red-50"
+                                    className="w-full flex items-center gap-2
+                       px-3 py-2.5 rounded-lg
+                       text-body font-medium
+                       text-danger-text
+                       hover:bg-danger-bg
+                       transition-colors"
                                 >
                                     <LogOut className="h-4 w-4" />
-                                    Logout
+                                    {loggingOut ? 'Logging out...' : 'Logout'}
                                 </button>
                             </>
                         ) : (
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 pt-1">
                                 <Link
                                     to="/login"
                                     className="flex-1"
                                     onClick={() => setMobileOpen(false)}
                                 >
-                                    <Button
-                                        variant="secondary"
-                                        fullWidth
-                                    >
+                                    <Button variant="secondary" fullWidth>
                                         Login
                                     </Button>
                                 </Link>
@@ -236,10 +251,7 @@ export default function Navbar() {
                                     className="flex-1"
                                     onClick={() => setMobileOpen(false)}
                                 >
-                                    <Button
-                                        variant="primary"
-                                        fullWidth
-                                    >
+                                    <Button variant="primary" fullWidth>
                                         Register
                                     </Button>
                                 </Link>
@@ -247,7 +259,7 @@ export default function Navbar() {
                         )}
                     </div>
                 </div>
-            )}
+            </div>
         </nav>
     )
 }

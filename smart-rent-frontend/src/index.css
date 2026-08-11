@@ -11,124 +11,336 @@
 
   html {
     font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
   }
 
   body {
     @apply bg-gray-50 text-gray-900;
+    font-size: 0.875rem;
+    line-height: 1.5rem;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-brand-green;
+  }
+
+  .skip-nav {
+    @apply absolute -top-full left-4 bg-brand-green text-white
+    px-4 py-2 rounded-btn z-50 font-medium text-base
+    focus:top-4 transition-all duration-200;
   }
 }
 
 @layer components {
+  /* ── PAGE LAYOUT ──────────────────────────── */
+  .page-container {
+    @apply max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-8;
+  }
 
-  /* ── Buttons ──────────────────────────────────── */
+  /* ── TYPE SCALE ───────────────────────────── */
+  .text-display {
+    @apply text-4xl font-bold leading-tight text-gray-900;
+  }
 
+  .text-page {
+    @apply text-3xl font-semibold text-gray-900;
+  }
+
+  .text-section {
+    @apply text-2xl font-semibold text-gray-900;
+  }
+
+  .text-card-title {
+    @apply text-lg font-semibold text-gray-900;
+  }
+
+  .text-body {
+    @apply text-base text-gray-700;
+  }
+
+  .text-meta {
+    @apply text-sm text-gray-500;
+  }
+
+  /* Legacy aliases */
+  .page-title {
+    @apply text-3xl font-bold text-gray-900 mb-6;
+  }
+
+  .section-title {
+    @apply text-xl font-semibold text-gray-900 mb-4;
+  }
+
+  /* ── CARD SYSTEM ──────────────────────────── */
+  .card {
+    @apply bg-white rounded-card border border-gray-100 shadow-card-rest p-6;
+  }
+
+  .card-interactive {
+    @apply card cursor-pointer transition-all duration-200 ease-smooth
+    hover:shadow-card-hover hover:-translate-y-0.5
+    active:shadow-card-rest active:translate-y-0
+    focus-visible:ring-2 focus-visible:ring-brand-green focus-visible:ring-offset-2;
+  }
+
+  .card-elevated {
+    @apply bg-white rounded-card border border-gray-100 shadow-card-active p-6;
+  }
+
+  .card-dashed {
+    @apply bg-white rounded-card border-2 border-dashed border-gray-200 p-6
+    transition-colors duration-200 hover:border-brand-green hover:bg-brand-lighter;
+  }
+
+  /* ── BUTTONS ─────────────────────────────── */
   .btn {
-    @apply inline-flex items-center justify-center
-    gap-2 px-4 py-2 rounded-lg font-medium
-    text-sm transition-all duration-200
-    focus:outline-none focus:ring-2
-    focus:ring-offset-2
-    disabled:opacity-50
-    disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2 rounded-btn font-medium
+    transition-all duration-200 ease-smooth focus-visible:outline-none
+    focus-visible:ring-2 focus-visible:ring-offset-2
+    disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none select-none;
   }
 
   .btn-primary {
-    @apply btn bg-brand-green text-white
-    hover:bg-brand-dark
-    focus:ring-brand-green;
+    @apply btn px-4 py-2 text-base bg-brand-green text-white
+    hover:bg-brand-dark active:bg-brand-dark focus-visible:ring-brand-green
+    shadow-sm hover:shadow-md;
   }
 
   .btn-secondary {
-    @apply btn bg-white text-gray-700
-    border border-gray-300
-    hover:bg-gray-50
-    focus:ring-gray-300;
+    @apply btn px-4 py-2 text-base bg-white text-gray-700 border border-gray-300
+    hover:bg-gray-50 hover:border-gray-400 focus-visible:ring-gray-400 shadow-sm;
   }
 
   .btn-danger {
-    @apply btn bg-red-600 text-white
-    hover:bg-red-700
-    focus:ring-red-500;
+    @apply btn px-4 py-2 text-base bg-danger-icon text-white
+    hover:bg-red-700 focus-visible:ring-danger-icon shadow-sm;
   }
 
   .btn-ghost {
-    @apply btn text-gray-600
-    hover:bg-gray-100
-    focus:ring-gray-300;
+    @apply btn px-4 py-2 text-base text-gray-600 bg-transparent
+    hover:bg-gray-100 hover:text-gray-900 focus-visible:ring-gray-400;
+  }
+
+  .btn-icon {
+    @apply btn p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700
+    rounded-lg focus-visible:ring-gray-400;
   }
 
   .btn-sm {
-    @apply px-3 py-1.5 text-xs;
+    @apply px-3 py-1.5 text-sm;
   }
 
   .btn-lg {
     @apply px-6 py-3 text-base;
   }
 
-  /* ── Inputs ───────────────────────────────────── */
+  .btn-xl {
+    @apply px-8 py-4 text-lg;
+  }
 
+  /* ── INPUTS ───────────────────────────────── */
   .input {
-    @apply w-full px-3 py-2 rounded-lg
-    border border-gray-300
-    text-sm text-gray-900
-    placeholder-gray-400
-    bg-white
-    transition-colors duration-200
-    focus:outline-none
-    focus:ring-2 focus:ring-brand-green
-    focus:border-transparent
-    disabled:bg-gray-50
-    disabled:cursor-not-allowed;
+    @apply w-full px-3 py-2.5 rounded-btn border border-gray-300
+    text-base text-gray-900 placeholder-gray-400 bg-white
+    transition-colors duration-150 focus:outline-none focus:ring-2
+    focus:ring-brand-green focus:border-transparent
+    disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed;
   }
 
   .input-error {
-    @apply border-red-400
-    focus:ring-red-400;
+    @apply border-danger-icon focus:ring-danger-icon;
   }
 
   .label {
-    @apply block text-sm font-medium
-    text-gray-700 mb-1;
+    @apply block text-base font-medium text-gray-700 mb-1.5;
+  }
+
+  .label-required::after {
+    content: ' *';
+    @apply text-danger-icon;
   }
 
   .error-text {
-    @apply text-xs text-red-500 mt-1;
+    @apply flex items-center gap-1 text-sm text-danger-text mt-1.5;
   }
 
-  /* ── Cards ────────────────────────────────────── */
-
-  .card {
-    @apply bg-white rounded-xl
-    border border-gray-100
-    shadow-sm p-6;
+  .helper-text {
+    @apply text-sm text-gray-400 mt-1;
   }
 
-  /* ── Badges ───────────────────────────────────── */
-
+  /* ── BADGES ───────────────────────────────── */
   .badge {
-    @apply inline-flex items-center
-    px-2.5 py-0.5 rounded-full
-    text-xs font-medium;
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-badge
+    text-sm font-medium whitespace-nowrap;
   }
 
-  .badge-green  { @apply badge bg-green-100 text-green-800; }
-  .badge-yellow { @apply badge bg-yellow-100 text-yellow-800; }
-  .badge-red    { @apply badge bg-red-100 text-red-800; }
-  .badge-blue   { @apply badge bg-blue-100 text-blue-800; }
-  .badge-gray   { @apply badge bg-gray-100 text-gray-800; }
-
-  /* ── Page layout ──────────────────────────────── */
-
-  .page-container {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8
-    py-8;
+  .badge-dot {
+    @apply w-1.5 h-1.5 rounded-full flex-shrink-0;
   }
 
-  .page-title {
-    @apply text-2xl font-bold text-gray-900 mb-6;
+  .badge-success {
+    @apply badge bg-success-bg text-success-text border border-success-border;
   }
 
-  .section-title {
-    @apply text-lg font-semibold text-gray-900 mb-4;
+  .badge-warning {
+    @apply badge bg-warning-bg text-warning-text border border-warning-border;
+  }
+
+  .badge-danger {
+    @apply badge bg-danger-bg text-danger-text border border-danger-border;
+  }
+
+  .badge-info {
+    @apply badge bg-info-bg text-info-text border border-info-border;
+  }
+
+  .badge-gray {
+    @apply badge bg-gray-100 text-gray-600 border border-gray-200;
+  }
+
+  /* ── FORM GROUPS ──────────────────────────── */
+  .form-group {
+    @apply space-y-5;
+  }
+
+  .form-section {
+    @apply card space-y-5;
+  }
+
+  .form-section-title {
+    @apply text-lg font-semibold text-gray-900 pb-3 border-b border-gray-100;
+  }
+
+  /* ── ALERTS ───────────────────────────────── */
+  .alert {
+    @apply flex items-start gap-3 p-4 rounded-card text-base;
+  }
+
+  .alert-success {
+    @apply alert bg-success-bg border border-success-border text-success-text;
+  }
+
+  .alert-warning {
+    @apply alert bg-warning-bg border border-warning-border text-warning-text;
+  }
+
+  .alert-danger {
+    @apply alert bg-danger-bg border border-danger-border text-danger-text;
+  }
+
+  .alert-info {
+    @apply alert bg-info-bg border border-info-border text-info-text;
+  }
+
+  /* ── EMPTY STATES ─────────────────────────── */
+  .empty-state {
+    @apply flex flex-col items-center justify-center py-20 text-center;
+  }
+
+  .empty-state-icon {
+    @apply h-14 w-14 text-gray-200 mb-4;
+  }
+
+  .empty-state-title {
+    @apply text-lg font-semibold text-gray-900 mb-2;
+  }
+
+  .empty-state-text {
+    @apply text-base text-gray-500 mb-6 max-w-xs;
+  }
+
+  /* ── OVERLAY / DRAWER ─────────────────────── */
+  .overlay {
+    @apply fixed inset-0 bg-black/40 backdrop-blur-sm z-40 transition-opacity duration-300;
+  }
+
+  .drawer-bottom {
+    @apply fixed bottom-0 left-0 right-0 bg-white rounded-t-2xl z-50 shadow-card-active transition-transform duration-300 ease-smooth;
+  }
+
+  .drawer-handle {
+    @apply w-10 h-1 bg-gray-300 rounded-full mx-auto mt-3 mb-4;
+  }
+
+  /* ── TABLES ───────────────────────────────── */
+  .table-container {
+    @apply card overflow-hidden p-0;
+  }
+
+  .table {
+    @apply w-full text-base;
+  }
+
+  .table thead {
+    @apply bg-gray-50 border-b border-gray-100;
+  }
+
+  .table th {
+    @apply text-left px-5 py-3 text-sm font-medium text-gray-500 uppercase tracking-wider;
+  }
+
+  .table td {
+    @apply px-5 py-4 border-b border-gray-50 text-gray-700;
+  }
+
+  .table tbody tr:last-child td {
+    @apply border-b-0;
+  }
+
+  .table tbody tr {
+    @apply hover:bg-gray-50 transition-colors;
+  }
+
+  /* ── LOADING SKELETON ─────────────────────── */
+  .skeleton {
+    @apply bg-gray-200 rounded animate-pulse;
+  }
+
+  /* ── REACT DATEPICKER OVERRIDES ──────────── */
+  .react-datepicker {
+    @apply font-sans border-gray-200 rounded-card shadow-card-active;
+  }
+
+  .react-datepicker__header {
+    @apply bg-white border-b border-gray-100;
+  }
+
+  .react-datepicker__current-month,
+  .react-datepicker__day-name {
+    @apply text-gray-900 font-medium;
+  }
+
+  .react-datepicker__day-name {
+    @apply text-sm text-gray-400;
+  }
+
+  .react-datepicker__day {
+    @apply text-base text-gray-700 rounded-lg hover:bg-brand-light
+    hover:text-brand-green transition-colors;
+  }
+
+  .react-datepicker__day--selected,
+  .react-datepicker__day--keyboard-selected {
+    @apply !bg-brand-green !text-white font-medium;
+  }
+
+  .react-datepicker__day--today {
+    @apply font-bold text-brand-green;
+  }
+
+  .react-datepicker__day--disabled {
+    @apply text-gray-300 cursor-not-allowed
+    hover:bg-transparent hover:text-gray-300;
+  }
+
+  .react-datepicker__navigation-icon::before {
+    @apply border-gray-500;
+  }
+
+  .react-datepicker__navigation:hover
+  .react-datepicker__navigation-icon::before {
+    @apply border-brand-green;
   }
 }
