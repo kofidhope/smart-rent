@@ -496,15 +496,13 @@ Defined in `.env` at repo root.
 | `GATEWAY_INTERNAL_SECRET` | `smartrent-internal-2026` | Service-to-service trust header |
 
 ### Databases (per-service)
-| Variable | DB | Username |
-|---|---|---|
-| `DB_NAME` / `DB_URL` / `DB_USERNAME` / `DB_PASSWORD` | `user_service_db` | `username` |
-| `P_DB_NAME` / `P_DB_URL` / `P_DB_USERNAME` / `P_DB_PASSWORD` | `property_db` | `username` |
-| `B_DB_NAME` / `B_DB_URL` / `B_DB_USERNAME` / `B_DB_PASSWORD` | `booking_db` | `username` |
-| `M_DB_NAME` / `M_DB_URL` / `M_DB_USERNAME` / `M_DB_PASSWORD` | `payment_db` | `username` |
-| `N_DB_NAME` / `N_DB_URL` / `N_DB_USERNAME` / `N_DB_PASSWORD` | `payment_db` ⚠️ | `username` |
-
-> ⚠️ `N_DB_NAME` is set to `payment_db` instead of `notification_db`. This needs reconciling with `init-db/init.sql`.
+| Variable | DB                   | Username |
+|---|----------------------|---|
+| `DB_NAME` / `DB_URL` / `DB_USERNAME` / `DB_PASSWORD` | `user_service_db`    | `username` |
+| `P_DB_NAME` / `P_DB_URL` / `P_DB_USERNAME` / `P_DB_PASSWORD` | `property_db`        | `username` |
+| `B_DB_NAME` / `B_DB_URL` / `B_DB_USERNAME` / `B_DB_PASSWORD` | `booking_db`         | `username` |
+| `M_DB_NAME` / `M_DB_URL` / `M_DB_USERNAME` / `M_DB_PASSWORD` | `payment_db`         | `username` |
+| `N_DB_NAME` / `N_DB_URL` / `N_DB_USERNAME` / `N_DB_PASSWORD` | `notification_db` ️ | `username` |
 
 ### Redis
 | Variable | Example |
@@ -526,7 +524,7 @@ Defined in `.env` at repo root.
 |---|---|
 | `PAYSTACK_SECRET_KEY` | `sk_test_…` |
 | `PAYSTACK_PUBLIC_KEY` | `pk_test_…` |
-| `PAYSTACK_WEBHOOK_SECRET` | `your_webhook_secret_here` ⚠️ |
+| `PAYSTACK_WEBHOOK_SECRET` | `your_webhook_secret_here`  |
 | `PAYSTACK_BASE_URL` | `https://api.paystack.co` |
 | `PAYSTACK_CURRENCY` | `GHS` |
 
@@ -639,19 +637,7 @@ feat(notification-service): support unit-based notifications
 feat(booking-service):   support unitId in bookings + per-unit overlap check
 feat(property-service):  add Unit entity + CRUD + data migration
 ```
-The **Unit** abstraction is the active theme — properties now contain bookable rooms/units rather than being rented as a whole.
 
-### Known inconsistencies / risks
-- **Version drift** — `config-server` is on Spring Boot 3.5.13 / Spring Cloud 2025.0.2 while the rest of the fleet is 3.2.5 / 2023.0.x.
-- **Package drift** — services split across `com.kofi`, `com.smartrent`, and `com.dhopecode`. Event DTOs are duplicated across packages; field names must be kept in sync manually.
-- **`.env` DB mismatch** — `N_DB_NAME=payment_db` but `init.sql` creates `notification_db`.
-- **Webhook secret placeholder** — `PAYSTACK_WEBHOOK_SECRET=your_webhook_secret_here` must be set before going live.
-- **Gateway routing config** lives entirely in config-server's Git repo — no local routes.
-- **Cookie duplication** — `auth-service` and `user-service` both set `access_token` + `refresh_token` httpOnly cookies (intentional but brittle).
-- **`BookingService.getDefaultUnit`** throws `RuntimeException` for missing units, breaking graceful degradation when property-service is unreachable (the fallback returns an empty list).
-- **`notification-service` retry scheduler** is not wired despite supporting repository methods (`findStuckPending`, `findRetryEligible`).
-
----
 
 ## Reading Order for Contributors
 
@@ -667,7 +653,3 @@ The **Unit** abstraction is the active theme — properties now contain bookable
 10. `smart-rent-frontend/src/context/AuthContext.jsx` — session restore flow.
 
 ---
-
-## License
-
-Proprietary — internal Smart-Rent project.

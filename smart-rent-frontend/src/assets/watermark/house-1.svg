@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="currentColor" aria-hidden="true">
+  <!-- Classic pitched-roof cottage with chimney -->
+  <g>
+    <!-- Main body -->
+    <path d="M80 150 L80 260 L320 260 L320 150 Z"/>
+    <!-- Pitched roof -->
+    <path d="M60 155 L200 70 L340 155 Z"/>
+    <!-- Chimney -->
+    <rect x="260" y="92" width="22" height="40"/>
+    <!-- Door -->
+    <rect x="180" y="200" width="40" height="60" fill="white" fill-opacity="0.85"/>
+    <!-- Door knob -->
+    <circle cx="213" cy="232" r="1.8" fill="currentColor"/>
+    <!-- Windows -->
+    <rect x="110" y="180" width="34" height="30" fill="white" fill-opacity="0.85"/>
+    <rect x="256" y="180" width="34" height="30" fill="white" fill-opacity="0.85"/>
+    <!-- Window cross-bars -->
+    <path d="M127 180 L127 210 M110 195 L144 195" stroke="currentColor" stroke-width="1.5" fill="none"/>
+    <path d="M273 180 L273 210 M256 195 L290 195" stroke="currentColor" stroke-width="1.5" fill="none"/>
+    <!-- Ground line -->
+    <rect x="0" y="260" width="400" height="6"/>
+  </g>
+</svg>

@@ -5,11 +5,16 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.kafka.annotation.EnableKafka;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableFeignClients
 @EnableKafka
+// NotificationRetryScheduler depends on @Scheduled support.
+// Three jobs: retryPending (5m), retryStuckPending (15m),
+// cleanupOldLogs (daily 02:00).
+@EnableScheduling
 public class NotificationApplication {
 
 	public static void main(String[] args) {

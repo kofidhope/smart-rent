@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="currentColor" aria-hidden="true">
+  <!-- Modern flat-roof duplex with two units -->
+  <g>
+    <!-- Left unit (slightly taller) -->
+    <path d="M60 110 L60 260 L195 260 L195 110 Z"/>
+    <!-- Right unit -->
+    <path d="M205 130 L205 260 L340 260 L340 130 Z"/>
+    <!-- Connecting middle block -->
+    <rect x="195" y="150" width="10" height="110"/>
+    <!-- Top trim line -->
+    <rect x="55" y="106" width="145" height="6"/>
+    <rect x="200" y="126" width="145" height="6"/>
+    <!-- Left unit door -->
+    <rect x="110" y="200" width="34" height="60" fill="white" fill-opacity="0.85"/>
+    <!-- Right unit door -->
+    <rect x="255" y="200" width="34" height="60" fill="white" fill-opacity="0.85"/>
+    <!-- Tall left windows (2 rows) -->
+    <rect x="78" y="130" width="22" height="50" fill="white" fill-opacity="0.85"/>
+    <rect x="155" y="130" width="22" height="50" fill="white" fill-opacity="0.85"/>
+    <!-- Right unit windows (1 row + balconies) -->
+    <rect x="220" y="150" width="22" height="40" fill="white" fill-opacity="0.85"/>
+    <rect x="302" y="150" width="22" height="40" fill="white" fill-opacity="0.85"/>
+    <!-- Ground line -->
+    <rect x="0" y="260" width="400" height="6"/>
+  </g>
+</svg>

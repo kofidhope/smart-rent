@@ -2,6 +2,7 @@ package com.kofi.booking_service.client;
 
 import com.kofi.booking_service.dto.PropertyResponse;
 import com.kofi.booking_service.dto.UnitResponse;
+import com.kofi.booking_service.exception.PropertyNotAvailableException;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,11 +34,23 @@ public interface PropertyServiceClient {
     @GetMapping("/api/properties/{propertyId}/units")
     List<UnitResponse> getUnitsForProperty(@PathVariable UUID propertyId);
 
-    // Gets the first unit — default for single-unit properties
+    // Gets the first unit — default for single-unit properties.
+    //
+    // Throws PropertyNotAvailableException (mapped to HTTP 409 by
+    // GlobalExceptionHandler) when the units list is empty. Two
+    // distinct causes collapse into the same typed exception:
+    //   1. Property really has no bookable units (config error
+    //      or property.status != AVAILABLE) — message reflects
+    //      that directly.
+    //   2. PropertyServiceClientFallback returned an empty list
+    //      because property-service was unreachable. Caller can
+    //      tell which from the failureReason persisted on the
+    //      booking record.
     default UnitResponse getDefaultUnit(UUID propertyId) {
         List<UnitResponse> units = getUnitsForProperty(propertyId);
         if (units == null || units.isEmpty()) {
-            throw new RuntimeException("No units found for property: " + propertyId);
+            throw new PropertyNotAvailableException(
+                    "No units available for property: " + propertyId);
         }
         return units.get(0);
     }

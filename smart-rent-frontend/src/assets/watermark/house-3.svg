@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="currentColor" aria-hidden="true">
+  <!-- Two-story colonial with garage -->
+  <g>
+    <!-- Main two-story body -->
+    <path d="M100 100 L100 260 L300 260 L300 100 Z"/>
+    <!-- Hip roof -->
+    <path d="M85 105 L200 50 L315 105 Z"/>
+    <!-- Garage wing (right, single story) -->
+    <path d="M300 180 L300 260 L370 260 L370 180 Z"/>
+    <!-- Garage door -->
+    <rect x="315" y="195" width="42" height="65" fill="white" fill-opacity="0.85"/>
+    <!-- Garage door panels (horizontal lines) -->
+    <path d="M315 210 L357 210 M315 225 L357 225 M315 240 L357 240" stroke="currentColor" stroke-width="1.2" fill="none"/>
+    <!-- Front door -->
+    <rect x="180" y="195" width="40" height="65" fill="white" fill-opacity="0.85"/>
+    <!-- Front door fanlight -->
+    <path d="M180 195 Q200 175 220 195" fill="white" fill-opacity="0.85"/>
+    <!-- Door knob -->
+    <circle cx="213" cy="228" r="2" fill="currentColor"/>
+    <!-- 4 upper windows -->
+    <rect x="118" y="120" width="30" height="28" fill="white" fill-opacity="0.85"/>
+    <rect x="158" y="120" width="30" height="28" fill="white" fill-opacity="0.85"/>
+    <rect x="212" y="120" width="30" height="28" fill="white" fill-opacity="0.85"/>
+    <rect x="252" y="120" width="30" height="28" fill="white" fill-opacity="0.85"/>
+    <!-- Window cross-bars -->
+    <g stroke="currentColor" stroke-width="1.2" fill="none">
+      <path d="M133 120 L133 148 M118 134 L148 134"/>
+      <path d="M173 120 L173 148 M158 134 L188 134"/>
+      <path d="M227 120 L227 148 M212 134 L242 134"/>
+      <path d="M267 120 L267 148 M252 134 L282 134"/>
+    </g>
+    <!-- Ground line -->
+    <rect x="0" y="260" width="400" height="6"/>
+  </g>
+</svg>

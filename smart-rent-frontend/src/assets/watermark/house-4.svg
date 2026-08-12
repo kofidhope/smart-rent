@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" fill="currentColor" aria-hidden="true">
+  <!-- Single-story bungalow with veranda and sloped roof -->
+  <g>
+    <!-- Main body -->
+    <path d="M70 150 L70 260 L330 260 L330 150 Z"/>
+    <!-- Sloped roof (low pitch, modern) -->
+    <path d="M55 155 L200 95 L345 155 Z"/>
+    <!-- Veranda posts (4) -->
+    <rect x="80" y="200" width="6" height="60"/>
+    <rect x="148" y="200" width="6" height="60"/>
+    <rect x="246" y="200" width="6" height="60"/>
+    <rect x="314" y="200" width="6" height="60"/>
+    <!-- Veranda roof / overhang -->
+    <rect x="55" y="190" width="290" height="10"/>
+    <!-- Front door (recessed) -->
+    <rect x="186" y="210" width="28" height="50" fill="white" fill-opacity="0.85"/>
+    <!-- Door knob -->
+    <circle cx="208" cy="237" r="1.6" fill="currentColor"/>
+    <!-- 3 wide windows on the facade -->
+    <rect x="98" y="170" width="36" height="22" fill="white" fill-opacity="0.85"/>
+    <rect x="158" y="170" width="20" height="22" fill="white" fill-opacity="0.85"/>
+    <rect x="222" y="170" width="20" height="22" fill="white" fill-opacity="0.85"/>
+    <rect x="266" y="170" width="36" height="22" fill="white" fill-opacity="0.85"/>
+    <!-- Window cross-bars -->
+    <g stroke="currentColor" stroke-width="1.2" fill="none">
+      <path d="M116 170 L116 192 M98 181 L134 181"/>
+      <path d="M168 170 L168 192"/>
+      <path d="M232 170 L232 192"/>
+      <path d="M284 170 L284 192 M266 181 L302 181"/>
+    </g>
+    <!-- Pathway to door -->
+    <path d="M186 260 L200 275 L214 260 Z" fill-opacity="0.6"/>
+    <!-- Ground line -->
+    <rect x="0" y="260" width="400" height="6"/>
+  </g>
+</svg>
