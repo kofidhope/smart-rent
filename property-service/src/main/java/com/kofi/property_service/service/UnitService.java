@@ -46,6 +46,16 @@ public class UnitService {
         return toResponse(findOrThrow(unitId));
     }
 
+    //  Get single unit with property validation
+    @Transactional(readOnly = true)
+    public UnitResponse getUnit(UUID propertyId, UUID unitId) {
+        Unit unit = findOrThrow(unitId);
+        if (!unit.getProperty().getId().equals(propertyId)) {
+            throw new ConflictException("Unit does not belong to the specified property");
+        }
+        return toResponse(unit);
+    }
+
     // ── Add unit to property — LANDLORD only
     @Transactional
     public UnitResponse addUnit(UUID propertyId, UUID ownerId, CreateUnitRequest request) {
@@ -99,11 +109,38 @@ public class UnitService {
         log.info("Unit deleted — unitId: {}", unitId);
     }
 
+    // ── Delete unit — LANDLORD only with property validation ────
+    @Transactional
+    public void deleteUnit(UUID propertyId, UUID unitId, UUID ownerId) {
+        Unit unit = findOrThrow(unitId);
+        if (!unit.getProperty().getId().equals(propertyId)) {
+            throw new ConflictException("Unit does not belong to the specified property");
+        }
+        if (!unit.getProperty().getOwnerId().equals(ownerId)) {
+            throw new ConflictException("You do not own this property");
+        }
+
+        // Cannot delete if it is the only unit
+        long count = unitRepository.countByPropertyId(unit.getProperty().getId());
+
+        if (count <= 1) {
+            throw new ConflictException("Cannot delete the last unit. " + "A property must have at least " + "one unit.");
+        }
+
+        unitRepository.delete(unit);
+
+        log.info("Unit deleted — unitId: {}", unitId);
+    }
+
     // ── Mark unit as rented — called by booking saga ──
     // This replaces the old markAsRented on Property
     // for single-unit properties
     @Transactional
-    public void markUnitAsRented(UUID unitId) {
+    public void markUnitAsRented(UUID propertyId, UUID unitId) {
+        Unit unit = findOrThrow(unitId);
+        if (!unit.getProperty().getId().equals(propertyId)) {
+            throw new ConflictException("Unit does not belong to the specified property");
+        }
         unitRepository.updateStatus(unitId, PropertyStatus.RENTED);
 
         log.info("Unit marked RENTED — unitId: {}", unitId);
@@ -111,7 +148,11 @@ public class UnitService {
 
     // ── Mark unit as available — booking cancelled ────
     @Transactional
-    public void markUnitAsAvailable(UUID unitId) {
+    public void markUnitAsAvailable(UUID propertyId, UUID unitId) {
+        Unit unit = findOrThrow(unitId);
+        if (!unit.getProperty().getId().equals(propertyId)) {
+            throw new ConflictException("Unit does not belong to the specified property");
+        }
         unitRepository.updateStatus(unitId, PropertyStatus.AVAILABLE);
 
         log.info("Unit marked AVAILABLE — unitId: {}", unitId);

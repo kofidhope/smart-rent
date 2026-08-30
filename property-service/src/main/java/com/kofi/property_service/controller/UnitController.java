@@ -2,6 +2,8 @@ package com.kofi.property_service.controller;
 
 import com.kofi.property_service.dto.CreateUnitRequest;
 import com.kofi.property_service.dto.UnitResponse;
+import com.kofi.property_service.exception.ConflictException;
+import com.kofi.property_service.model.Unit;
 import com.kofi.property_service.service.UnitService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +31,7 @@ public class UnitController {
     // Public — get single unit detail
     @GetMapping("/{unitId}")
     public ResponseEntity<UnitResponse> getUnit(@PathVariable UUID propertyId, @PathVariable UUID unitId) {
-        return ResponseEntity.ok(unitService.getUnit(unitId));
+        return ResponseEntity.ok(unitService.getUnit(propertyId, unitId));
     }
 
     // LANDLORD only — add a unit to their property
@@ -47,7 +49,7 @@ public class UnitController {
     @DeleteMapping("/{unitId}")
     public ResponseEntity<Void> deleteUnit(@PathVariable UUID propertyId, @PathVariable UUID unitId, @RequestHeader("X-User-Id") UUID ownerId) {
 
-        unitService.deleteUnit(unitId, ownerId);
+        unitService.deleteUnit(propertyId, unitId, ownerId);
         return ResponseEntity.noContent().build();
     }
 
@@ -55,13 +57,13 @@ public class UnitController {
     // No @PreAuthorize — permitAll in SecurityConfig
     @PutMapping("/{unitId}/status/rent")
     public ResponseEntity<Void> markAsRented(@PathVariable UUID propertyId, @PathVariable UUID unitId) {
-        unitService.markUnitAsRented(unitId);
+        unitService.markUnitAsRented(propertyId, unitId);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{unitId}/status/available")
     public ResponseEntity<Void> markAsAvailable(@PathVariable UUID propertyId, @PathVariable UUID unitId) {
-        unitService.markUnitAsAvailable(unitId);
+        unitService.markUnitAsAvailable(propertyId, unitId);
         return ResponseEntity.noContent().build();
     }
 }
