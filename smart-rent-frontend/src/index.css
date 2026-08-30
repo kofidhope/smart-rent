@@ -73,6 +73,29 @@
     @apply text-xl font-semibold text-gray-900 mb-4;
   }
 
+  /* Editorial display — heavier tracking-tight
+     hero headline. Replaces the generic
+     text-4xl sm:text-5xl lg:text-6xl font-bold
+     pattern with one that reads intentionally. */
+  .display-editorial {
+    @apply text-4xl sm:text-5xl lg:text-6xl
+           font-bold leading-[1.05] tracking-tight
+           text-gray-900;
+  }
+
+  /* Eyebrow label — small uppercase letter-spaced
+     label above hero or section titles. Replaces
+     rounded-pill hero badges. */
+  .eyebrow {
+    @apply inline-flex items-center gap-2
+           text-xs uppercase tracking-[0.18em]
+           font-medium text-gray-500;
+  }
+
+  .eyebrow-brand {
+    @apply eyebrow text-brand-green;
+  }
+
   /* ── CARD SYSTEM ──────────────────────────── */
   .card {
     @apply bg-white rounded-card border border-gray-100 shadow-card-rest p-6;
@@ -99,7 +122,8 @@
     @apply inline-flex items-center justify-center gap-2 rounded-btn font-medium
     transition-all duration-200 ease-smooth focus-visible:outline-none
     focus-visible:ring-2 focus-visible:ring-offset-2
-    disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none select-none;
+    disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none select-none
+    active:translate-y-px;
   }
 
   .btn-primary {
@@ -128,6 +152,16 @@
     rounded-lg focus-visible:ring-gray-400;
   }
 
+  /* Quiet link-style button — used for inline actions
+     that should not look like a primary CTA. Reads as
+     a text link with a subtle chevron affordance. */
+  .btn-link {
+    @apply inline-flex items-center gap-1.5
+           text-sm font-medium text-brand-green
+           hover:text-brand-dark
+           transition-colors;
+  }
+
   .btn-sm {
     @apply px-3 py-1.5 text-sm;
   }
@@ -151,6 +185,14 @@
 
   .input-error {
     @apply border-danger-icon focus:ring-danger-icon;
+  }
+
+  .select {
+    @apply input appearance-none bg-white pr-10;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239CA3AF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
   }
 
   .label {
@@ -258,6 +300,118 @@
 
   .surface-card {
     @apply bg-white rounded-card border border-gray-100;
+  }
+
+  /* Editorial surfaces — used on the homepage to
+     break the card-grid rhythm. Not the same shape
+     as .card; they read as a different content tier. */
+
+  .surface-cream {
+    @apply bg-[#FBF7F1] text-gray-900;
+  }
+
+  .surface-ink {
+    @apply bg-gray-900 text-white;
+  }
+
+  .surface-quiet {
+    @apply bg-white border border-gray-100;
+  }
+
+  /* Big panel — used as a hero secondary, a stats
+     block, or an editorial split. Larger radius and
+     gentler shadow than .card. */
+  .panel {
+    @apply bg-white rounded-panel border border-gray-100
+    shadow-card-rest;
+  }
+
+  .panel-padded {
+    @apply panel p-6 sm:p-8;
+  }
+
+  .hero-property-note {
+    @apply border-l-2 border-brand-green/20 pl-5;
+  }
+
+  /* The homepage house is decorative CSS 3D: the existing SVG silhouettes
+     remain the source of truth, while perspective gives the hero a quiet
+     sense of depth without a canvas or runtime dependency. */
+  .house-watermark-scene {
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 58%;
+    max-width: 820px;
+    opacity: 0.16;
+    transform-style: preserve-3d;
+    perspective: 900px;
+    animation: house-scene-float 8s ease-in-out infinite;
+  }
+
+  .house-watermark-image {
+    transform: rotateY(-12deg) rotateX(3deg) translateZ(12px);
+    transform-origin: 58% 72%;
+    filter: drop-shadow(18px 18px 0 rgb(17 24 39 / 0.05));
+  }
+
+  .house-watermark-scene::before {
+    content: '';
+    position: absolute;
+    left: 12%;
+    right: 8%;
+    bottom: 8%;
+    height: 18%;
+    border-radius: 50%;
+    background: rgb(17 24 39 / 0.08);
+    transform: rotateX(70deg) translateZ(-16px);
+    filter: blur(2px);
+  }
+
+  @keyframes house-scene-float {
+    0%, 100% { transform: translateY(0) rotateZ(-1deg); }
+    50% { transform: translateY(-7px) rotateZ(1deg); }
+  }
+
+  @media (max-width: 1023px) {
+    .house-watermark-scene {
+      top: auto;
+      bottom: 0;
+      right: -5%;
+      width: 76%;
+      height: 55%;
+      max-width: none;
+      opacity: 0.09;
+    }
+
+    .hero-property-note {
+      margin-top: 1rem;
+      max-width: 22rem;
+    }
+  }
+
+  @media (max-width: 639px) {
+    .hero-property {
+      min-height: 720px;
+    }
+
+    .hero-property > .max-w-7xl {
+      min-height: 720px;
+      padding-top: 4rem;
+      padding-bottom: 2rem;
+    }
+
+    .house-watermark-scene {
+      width: 94%;
+      height: 43%;
+      right: -12%;
+      opacity: 0.075;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .house-watermark-scene { animation: none; }
+    .house-watermark-image { transform: none; }
   }
 
   /* Standardised stat tile — replaces ad-hoc

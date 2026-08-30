@@ -59,22 +59,20 @@ export default function RotatingHouseWatermark({
     // silhouette off to the right; the `band` variant uses a tighter,
     // repeated tile so the section feels textured without dominating.
     const containerClasses = isHero
-        ? 'absolute inset-0 pointer-events-none overflow-hidden'
+        ? 'absolute inset-0 pointer-events-none'
         : 'absolute inset-0 pointer-events-none overflow-hidden'
 
     const tintClasses = isHero
         ? // Hero sits on a green-to-gray gradient — use white at low opacity
           // so it reads as part of the existing brand palette.
-          'text-white'
+          'text-brand-green'
         : // Band sits on bg-gray-50 — use a soft brand-green tint so the
           // watermark hints at the brand without competing with the text.
           'text-brand-green'
 
     const silhouetteLayoutClasses = isHero
         ? // Big silhouette, right-aligned, vertically centered.
-          'absolute right-[6%] top-1/2 -translate-y-1/2 ' +
-          'w-[44%] max-w-[640px] aspect-[4/3] ' +
-          'opacity-[0.10]'
+          'house-watermark-scene absolute'
         : // Tiled band: 4 silhouettes across the section, low opacity.
           'absolute inset-0 grid grid-cols-2 sm:grid-cols-4 ' +
           'items-center justify-items-center gap-6 ' +
@@ -118,7 +116,9 @@ export default function RotatingHouseWatermark({
                                 tintClasses +
                                 ' w-full h-full object-contain ' +
                                 'transition-opacity ease-smooth ' +
-                                (isHero ? '' : 'max-h-[140px]')
+                                (isHero
+                                    ? 'absolute inset-0 house-watermark-image'
+                                    : 'max-h-[140px]')
                             }
                             style={{
                                 opacity: isActive ? 1 : 0,

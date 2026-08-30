@@ -94,7 +94,9 @@ export default function Navbar() {
         || location.pathname.startsWith(path + '/')
 
     return (
-        <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <nav className="bg-white/95 backdrop-blur-sm
+                        border-b border-gray-200
+                        sticky top-0 z-50">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
 
@@ -103,16 +105,18 @@ export default function Navbar() {
                         to="/"
                         className="flex items-center gap-2 flex-shrink-0"
                         aria-label="SmartRent home">
-                        <div className="w-8 h-8 bg-brand-green rounded-lg flex items-center justify-center">
+                        <div className="w-8 h-8 bg-brand-green rounded-md
+                                    flex items-center justify-center">
                             <span className="text-white text-sm font-bold">SR</span>
                         </div>
-                        <span className="text-gray-900 font-bold text-lg hidden sm:block">
+                        <span className="text-gray-900 font-bold text-base
+                                     tracking-tight hidden sm:block">
                             SmartRent
                         </span>
                     </Link>
 
                     {/* Desktop links */}
-                    <div className="hidden md:flex items-center gap-1">
+                    <div className="hidden md:flex items-center gap-0.5">
                         {links.map(({ to, label, icon: Icon }) => {
                             const active = isActive(to)
                             return (
@@ -123,7 +127,7 @@ export default function Navbar() {
                                     className={`
                                         relative flex items-center
                                         gap-1.5 px-3 py-2
-                                        rounded-lg text-sm font-medium
+                                        rounded-btn text-sm font-medium
                                         transition-colors duration-150
                                         ${active
                                             ? 'text-brand-green'
@@ -132,10 +136,6 @@ export default function Navbar() {
                                     `}>
                                     <Icon className="h-4 w-4" />
                                     {label}
-                                    {/* Active indicator — small
-                                        underline at the bottom of
-                                        the link for clear visual
-                                        feedback beyond colour. */}
                                     {active && (
                                         <span
                                             aria-hidden="true"
@@ -155,20 +155,23 @@ export default function Navbar() {
                         {isAuthenticated ? (
                             <>
                                 {/* Avatar circle + name */}
-                                <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-2.5
+                                              pl-1 pr-3 py-1
+                                              rounded-full
+                                              border border-gray-200">
                                     <div
                                         aria-hidden="true"
-                                        className="w-9 h-9 bg-brand-green
+                                        className="w-7 h-7 bg-brand-green
                                             rounded-full flex items-center
                                             justify-center text-white
-                                            font-semibold text-sm">
+                                            font-semibold text-xs">
                                         {getInitial(user.firstName)}
                                     </div>
-                                    <div className="text-right">
+                                    <div className="text-right leading-tight">
                                         <p className="text-sm font-medium text-gray-900">
-                                            {user.firstName} {user.lastName}
+                                            {user.firstName}
                                         </p>
-                                        <p className="text-xs text-gray-500">
+                                        <p className="text-xs text-gray-500 uppercase tracking-wider">
                                             {user.role}
                                         </p>
                                     </div>
@@ -203,7 +206,11 @@ export default function Navbar() {
 
                     {/* Mobile menu button */}
                     <button
-                        className="md:hidden p-2 rounded-lg text-gray-500 hover:bg-gray-100"
+                        className="md:hidden p-2 rounded-btn text-gray-500
+                                   hover:bg-gray-100
+                                   focus-visible:outline-none
+                                   focus-visible:ring-2
+                                   focus-visible:ring-brand-green"
                         onClick={() => setMobileOpen(!mobileOpen)}
                         aria-label={
                             mobileOpen ? 'Close menu'
@@ -238,7 +245,7 @@ export default function Navbar() {
                                 className={`
                                     flex items-center gap-2.5
                                     px-3 py-2.5
-                                    rounded-lg text-body font-medium
+                                    rounded-btn text-sm font-medium
                                     transition-colors duration-150
                                     ${active
                                         ? 'bg-brand-light text-brand-green'
@@ -265,11 +272,11 @@ export default function Navbar() {
                                         {getInitial(user.firstName)}
                                     </div>
                                     <div>
-                                        <p className="text-body font-semibold
+                                        <p className="text-sm font-semibold
                                             text-gray-900">
                                             {user.firstName} {user.lastName}
                                         </p>
-                                        <p className="text-meta text-gray-500">
+                                        <p className="text-xs text-gray-500 uppercase tracking-wider">
                                             {user.role}
                                         </p>
                                     </div>
@@ -278,8 +285,8 @@ export default function Navbar() {
                                     onClick={handleLogout}
                                     disabled={loggingOut}
                                     className="w-full flex items-center gap-2
-                                        px-3 py-2.5 rounded-lg
-                                        text-body font-medium
+                                        px-3 py-2.5 rounded-btn
+                                        text-sm font-medium
                                         text-danger-text
                                         hover:bg-danger-bg
                                         disabled:opacity-60

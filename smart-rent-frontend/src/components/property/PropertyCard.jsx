@@ -31,8 +31,6 @@ export default function PropertyCard({ property }) {
             className="card-interactive text-left w-full
                  overflow-hidden p-0 rounded-card
                  group"
-            // aria-label gives screen readers
-            // a meaningful description of the card
             aria-label={`View ${property.title} in ${
                 property.city} — GHS ${
                 property.price.toLocaleString()} per month`}
@@ -40,13 +38,12 @@ export default function PropertyCard({ property }) {
             transition={{ duration: 0.15, ease: 'easeOut' }}
         >
 
-            {/* ── Image ───────────────────────────────── */}
+            {/* ── Image ─────────────────────────────── */}
             <div className="relative h-56 bg-gray-100
                       overflow-hidden">
                 {property.primaryImageUrl ? (
                     <img
                         src={property.primaryImageUrl}
-                        // Descriptive alt not just the title
                         alt={`${property.title} — ${
                             property.type.toLowerCase()} in ${
                             property.city}`}
@@ -68,11 +65,11 @@ export default function PropertyCard({ property }) {
                     <Badge status={property.status} />
                 </div>
 
-                {/* Type badge */}
+                {/* Type pill — quiet, glass-like */}
                 <div className="absolute top-3 right-3">
-                    <span className="badge badge-gray
-                           bg-black/50 text-white
-                           border-0">
+                    <span className="badge bg-white/90 backdrop-blur-sm
+                           text-gray-700 border border-white/40
+                           shadow-sm">
                         {property.type.charAt(0) +
                             property.type.slice(1).toLowerCase()}
                     </span>
@@ -80,12 +77,15 @@ export default function PropertyCard({ property }) {
             </div>
 
             {/* ── Content ─────────────────────────────── */}
-            <div className="p-4 space-y-2">
+            <div className="p-5 space-y-3">
 
-                {/* Price — FIRST, most important info */}
-                <div className="flex items-baseline gap-1">
-                    <span className="text-xl font-bold
-                           text-brand-green">
+                {/* Price — FIRST, most important info.
+                    Tracking-tight so big numbers don't
+                    dominate horizontally. */}
+                <div className="flex items-baseline gap-1.5">
+                    <span className="text-2xl font-bold
+                           text-gray-900
+                           tracking-tight">
                         GHS {property.price.toLocaleString()}
                     </span>
                     <span className="text-meta text-gray-400">
@@ -100,7 +100,7 @@ export default function PropertyCard({ property }) {
                 </h3>
 
                 {/* Location */}
-                <div className="flex items-center gap-1
+                <div className="flex items-center gap-1.5
                         text-meta text-gray-500">
                     <MapPin className="h-3 w-3 flex-shrink-0" />
                     <span className="line-clamp-1">
@@ -109,27 +109,33 @@ export default function PropertyCard({ property }) {
                 </div>
 
                 {/* Divider */}
-                <div className="border-t border-gray-100 pt-2
+                <div className="border-t border-gray-100 pt-3 mt-1
                         flex items-center
                         justify-between gap-2">
 
-                    {/* Bedrooms + bathrooms */}
-                    <div className="flex items-center gap-3
+                    {/* Bedrooms + bathrooms — quieter */}
+                    <div className="flex items-center gap-4
                           text-meta text-gray-500">
                         <span className="flex items-center gap-1">
                             <BedDouble className="h-3.5 w-3.5" />
-                            {property.bedrooms}
+                            <span className="text-gray-700 font-medium">
+                                {property.bedrooms}
+                            </span>
+                            bed
                         </span>
                         <span className="flex items-center gap-1">
                             <Bath className="h-3.5 w-3.5" />
-                            {property.bathrooms}
+                            <span className="text-gray-700 font-medium">
+                                {property.bathrooms}
+                            </span>
+                            bath
                         </span>
                     </div>
 
                     {/* Owner — prefixed with icon for clarity */}
                     <span className="flex items-center gap-1
                            text-meta text-gray-400
-                           truncate min-w-0">
+                           truncate min-w-0 max-w-[40%]">
                         <User className="h-3 w-3 flex-shrink-0" />
                         <span className="truncate">
                             {property.ownerName}

@@ -95,15 +95,17 @@ export default function LandlordDashboard() {
   return (
       <div className="page-container">
 
-        <div className="flex flex-col gap-3 sm:flex-row
-                      sm:items-center sm:justify-between
-                      mb-8">
+        <div className="flex flex-col gap-5 sm:flex-row
+                      sm:items-end sm:justify-between
+                      mb-10">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              Welcome, {user?.firstName}!
+            <span className="eyebrow">Landlord dashboard</span>
+            <h1 className="mt-3 text-3xl font-bold text-gray-900
+                       tracking-tight">
+              Welcome, {user?.firstName}.
             </h1>
-            <p className="text-gray-500 mt-1">
-              Landlord dashboard
+            <p className="text-gray-500 mt-2">
+              A snapshot of your properties and revenue.
             </p>
           </div>
           <Button
@@ -118,7 +120,7 @@ export default function LandlordDashboard() {
 
         {/* Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4
-                      gap-4 mb-8">
+                      gap-4 mb-10">
           {stats.map(({ label, value, hint, icon: Icon,
                       variant }, i) => (
               <MotionFadeUp key={label} delay={i * 0.05}>
@@ -139,8 +141,9 @@ export default function LandlordDashboard() {
         {/* Properties overview */}
         <div className="card mb-6">
           <div className="flex items-center
-                        justify-between mb-4">
-            <h2 className="section-title mb-0">
+                        justify-between mb-5">
+            <h2 className="text-lg font-semibold text-gray-900
+                       tracking-tight">
               My properties
             </h2>
             {properties.length > 0 && (
@@ -148,13 +151,13 @@ export default function LandlordDashboard() {
                     onClick={() =>
                         navigate('/landlord/properties')
                     }
-                    className="text-sm text-brand-green
+                    className="text-meta text-brand-green
                        hover:text-brand-dark
                        flex items-center gap-1
                        font-medium"
                 >
                   View all
-                  <ArrowRight className="h-4 w-4"/>
+                  <ArrowRight className="h-3.5 w-3.5"/>
                 </button>
             )}
           </div>
@@ -169,14 +172,13 @@ export default function LandlordDashboard() {
                       navigate('/landlord/properties/new')}
               />
           ) : (
-              <div className="space-y-3">
+              <div className="divide-y divide-gray-100 -mx-6">
                 {properties.slice(0, 4).map(property => (
                     <div
                         key={property.id}
                         className="flex items-center
-                           justify-between p-3
-                           rounded-lg bg-gray-50
-                           hover:bg-gray-100
+                           justify-between px-6 py-4
+                           hover:bg-gray-50
                            transition-colors cursor-pointer"
                         onClick={() =>
                             navigate('/landlord/properties')
@@ -187,7 +189,7 @@ export default function LandlordDashboard() {
                                 text-gray-900">
                           {property.title}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-meta text-gray-500 mt-0.5">
                           {property.city} ·{' '}
                           GHS {property.price.toLocaleString()}
                           /month
@@ -203,8 +205,9 @@ export default function LandlordDashboard() {
         {/* Recent payments */}
         <div className="card">
           <div className="flex items-center
-                        justify-between mb-4">
-            <h2 className="section-title mb-0">
+                        justify-between mb-5">
+            <h2 className="text-lg font-semibold text-gray-900
+                       tracking-tight">
               Recent payments received
             </h2>
           </div>
@@ -214,13 +217,14 @@ export default function LandlordDashboard() {
                 No payments received yet
               </p>
           ) : (
-              <div className="space-y-3">
+              <div className="divide-y divide-gray-100 -mx-6">
                 {revenue.slice(0, 5).map(payment => (
                     <div
                         key={payment.id}
                         className="flex items-center
-                           justify-between p-3
-                           rounded-lg bg-gray-50"
+                           justify-between px-6 py-4
+                           hover:bg-gray-50
+                           transition-colors"
                     >
                       <div>
                         <p className="text-sm font-medium
@@ -228,7 +232,7 @@ export default function LandlordDashboard() {
                           {payment.paystackReference
                               || payment.id.slice(0, 12)}
                         </p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-meta text-gray-500 mt-0.5">
                           {new Date(
                               payment.paidAt || payment.createdAt
                           ).toLocaleDateString()}
@@ -236,7 +240,8 @@ export default function LandlordDashboard() {
                       </div>
                       <div className="flex items-center gap-3">
                   <span className="font-semibold
-                                   text-brand-green">
+                                   text-brand-green
+                                   tracking-tight">
                     +GHS {(payment.amount || 0)
                         .toLocaleString()}
                   </span>

@@ -91,7 +91,17 @@ export default function MyBookings() {
 
   return (
       <div className="page-container">
-        <h1 className="page-title">My bookings</h1>
+
+        <div className="mb-8">
+          <span className="eyebrow">Bookings</span>
+          <h1 className="mt-3 text-3xl font-bold text-gray-900
+                     tracking-tight">
+            My bookings
+          </h1>
+          <p className="text-gray-500 mt-2">
+            Your active and past rental reservations.
+          </p>
+        </div>
 
         <ErrorMessage message={error} className="mb-6" />
 
@@ -104,84 +114,82 @@ export default function MyBookings() {
               onAction={() => navigate('/properties')}
             />
         ) : (
-            <div className="space-y-4">
-              {bookings.map(booking => (
-                  <div key={booking.id} className="card">
-                    <div className="flex flex-col
-                              sm:flex-row sm:items-center
-                              justify-between gap-4">
+            <div className="card p-0 overflow-hidden">
+              <div className="divide-y divide-gray-100">
+                {bookings.map(booking => (
+                    <div key={booking.id} className="px-5 sm:px-6 py-5">
+                      <div className="flex flex-col
+                                  sm:flex-row sm:items-center
+                                  justify-between gap-4">
 
-                      {/* Booking info */}
-                      <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 bg-gray-100
-                                  rounded-lg flex
-                                  items-center justify-center
-                                  flex-shrink-0">
-                          <Building2 className="h-5 w-5
-                                         text-gray-400" />
+                        {/* Booking info */}
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 bg-gray-100
+                                    rounded-btn flex
+                                    items-center justify-center
+                                    flex-shrink-0">
+                            <Building2 className="h-5 w-5
+                                           text-gray-400" />
+                          </div>
+                          <div>
+                            <p className="font-semibold
+                                    text-gray-900 text-sm">
+                              Booking #{booking.id.slice(0, 8)}
+                            </p>
+                            <p className="text-meta text-gray-500
+                                    mt-0.5">
+                              {booking.startDate} → {booking.endDate}
+                            </p>
+                            <p className="text-sm font-semibold
+                                    text-gray-900 mt-1.5
+                                    tracking-tight">
+                              GHS {booking.totalPrice
+                                .toLocaleString()}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-semibold
-                                  text-gray-900 text-sm">
-                            Booking #{booking.id.slice(0, 8)}
-                          </p>
-                          <p className="text-xs text-gray-500
-                                  mt-0.5">
-                            {booking.startDate} → {booking.endDate}
-                          </p>
-                          <p className="text-sm font-medium
-                                  text-gray-700 mt-1">
-                            GHS {booking.totalPrice
-                              .toLocaleString()}
-                          </p>
+
+                        {/* Status and actions */}
+                        <div className="flex items-center
+                                  gap-3 flex-wrap">
+                          <Badge status={booking.bookingStatus} />
+                          <Badge status={booking.paymentStatus} />
+
+                          {booking.bookingStatus ===
+                              'PAYMENT_INITIATED' && (
+                                  <Button
+                                      size="sm"
+                                      loading={payingId === booking.id}
+                                      onClick={() =>
+                                          handlePay(booking.id)
+                                      }
+                                  >
+                                    <ExternalLink className="h-3.5 w-3.5" />
+                                    Pay now
+                                  </Button>
+                              )}
+
+                          {CANCELLABLE_STATUSES
+                              .includes(booking.bookingStatus) && (
+                              <Button
+                                  variant="danger"
+                                  size="sm"
+                                  loading={
+                                      cancelling === booking.id
+                                  }
+                                  onClick={() =>
+                                      setBookingPendingCancel(booking)
+                                  }
+                              >
+                                <X className="h-3.5 w-3.5" />
+                                Cancel
+                              </Button>
+                          )}
                         </div>
-                      </div>
-
-                      {/* Status and actions */}
-                      <div className="flex items-center
-                                gap-3 flex-wrap">
-                        <Badge status={booking.bookingStatus} />
-                        <Badge status={booking.paymentStatus} />
-
-                        {/* Pay button for pending payments */}
-                        {booking.bookingStatus ===
-                            'PAYMENT_INITIATED' && (
-                                <Button
-                                    size="sm"
-                                    loading={payingId === booking.id}
-                                    onClick={() =>
-                                        handlePay(booking.id)
-                                    }
-                                >
-                                  <ExternalLink className="h-3.5 w-3.5" />
-                                  Pay now
-                                </Button>
-                            )}
-
-                        {/* Cancel button — opens a confirmation
-                            dialog instead of using window.confirm.
-                            window.confirm is modal, ugly, and
-                            can't be styled. */}
-                        {CANCELLABLE_STATUSES
-                            .includes(booking.bookingStatus) && (
-                            <Button
-                                variant="danger"
-                                size="sm"
-                                loading={
-                                    cancelling === booking.id
-                                }
-                                onClick={() =>
-                                    setBookingPendingCancel(booking)
-                                }
-                            >
-                              <X className="h-3.5 w-3.5" />
-                              Cancel
-                            </Button>
-                        )}
                       </div>
                     </div>
-                  </div>
-              ))}
+                ))}
+              </div>
             </div>
         )}
 

@@ -29,6 +29,7 @@ export default function PropertyDetailPage() {
 
   const {
     handleSubmit,
+    register,
     watch,
     setValue,
     formState: { errors },
@@ -305,8 +306,9 @@ export default function PropertyDetailPage() {
               {/* Title and badges */}
               <div className="flex items-start
                             justify-between gap-4 mb-4">
-                <h1 className="text-xl sm:text-2xl
-                             font-bold text-gray-900">
+                <h1 className="text-2xl sm:text-3xl
+                             font-bold text-gray-900
+                             tracking-tight leading-tight">
                   {property.title}
                 </h1>
                 <div className="flex flex-col
@@ -319,7 +321,7 @@ export default function PropertyDetailPage() {
 
               {/* Location */}
               <div className="flex items-center gap-2
-                            text-gray-500 mb-4">
+                            text-gray-500 mb-6">
                 <MapPin className="h-4 w-4
                                  flex-shrink-0" />
                 <span className="text-sm">
@@ -327,43 +329,46 @@ export default function PropertyDetailPage() {
               </span>
               </div>
 
-              {/* Key details */}
-              <div className="grid grid-cols-3 gap-4
-                            py-4 border-t border-b
-                            border-gray-100 mb-4">
-                <div className="text-center">
+              {/* Key details — quieter, dividers
+                  instead of stacked icons. */}
+              <div className="grid grid-cols-3 gap-px
+                            bg-gray-100
+                            py-px border border-gray-100
+                            rounded-card overflow-hidden
+                            mb-6">
+                <div className="bg-white p-4 text-center">
                   <BedDouble className="h-5 w-5
                                       text-gray-400
-                                      mx-auto mb-1" />
-                  <p className="text-sm font-semibold
+                                      mx-auto mb-1.5" />
+                  <p className="text-base font-semibold
                               text-gray-900">
                     {property.bedrooms}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-meta text-gray-500">
                     Bedroom{property.bedrooms !== 1
                       ? 's' : ''}
                   </p>
                 </div>
-                <div className="text-center">
+                <div className="bg-white p-4 text-center">
                   <Bath className="h-5 w-5 text-gray-400
-                                 mx-auto mb-1" />
-                  <p className="text-sm font-semibold
+                                 mx-auto mb-1.5" />
+                  <p className="text-base font-semibold
                               text-gray-900">
                     {property.bathrooms}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-meta text-gray-500">
                     Bathroom{property.bathrooms !== 1
                       ? 's' : ''}
                   </p>
                 </div>
-                <div className="text-center">
+                <div className="bg-white p-4 text-center">
                   <User className="h-5 w-5 text-gray-400
-                                 mx-auto mb-1" />
-                  <p className="text-sm font-semibold
+                                 mx-auto mb-1.5" />
+                  <p className="text-base font-semibold
                               text-gray-900 truncate">
                     {property.ownerName}
                   </p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-meta text-gray-500">
                     Owner
                   </p>
                 </div>
@@ -371,10 +376,11 @@ export default function PropertyDetailPage() {
 
               {/* Description */}
               <div>
-                <h2 className="section-title">
+                <h2 className="text-lg font-semibold text-gray-900
+                           mb-3 tracking-tight">
                   About this property
                 </h2>
-                <p className="text-gray-600 text-sm
+                <p className="text-base text-gray-600
                             leading-relaxed whitespace-pre-line">
                   {property.description}
                 </p>
@@ -389,16 +395,17 @@ export default function PropertyDetailPage() {
                       max-h-[calc(100dvh-7rem)]
                       overflow-y-auto">
 
-              {/* Price */}
-              <div className="mb-4">
-                <span className="text-3xl font-bold
-                               text-brand-green">
+              {/* Price — larger, tracking-tight */}
+              <div className="mb-1">
+                <span className="text-4xl font-bold
+                               text-gray-900
+                               tracking-tight">
                   GHS {property.price.toLocaleString()}
                 </span>
-                <span className="text-gray-400 text-sm">
-                  /month
-                </span>
               </div>
+              <p className="text-meta text-gray-500 mb-6">
+                per month
+              </p>
 
               {property.status !== 'AVAILABLE' ? (
                   <div className="text-center py-6">
@@ -419,9 +426,22 @@ export default function PropertyDetailPage() {
                     {/* Booking form */}
                     <form
                         onSubmit={handleSubmit(onBookingSubmit)}
-                        className="space-y-3"
+                        className="space-y-4"
                         noValidate
                     >
+                      <input
+                          type="hidden"
+                          {...register('startDate', {
+                            required: 'Move-in date is required',
+                          })}
+                      />
+                      <input
+                          type="hidden"
+                          {...register('endDate', {
+                            required: 'Move-out date is required',
+                          })}
+                      />
+
                       {/* Start date */}
                       <DatePicker
                           id="startDate"
@@ -429,7 +449,8 @@ export default function PropertyDetailPage() {
                           selected={startDate ? new Date(startDate) : null}
                           onChange={(date) => {
                             setValue('startDate',
-                                date?.toISOString().split('T')[0] || '')
+                                date?.toISOString().split('T')[0] || '',
+                                { shouldDirty: true, shouldValidate: true })
                           }}
                           minDate={new Date()}
                           placeholderText="Select move-in date"
@@ -444,7 +465,8 @@ export default function PropertyDetailPage() {
                           selected={endDate ? new Date(endDate) : null}
                           onChange={(date) => {
                             setValue('endDate',
-                                date?.toISOString().split('T')[0] || '')
+                                date?.toISOString().split('T')[0] || '',
+                                { shouldDirty: true, shouldValidate: true })
                           }}
                           minDate={startDate
                               ? new Date(startDate)
@@ -455,15 +477,16 @@ export default function PropertyDetailPage() {
                           required
                       />
 
-                      {/* Price breakdown */}
+                      {/* Price breakdown — quieter
+                          background, tighter numbers */}
                       {priceCalc && (
-                          <div className="bg-gray-50 rounded-lg
-                                    p-3 text-sm space-y-1">
+                          <div className="bg-gray-50 rounded-card
+                                    p-4 text-sm space-y-2">
                             <div className="flex justify-between
                                       text-gray-600">
                               <span>
                                 GHS {property.price.toLocaleString()}
-                                /month × {(priceCalc.months)
+                                {' '}×{' '}{(priceCalc.months)
                                   .toFixed(1)} months
                               </span>
                               <span className="text-gray-400">
@@ -474,9 +497,10 @@ export default function PropertyDetailPage() {
                                       font-semibold
                                       text-gray-900
                                       border-t border-gray-200
-                                      pt-1 mt-1">
+                                      pt-2 mt-2">
                               <span>Total</span>
-                              <span className="text-brand-green">
+                              <span className="text-brand-green
+                                            tracking-tight">
                                 GHS {priceCalc.total}
                               </span>
                             </div>
@@ -488,6 +512,7 @@ export default function PropertyDetailPage() {
                           <Button
                               type="submit"
                               fullWidth
+                              size="lg"
                               loading={booking}
                           >
                             {booking
@@ -496,7 +521,7 @@ export default function PropertyDetailPage() {
                             }
                           </Button>
                       ) : isAuthenticated ? (
-                          <p className="text-xs text-center
+                          <p className="text-meta text-center
                                   text-gray-400 py-2">
                             Only tenants can book properties.
                           </p>
@@ -504,6 +529,7 @@ export default function PropertyDetailPage() {
                           <Button
                               type="button"
                               fullWidth
+                              size="lg"
                               onClick={() =>
                                   navigate('/login', {
                                     state: {
@@ -518,19 +544,20 @@ export default function PropertyDetailPage() {
 
                     </form>
 
-                    {/* Trust signals */}
-                    <div className="mt-4 space-y-2">
+                    {/* Trust signals — quietly under the
+                        form, not competing with the CTA */}
+                    <div className="mt-6 pt-5 border-t
+                                border-gray-100 space-y-2.5">
                       {[
                         'Secure payment via Paystack',
                         'Instant booking confirmation',
-                        'SMS notification sent to you',
+                        'SMS notification on success',
                       ].map(item => (
                           <div
                               key={item}
                               className="flex items-center
-                                 gap-2 text-xs
-                                 text-gray-500"
-                          >
+                                 gap-2 text-meta
+                                 text-gray-500">
                             <CheckCircle className="h-3.5 w-3.5
                                              text-brand-green
                                              flex-shrink-0" />

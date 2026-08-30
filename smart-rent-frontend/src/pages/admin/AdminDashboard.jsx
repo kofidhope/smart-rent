@@ -69,16 +69,19 @@ export default function AdminDashboard() {
   return (
       <div className="page-container">
 
-        <h1 className="text-2xl font-bold
-                     text-gray-900 mb-2">
-          Admin dashboard
-        </h1>
-        <p className="text-gray-500 mb-8">
-          Welcome, {user?.firstName}
-        </p>
+        <div className="mb-10">
+          <span className="eyebrow">Admin</span>
+          <h1 className="mt-3 text-3xl font-bold
+                     text-gray-900 tracking-tight">
+            Admin dashboard
+          </h1>
+          <p className="text-gray-500 mt-2">
+            Welcome, {user?.firstName}. Platform overview at a glance.
+          </p>
+        </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-2 gap-4 mb-8">
+        <div className="grid grid-cols-2 gap-4 mb-10">
           {stats.map(({ label, value, hint, icon: Icon,
                        variant }, i) => (
               <MotionFadeUp key={label} delay={i * 0.05}>
@@ -101,12 +104,12 @@ export default function AdminDashboard() {
             <div className="alert-warning mb-6">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <h3 className="font-semibold">
+                  <h3 className="font-semibold tracking-tight">
                     {pending.length} verification
                     {pending.length > 1 ? 's' : ''} pending
                   </h3>
-                  <p className="text-sm mt-1">
-                    Landlord applications waiting for review
+                  <p className="text-meta mt-1">
+                    Landlord applications waiting for review.
                   </p>
                 </div>
                 <Button
@@ -133,29 +136,27 @@ export default function AdminDashboard() {
                      transition-shadow
                      border-2 border-dashed
                      border-gray-200
-                     hover:border-brand-green group"
-          >
-            <Shield className="h-8 w-8 text-gray-300
+                     hover:border-brand-green group">
+            <Shield className="h-7 w-7 text-gray-300
                              group-hover:text-brand-green
-                             mb-3 transition-colors" />
-            <h3 className="font-semibold text-gray-900">
+                             mb-4 transition-colors" />
+            <h3 className="font-semibold text-gray-900 tracking-tight">
               Landlord verification
             </h3>
-            <p className="text-sm text-gray-500 mt-1">
-              Review and approve landlord applications
+            <p className="text-meta text-gray-500 mt-1.5">
+              Review and approve landlord applications.
             </p>
           </button>
 
           <button
               className="card text-left opacity-60
                      cursor-not-allowed"
-              disabled
-          >
-            <Users className="h-8 w-8 text-gray-300 mb-3" />
-            <h3 className="font-semibold text-gray-900">
+              disabled>
+            <Users className="h-7 w-7 text-gray-300 mb-4" />
+            <h3 className="font-semibold text-gray-900 tracking-tight">
               User management
             </h3>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-meta text-gray-500 mt-1.5">
               Coming soon
             </p>
           </button>

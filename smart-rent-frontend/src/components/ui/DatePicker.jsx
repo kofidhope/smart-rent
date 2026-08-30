@@ -32,11 +32,6 @@ export default function DatePicker({label, error, selected, onChange, minDate, m
                     maxDate={maxDate}
                     placeholderText={placeholderText}
                     dateFormat="dd MMM yyyy"
-                    // readOnly prevents typing into the field.
-                    // Picker still opens on click and arrow
-                    // keys still navigate. Avoids the
-                    // preventDefault on every keystroke.
-                    readOnly
                     className={`
             input pl-10 w-full cursor-pointer
             ${error ? 'input-error' : ''}

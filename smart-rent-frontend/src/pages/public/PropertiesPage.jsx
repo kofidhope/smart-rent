@@ -33,7 +33,7 @@ function FilterForm({
                        clearLabel = 'Clear',
                    }) {
     return (
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={onSubmit} className="space-y-5">
             <div>
                 <label className="label" htmlFor="filter-city">City</label>
                 <input
@@ -129,7 +129,7 @@ function FilterForm({
                 </select>
             </div>
 
-            <div className="flex gap-3 pt-2">
+            <div className="flex gap-3 pt-3">
                 {hasActiveFilters && (
                     <button
                         type="button"
@@ -265,15 +265,18 @@ export default function PropertiesPage() {
         <div className="page-container">
 
             {/* Page header */}
-            <div className="flex items-center
-                      justify-between mb-6 gap-4">
+            <div className="flex items-end
+                      justify-between mb-8 gap-4">
                 <div>
-                    <h1 className="page-title mb-0">
-                        Browse properties
+                    <span className="eyebrow">Browse</span>
+                    <h1 className="mt-3 text-3xl sm:text-4xl
+                               font-bold text-gray-900
+                               tracking-tight">
+                        Properties
                     </h1>
                     {!loading && (
-                        <p className="text-gray-500 text-sm mt-1">
-                            {totalElements} {totalElements === 1
+                        <p className="text-gray-500 mt-2 text-meta">
+                            {totalElements.toLocaleString()} {totalElements === 1
                                 ? 'property'
                                 : 'properties'} found
                         </p>
@@ -296,7 +299,7 @@ export default function PropertiesPage() {
                 </Button>
             </div>
 
-            <div className="flex gap-6">
+            <div className="flex gap-8">
 
                 {/* ── MOBILE FILTER DRAWER ───────────────── */}
                 <MobileDrawer
@@ -319,7 +322,7 @@ export default function PropertiesPage() {
                 <aside className="hidden sm:block w-64 flex-shrink-0">
                     <div className="card sticky top-24">
                         <h2 className="text-card-title
-                                text-gray-900 mb-4">
+                                text-gray-900 mb-5">
                             Filters
                         </h2>
 

@@ -73,30 +73,32 @@ export default function LoginPage() {
         <div className="w-full max-w-md">
 
           {/* Header */}
-          <div className="text-center mb-8">
-            <div className="w-12 h-12 bg-brand-green rounded-xl mx-auto mb-4 flex items-center justify-center">
-            <span className="text-white font-bold text-lg">
-              SR
-            </span>
+          <div className="text-center mb-10">
+            <div className="w-12 h-12 bg-brand-green rounded-md
+                          mx-auto mb-5 flex items-center justify-center">
+              <span className="text-white font-bold text-lg tracking-tight">
+                SR
+              </span>
             </div>
-              <h1 className="text-2xl font-bold text-gray-900">
-                Welcome back
-              </h1>
-              <p className="text-gray-500 mt-1 text-sm">
-                Sign in to your SmartRent account
-              </p>
+            <h1 className="text-3xl font-bold text-gray-900
+                       tracking-tight">
+              Welcome back
+            </h1>
+            <p className="text-gray-500 mt-2 text-sm">
+              Sign in to your SmartRent account
+            </p>
           </div>
 
           {/* Card */}
-          <div className="card">
+          <div className="card p-6 sm:p-8">
 
             {/* Error message */}
-            <ErrorMessage message={error} className="mb-4" />
+            <ErrorMessage message={error} className="mb-5" />
 
             {/* Form */}
             <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="space-y-4"
+                className="space-y-5"
                 noValidate
             >
 
@@ -133,10 +135,6 @@ export default function LoginPage() {
                       },
                     })}
                 />
-                {/* Show/hide password toggle.
-                    inset-y-0 + flex centering means the
-                    button always sits at the input's vertical
-                    centre regardless of label/helper height. */}
                 <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
@@ -144,7 +142,7 @@ export default function LoginPage() {
                       showPassword ? 'Hide password'
                           : 'Show password'
                     }
-                    className="absolute inset-y-0 right-0
+                    className="absolute top-8 right-0 h-11
                            flex items-center pr-3
                            text-gray-400
                            hover:text-gray-600
@@ -161,6 +159,7 @@ export default function LoginPage() {
                   type="submit"
                   loading={loading}
                   fullWidth
+                  size="lg"
                   className="mt-2"
               >
                 Sign in
@@ -168,21 +167,19 @@ export default function LoginPage() {
 
             </form>
 
-            {/* ── Social login placeholder ─────────────────
-              Add Google, Facebook etc here later.
-              Each provider needs:
-              1. OAuth app credentials
-              2. Backend endpoint to handle callback
-              3. Button here that redirects to provider
-              ─────────────────────────────────────────── */}
-            <div className="mt-6">
+            {/* ── Social login placeholder ─────────────
+              Quieter divider + dimmed buttons so the
+              real form remains the visual lead.
+            ─────────────────────────────────────────── */}
+            <div className="mt-8">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-200" />
                 </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-3 bg-white text-gray-400">
-                    or continue with
+                <div className="relative flex justify-center">
+                  <span className="px-3 bg-white text-meta uppercase
+                               tracking-[0.18em] text-gray-400">
+                    Coming soon
                   </span>
                 </div>
               </div>
@@ -194,15 +191,13 @@ export default function LoginPage() {
                     type="button"
                     disabled
                     className="flex items-center justify-center
-                           gap-2 px-4 py-2.5 rounded-lg
-                           border border-gray-300
-                           bg-white text-sm font-medium
-                           text-gray-400 cursor-not-allowed
-                           opacity-60"
+                           gap-2 px-4 py-2.5 rounded-btn
+                           border border-gray-200
+                           bg-gray-50 text-sm font-medium
+                           text-gray-400 cursor-not-allowed"
                     title="Coming soon"
                 >
-                  {/* Google SVG icon */}
-                  <svg className="h-4 w-4" viewBox="0 0 24 24">
+                  <svg className="h-4 w-4 opacity-60" viewBox="0 0 24 24">
                     <path
                         d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                         fill="#4285F4"
@@ -228,16 +223,14 @@ export default function LoginPage() {
                     type="button"
                     disabled
                     className="flex items-center justify-center
-                           gap-2 px-4 py-2.5 rounded-lg
-                           border border-gray-300
-                           bg-white text-sm font-medium
-                           text-gray-400 cursor-not-allowed
-                           opacity-60"
+                           gap-2 px-4 py-2.5 rounded-btn
+                           border border-gray-200
+                           bg-gray-50 text-sm font-medium
+                           text-gray-400 cursor-not-allowed"
                     title="Coming soon"
                 >
-                  {/* Facebook SVG icon */}
                   <svg
-                      className="h-4 w-4"
+                      className="h-4 w-4 opacity-60"
                       viewBox="0 0 24 24"
                       fill="#1877F2"
                   >
@@ -247,17 +240,11 @@ export default function LoginPage() {
                 </button>
 
               </div>
-
-              {/* Coming soon note */}
-              <p className="text-center text-xs
-                          text-gray-400 mt-3">
-                Social login coming soon
-              </p>
             </div>
 
             {/* Register link */}
             <p className="text-center text-sm
-                        text-gray-500 mt-6">
+                        text-gray-500 mt-8">
               Don't have an account?{' '}
               <Link
                   to="/register"
@@ -270,24 +257,6 @@ export default function LoginPage() {
             </p>
 
           </div>
-
-          {/*/!* Demo credentials hint *!/*/}
-          {/*<div className="mt-4 p-3 rounded-lg*/}
-          {/*              bg-blue-50 border border-blue-100">*/}
-          {/*  <p className="text-xs text-blue-600*/}
-          {/*              font-medium mb-1">*/}
-          {/*    Test accounts*/}
-          {/*  </p>*/}
-          {/*  <p className="text-xs text-blue-500">*/}
-          {/*    Tenant: kofi@smartrent.com / password123*/}
-          {/*  </p>*/}
-          {/*  <p className="text-xs text-blue-500">*/}
-          {/*    Landlord: kwame@smartrent.com / password123*/}
-          {/*  </p>*/}
-          {/*  <p className="text-xs text-blue-500">*/}
-          {/*    Admin: admin@smartrent.com / admin123*/}
-          {/*  </p>*/}
-          {/*</div>*/}
 
         </div>
       </div>

@@ -84,6 +84,11 @@ export default {
         'card': '0.75rem',
         'btn':  '0.5rem',
         'badge': '9999px',
+        // Editorial radii — used for hero panels and
+        // large content surfaces that need to read
+        // differently from the standard card grid.
+        'panel': '1.25rem',
+        'sheet': '1.75rem',
       },
 
       // ── Transitions ───────────────────────────────

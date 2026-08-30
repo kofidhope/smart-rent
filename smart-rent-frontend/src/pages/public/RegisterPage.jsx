@@ -67,43 +67,49 @@ export default function RegisterPage() {
         <div className="w-full max-w-md">
 
           {/* Header */}
-          <div className="text-center mb-8">
-            <div className="w-12 h-12 bg-brand-green rounded-xl mx-auto mb-4 flex items-center justify-center">
-              <span className="text-white font-bold text-lg">
+          <div className="text-center mb-10">
+            <div className="w-12 h-12 bg-brand-green rounded-md
+                          mx-auto mb-5 flex items-center justify-center">
+              <span className="text-white font-bold text-lg tracking-tight">
                 SR
               </span>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <h1 className="text-3xl font-bold text-gray-900
+                       tracking-tight">
               Create your account
             </h1>
-            <p className="text-gray-500 mt-1 text-sm">
+            <p className="text-gray-500 mt-2 text-sm">
               Join SmartRent and find your perfect home
             </p>
           </div>
 
           {/* Card */}
-          <div className="card">
+          <div className="card p-6 sm:p-8">
 
-            {/* Role notice */}
-            <div className="flex items-start gap-2 p-3 rounded-lg bg-blue-50 border border-blue-100 mb-4">
-              <div className="flex-shrink-0 w-4 h-4 mt-0.5 rounded-full bg-blue-400 flex items-center justify-center">
-              <span className="text-white text-xs font-bold">i</span>
+            {/* Role notice — quieter, info-bg
+                instead of a loud blue. */}
+            <div className="flex items-start gap-3 p-4 rounded-btn
+                          bg-info-bg border border-info-border
+                          mb-6">
+              <div className="flex-shrink-0 w-4 h-4 mt-0.5
+                            rounded-full bg-info-icon
+                            flex items-center justify-center">
+                <span className="text-white text-xs font-bold">i</span>
               </div>
-              <p className="text-xs text-blue-700">
-                All accounts start as{' '}
-                <strong>Tenant</strong>.
+              <p className="text-meta text-info-text leading-relaxed">
+                All accounts start as <strong>Tenant</strong>.
                 To become a landlord contact support
                 after registering.
               </p>
             </div>
 
             {/* Error */}
-            <ErrorMessage message={error} className="mb-4"/>
+            <ErrorMessage message={error} className="mb-5"/>
 
             {/* Form */}
             <form
                 onSubmit={handleSubmit(onSubmit)}
-                className="space-y-4"
+                className="space-y-5"
                 noValidate
             >
 
@@ -199,7 +205,7 @@ export default function RegisterPage() {
                       showPassword ? 'Hide password'
                           : 'Show password'
                     }
-                    className="absolute inset-y-0 right-0
+                    className="absolute top-8 right-0 h-11
                            flex items-center pr-3
                            text-gray-400
                            hover:text-gray-600
@@ -234,7 +240,7 @@ export default function RegisterPage() {
                       showConfirm ? 'Hide password'
                           : 'Show password'
                     }
-                    className="absolute inset-y-0 right-0
+                    className="absolute top-8 right-0 h-11
                            flex items-center pr-3
                            text-gray-400
                            hover:text-gray-600
@@ -246,28 +252,39 @@ export default function RegisterPage() {
                 </button>
               </div>
 
-              {/* Password strength hints */}
-              <div className="text-xs text-gray-400 space-y-1 -mt-2">
+              {/* Password strength hints — quietly
+                  styled with check indicators. */}
+              <div className="text-meta text-gray-500
+                            space-y-1.5 -mt-1">
                 <p>Password must contain:</p>
-                <ul className="list-disc list-inside space-y-0.5 pl-1">
-                  <li className={password?.length >= 8 ? 'text-green-500' : ''}>
-                    At least 8 characters
-                  </li>
-                  <li className={/[A-Z]/.test(password || '') ? 'text-green-500' : ''}>
-                    One uppercase letter
-                  </li>
-                  <li className={
-                    /[a-z]/.test(password || '') ? 'text-green-500' : ''}>
-                    One lowercase letter
-                  </li>
-                  <li className={/\d/.test(password || '') ? 'text-green-500'                       : ''}>
-                    One number
-                  </li>
+                <ul className="space-y-1">
+                  {[
+                    { ok: (password?.length || 0) >= 8,
+                      label: 'At least 8 characters' },
+                    { ok: /[A-Z]/.test(password || ''),
+                      label: 'One uppercase letter' },
+                    { ok: /[a-z]/.test(password || ''),
+                      label: 'One lowercase letter' },
+                    { ok: /\d/.test(password || ''),
+                      label: 'One number' },
+                  ].map(({ ok, label }) => (
+                    <li key={label}
+                        className={`flex items-center gap-2
+                                   ${ok
+                                     ? 'text-success-text'
+                                     : 'text-gray-400'}`}>
+                      <span className={`w-1 h-1 rounded-full
+                                       ${ok
+                                         ? 'bg-success-icon'
+                                         : 'bg-gray-300'}`}/>
+                      {label}
+                    </li>
+                  ))}
                 </ul>
               </div>
 
               {/* Terms notice */}
-              <p className="text-xs text-gray-400 pt-1">
+              <p className="text-meta text-gray-500 pt-1">
                 By creating an account you agree to our{' '}
                 <span className="text-brand-green
                                cursor-pointer
@@ -288,102 +305,16 @@ export default function RegisterPage() {
                   type="submit"
                   loading={loading}
                   fullWidth
+                  size="lg"
               >
                 Create account
               </Button>
 
             </form>
 
-            {/* ── Social register placeholder ──────────────
-              Same as login — disabled until OAuth is set up
-              When implemented use same Google/Facebook
-              buttons but call /api/auth/google-register
-              ─────────────────────────────────────────── */}
-            <div className="mt-6">
-              <div className="relative">
-                <div className="absolute inset-0
-                              flex items-center">
-                  <div className="w-full border-t
-                                border-gray-200" />
-                </div>
-                <div className="relative flex
-                              justify-center text-sm">
-                <span className="px-3 bg-white
-                                 text-gray-400">
-                  or register with
-                </span>
-                </div>
-              </div>
-
-              <div className="mt-4 grid grid-cols-2 gap-3">
-
-                <button
-                    type="button"
-                    disabled
-                    className="flex items-center
-                           justify-center gap-2
-                           px-4 py-2.5 rounded-lg
-                           border border-gray-300
-                           bg-white text-sm
-                           font-medium text-gray-400
-                           cursor-not-allowed opacity-60"
-                    title="Coming soon"
-                >
-                  <svg className="h-4 w-4"
-                       viewBox="0 0 24 24">
-                    <path
-                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                        fill="#4285F4"
-                    />
-                    <path
-                        d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                        fill="#34A853"
-                    />
-                    <path
-                        d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                        fill="#FBBC05"
-                    />
-                    <path
-                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                        fill="#EA4335"
-                    />
-                  </svg>
-                  Google
-                </button>
-
-                <button
-                    type="button"
-                    disabled
-                    className="flex items-center
-                           justify-center gap-2
-                           px-4 py-2.5 rounded-lg
-                           border border-gray-300
-                           bg-white text-sm
-                           font-medium text-gray-400
-                           cursor-not-allowed opacity-60"
-                    title="Coming soon"
-                >
-                  <svg
-                      className="h-4 w-4"
-                      viewBox="0 0 24 24"
-                      fill="#1877F2"
-                  >
-                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-                  </svg>
-                  Facebook
-                </button>
-
-              </div>
-
-              <p className="text-center text-xs
-                          text-gray-400 mt-3">
-                Social login coming soon
-              </p>
-            </div>
-
             {/* Login link */}
             <p className="text-center text-sm
-                        text-gray-500 mt-6">
+                        text-gray-500 mt-8">
               Already have an account?{' '}
               <Link
                   to="/login"

@@ -102,19 +102,21 @@ export default function TenantDashboard() {
       <div className="page-container">
 
         {/* Welcome */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">
-            Welcome back, {user?.firstName}!
+        <div className="mb-10">
+          <span className="eyebrow">Tenant dashboard</span>
+          <h1 className="mt-3 text-3xl font-bold text-gray-900
+                     tracking-tight">
+            Welcome back, {user?.firstName}.
           </h1>
-          <p className="text-gray-500 mt-1">
-            Here is an overview of your rental activity
+          <p className="text-gray-500 mt-2">
+            Here is an overview of your rental activity.
           </p>
         </div>
 
         {/* Stats — each tile is a button that drills
             into the relevant list */}
         <div className="grid grid-cols-1 sm:grid-cols-3
-                      gap-4 mb-8">
+                      gap-4 mb-10">
           {stats.map(({ label, value, hint, icon: Icon,
                        variant, action }, i) => (
               <MotionFadeUp key={label} delay={i * 0.05}>
@@ -149,20 +151,21 @@ export default function TenantDashboard() {
         {/* Recent bookings */}
         <div className="card mb-6">
           <div className="flex items-center
-                        justify-between mb-4">
-            <h2 className="section-title mb-0">
+                        justify-between mb-5">
+            <h2 className="text-lg font-semibold text-gray-900
+                       tracking-tight">
               Recent bookings
             </h2>
             {bookings.length > 0 && (
                 <button
                     onClick={() => navigate('/tenant/bookings')}
-                    className="text-sm text-brand-green
+                    className="text-meta text-brand-green
                        hover:text-brand-dark
                        flex items-center gap-1
                        font-medium"
                 >
                   View all
-                  <ArrowRight className="h-4 w-4"/>
+                  <ArrowRight className="h-3.5 w-3.5"/>
                 </button>
             )}
           </div>
@@ -176,14 +179,13 @@ export default function TenantDashboard() {
                   onAction={() => navigate('/properties')}
               />
           ) : (
-              <div className="space-y-3">
+              <div className="divide-y divide-gray-100 -mx-6">
                 {bookings.slice(0, 3).map(booking => (
                     <div
                         key={booking.id}
                         className="flex items-center
-                           justify-between p-3
-                           rounded-lg bg-gray-50
-                           hover:bg-gray-100
+                           justify-between px-6 py-4
+                           hover:bg-gray-50
                            transition-colors cursor-pointer"
                         onClick={() =>
                             navigate('/tenant/bookings')
@@ -194,7 +196,7 @@ export default function TenantDashboard() {
                                 text-gray-900">
                           Booking #{booking.id.slice(0, 8)}
                         </p>
-                        <p className="text-xs text-gray-500 mt-0.5">
+                        <p className="text-meta text-gray-500 mt-0.5">
                           {booking.startDate} →{' '}
                           {booking.endDate}
                         </p>
@@ -221,16 +223,15 @@ export default function TenantDashboard() {
               className="card text-left hover:shadow-md
                      transition-shadow border-dashed
                      border-2 border-gray-200
-                     hover:border-brand-green group"
-          >
-            <Search className="h-8 w-8 text-gray-300
+                     hover:border-brand-green group">
+            <Search className="h-7 w-7 text-gray-300
                              group-hover:text-brand-green
-                             mb-3 transition-colors"/>
-            <h3 className="font-semibold text-gray-900">
+                             mb-4 transition-colors"/>
+            <h3 className="font-semibold text-gray-900 tracking-tight">
               Find a property
             </h3>
-            <p className="text-sm text-gray-500 mt-1">
-              Browse and book your next home
+            <p className="text-meta text-gray-500 mt-1.5">
+              Browse and book your next home.
             </p>
           </button>
 
@@ -239,16 +240,15 @@ export default function TenantDashboard() {
               className="card text-left hover:shadow-md
                      transition-shadow border-dashed
                      border-2 border-gray-200
-                     hover:border-brand-green group"
-          >
-            <CreditCard className="h-8 w-8 text-gray-300
+                     hover:border-brand-green group">
+            <CreditCard className="h-7 w-7 text-gray-300
                                  group-hover:text-brand-green
-                                 mb-3 transition-colors"/>
-            <h3 className="font-semibold text-gray-900">
+                                 mb-4 transition-colors"/>
+            <h3 className="font-semibold text-gray-900 tracking-tight">
               Payment history
             </h3>
-            <p className="text-sm text-gray-500 mt-1">
-              View all your payment records
+            <p className="text-meta text-gray-500 mt-1.5">
+              View all your payment records.
             </p>
           </button>
         </div>

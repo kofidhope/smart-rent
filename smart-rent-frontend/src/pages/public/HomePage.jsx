@@ -11,16 +11,16 @@ import {
     Building2,
     Users,
     CheckCircle,
-    ChevronDown,
+    Sparkles,
 } from 'lucide-react'
 import useAuth from '../../hooks/useAuth'
 import PropertyService from '../../services/property.service'
 import PropertyCard from '../../components/property/PropertyCard'
 import Button from '../../components/ui/Button'
-import Badge from '../../components/ui/Badge'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import EmptyState from '../../components/ui/EmptyState'
 import {Stagger, StaggerItem} from '../../components/ui/Stagger'
+import RotatingHouseWatermark from '../../components/home/RotatingHouseWatermark'
 
 export default function HomePage() {
     const navigate = useNavigate()
@@ -71,177 +71,221 @@ export default function HomePage() {
     return (
         <div className="flex flex-col">
 
-            {/* ── HERO SECTION ──────────────────────────── */}
-            <section
-                className="relative bg-gradient-to-br from-brand-green via-brand-dark to-gray-900 text-white overflow-hidden">
+            {/* ── HERO ───────────────────────────────
+                Composed split layout instead of a
+                full-bleed gradient. The right column
+                carries a single editorial panel — quiet,
+                asymmetric, and intentional. The single
+                warm accent (yellow-300) is reserved for
+                the eyebrow + price marker.
+            ──────────────────────────────────────── */}
+            <section className="hero-property relative min-h-[680px]
+                                overflow-hidden bg-white border-b border-gray-100">
+                <RotatingHouseWatermark variant="hero" />
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8
+                              relative z-10 min-h-[680px] py-16 sm:py-24">
+                    <div className="grid grid-cols-1 lg:grid-cols-12
+                                  gap-10 lg:gap-16 items-center min-h-full">
 
-                {/* Background pattern — slow drift, very subtle.
-                    Reduced-motion users see a static pair of circles. */}
-                <div className="absolute inset-0 opacity-10 pointer-events-none">
-                    <motion.div
-                        className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"
-                        animate={{
-                            x: ['-50%', '-40%', '-50%'],
-                            y: ['-50%', '-40%', '-50%'],
-                        }}
-                        transition={{
-                            duration: 14,
-                            repeat: Infinity,
-                            ease: 'easeInOut',
-                        }}
-                    />
-                    <motion.div
-                        className="absolute bottom-0 right-0 w-64 h-64 bg-white rounded-full translate-x-1/2 translate-y-1/2"
-                        animate={{
-                            x: ['50%', '40%', '50%'],
-                            y: ['50%', '40%', '50%'],
-                        }}
-                        transition={{
-                            duration: 18,
-                            repeat: Infinity,
-                            ease: 'easeInOut',
-                        }}
-                    />
-                </div>
+                        {/* Left — headline column */}
+                        <div className="lg:col-span-7">
+                            <motion.div
+                                initial={{ opacity: 0, y: 8 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{
+                                    duration: 0.32,
+                                    ease: [0.0, 0, 0.2, 1],
+                                }}>
+                                {/* Eyebrow */}
+                                <span className="eyebrow-brand">
+                                    <Sparkles className="h-3 w-3" />
+                                    Verified rentals · Paystack-secured
+                                </span>
 
-                <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28">
+                                <h1 className="display-editorial mt-5">
+                                    A calmer way to
+                                    <span className="block">
+                                        find your next home.
+                                    </span>
+                                </h1>
 
-                    <div className="max-w-3xl">
+                                <p className="mt-6 text-base sm:text-lg
+                                          text-gray-600 max-w-xl
+                                          leading-relaxed">
+                                    Browse verified rentals across Ghana,
+                                    book the dates that work for you, and
+                                    pay securely — Mobile Money or card.
+                                </p>
 
-                        {/* Tag line */}
-                        <div
-                            className="inline-flex items-center gap-2 bg-white/10 rounded-full px-4 py-1.5 text-sm mb-6 backdrop-blur-sm">
-                            <Star className="h-3.5 w-3.5 text-yellow-300 fill-yellow-300"/>
-                            <span>Ghana's trusted rental platform</span>
+                                {/* Search */}
+                                <form
+                                    onSubmit={handleSearch}
+                                    className="mt-8 flex flex-col
+                                             sm:flex-row gap-3 max-w-xl">
+                                    <div className="relative flex-1">
+                                        <MapPin className="absolute
+                                                  left-3.5 top-1/2
+                                                  -translate-y-1/2
+                                                  h-4 w-4
+                                                  text-gray-400"/>
+                                        <input
+                                            type="text"
+                                            placeholder="Search by city — Accra, Kumasi…"
+                                            value={searchCity}
+                                            onChange={(e) =>
+                                                setSearchCity(e.target.value)}
+                                            className="w-full pl-10 pr-4 py-3
+                                                     rounded-btn
+                                                     border border-gray-300
+                                                     text-sm bg-white
+                                                     text-gray-900
+                                                     placeholder-gray-400
+                                                     transition-colors
+                                                     focus:outline-none
+                                                     focus:ring-2
+                                                     focus:ring-brand-green
+                                                     focus:border-transparent"
+                                            list="cities"
+                                            aria-label="Search city"
+                                        />
+                                        <datalist id="cities">
+                                            {cities.map(city => (
+                                                <option key={city} value={city}/>
+                                            ))}
+                                        </datalist>
+                                    </div>
+
+                                    <Button type="submit" size="lg">
+                                        <Search className="h-4 w-4"/>
+                                        Search
+                                    </Button>
+                                </form>
+
+                                {/* Quick city list */}
+                                <div className="mt-5 flex flex-wrap
+                                              items-center gap-x-1 gap-y-1">
+                                    <span className="text-meta text-gray-500
+                                                 mr-1">
+                                        Popular:
+                                    </span>
+                                    {cities.map((city, i) => (
+                                        <button
+                                            key={city}
+                                            onClick={() =>
+                                                navigate(`/properties?city=${city}`)
+                                            }
+                                            className="text-meta
+                                                       text-gray-500
+                                                       hover:text-brand-green
+                                                       transition-colors">
+                                            {city}
+                                            {i < cities.length - 1 && (
+                                                <span className="mx-1.5
+                                                             text-gray-300">
+                                                    ·
+                                                </span>
+                                            )}
+                                        </button>
+                                    ))}
+                                </div>
+                            </motion.div>
                         </div>
 
-                        {/* Headline */}
-                        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
-                            Find your perfect
-                            <span className="block text-yellow-300">
-                                home in Ghana
-                            </span>
-                        </h1>
+                        {/* Right — supporting note layered over the hero visual */}
+                        <div className="lg:col-span-5 relative z-20 self-end
+                                        pb-2 lg:pb-6">
+                            <motion.div
+                                initial={{ opacity: 0, y: 12 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{
+                                    duration: 0.4,
+                                    delay: 0.1,
+                                    ease: [0.0, 0, 0.2, 1],
+                                }}
+                                className="hero-property-note w-full min-w-0
+                                           lg:ml-auto lg:max-w-xs">
+                                <div className="relative">
+                                    <p className="eyebrow">
+                                        This week
+                                    </p>
+                                    <p className="mt-3 text-2xl
+                                              font-semibold text-gray-900
+                                              leading-snug">
+                                        Three new listings in East Legon,
+                                        verified this morning.
+                                    </p>
+                                    <p className="mt-2 text-meta text-gray-500">
+                                        Updated daily by our verification team.
+                                    </p>
 
-                        <p className="text-lg sm:text-xl text-white/80 mb-10 max-w-xl leading-relaxed">
-                            Browse thousands of verified rental
-                            properties across Ghana. Secure booking,
-                            easy payments via Mobile Money and cards.
-                        </p>
+                                    {/* Mini stats — different rhythm than
+                                        the full stats strip below. */}
+                                    <dl className="mt-6 grid grid-cols-2
+                                                  gap-x-6 gap-y-4">
+                                        {[
+                                            { label: 'Avg. response',  value: '< 2 hrs' },
+                                            { label: 'Verified today', value: '12' },
+                                            { label: 'Cities',          value: '8' },
+                                            { label: 'Satisfaction',    value: '99%' },
+                                        ].map(({ label, value }) => (
+                                            <div key={label}>
+                                                <dt className="text-meta
+                                                              text-gray-500">
+                                                    {label}
+                                                </dt>
+                                                <dd className="mt-1
+                                                              text-card-title
+                                                              text-gray-900">
+                                                    {value}
+                                                </dd>
+                                            </div>
+                                        ))}
+                                    </dl>
 
-                        {/* Search bar */}
-                        <form
-                            onSubmit={handleSearch}
-                            className="flex flex-col sm:flex-row gap-3 max-w-2xl"
-                        >
-                            <div className="relative flex-1">
-                                <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400"/>
-                                <input
-                                    type="text"
-                                    placeholder="Search by city — Accra, Kumasi..."
-                                    value={searchCity}
-                                    onChange={(e) =>
-                                        setSearchCity(e.target.value)}
-                                    className="w-full pl-12 pr-4 py-4
-                                        rounded-xl text-gray-900
-                                        text-sm bg-white
-                                        focus:outline-none
-                                        focus:ring-2
-                                        focus:ring-yellow-300
-                                        shadow-lg"
-                                    list="cities"
-                                />
-                                <datalist id="cities">
-                                    {cities.map(city => (
-                                        <option key={city} value={city}/>
-                                    ))}
-                                </datalist>
-                            </div>
-
-                            <button
-                                type="submit"
-                                className="flex items-center
-                                    justify-center gap-2
-                                    bg-yellow-400 hover:bg-yellow-300
-                                    text-gray-900 font-semibold
-                                    px-8 py-4 rounded-xl
-                                    transition-colors duration-200
-                                    shadow-lg"
-                            >
-                                <Search className="h-5 w-5"/>
-                                Search
-                            </button>
-                        </form>
-
-                        {/* Quick city links */}
-                        <div className="flex flex-wrap gap-2 mt-4">
-                            <span className="text-white/60 text-sm self-center">
-                                Popular:
-                            </span>
-                            {cities.map(city => (
-                                <button
-                                    key={city}
-                                    onClick={() =>
-                                        navigate(`/properties?city=${city}`)
-                                    }
-                                    className="text-sm text-white/80
-                                        hover:text-white
-                                        underline underline-offset-2
-                                        transition-colors"
-                                >
-                                    {city}
-                                </button>
-                            ))}
+                                    <button
+                                        onClick={() => navigate('/properties')}
+                                        className="btn-link mt-6
+                                                   group">
+                                        Browse this week's listings
+                                        <ArrowRight className="h-4 w-4
+                                                       transition-transform
+                                                       group-hover:translate-x-0.5"/>
+                                    </button>
+                                </div>
+                            </motion.div>
                         </div>
 
                     </div>
                 </div>
-
-                {/* Scroll indicator */}
-                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce hidden sm:block">
-                    <ChevronDown className="h-6 w-6 text-white/50"/>
-                </div>
             </section>
 
-            {/* ── STATS SECTION ─────────────────────────── */}
-            <section className="bg-white border-b border-gray-100">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            {/* ── STATS STRIP ────────────────────────
+                Quiet, ink-on-cream band. No icons —
+                the numbers speak.
+            ──────────────────────────────────────── */}
+            <section className="surface-cream border-b border-gray-100/60">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8
+                              py-10">
                     <Stagger
                         className="grid grid-cols-2 md:grid-cols-4 gap-8"
-                        itemDelay={0.05}
+                        itemDelay={0.04}
                     >
                         {[
-                            {
-                                value: '2,000+',
-                                label: 'Properties listed',
-                                icon: Building2,
-                            },
-                            {
-                                value: '5,000+',
-                                label: 'Happy tenants',
-                                icon: Users,
-                            },
-                            {
-                                value: '50+',
-                                label: 'Cities covered',
-                                icon: MapPin,
-                            },
-                            {
-                                value: '99%',
-                                label: 'Satisfaction rate',
-                                icon: Star,
-                            },
-                        ].map(({value, label, icon: Icon}) => (
+                            { value: '2,000+', label: 'Properties listed' },
+                            { value: '5,000+', label: 'Happy tenants' },
+                            { value: '50+',     label: 'Cities covered' },
+                            { value: '99%',     label: 'Satisfaction' },
+                        ].map(({ value, label }) => (
                             <StaggerItem key={label}>
-                                <div className="text-center">
-                                    <div
-                                        className="inline-flex items-center justify-center w-12 h-12 bg-brand-light rounded-xl mb-3">
-                                        <Icon className="h-6 w-6 text-brand-green"/>
-                                    </div>
-                                    <p className="text-2xl sm:text-3xl font-bold text-gray-900">
+                                <div>
+                                    <p className="text-3xl sm:text-4xl
+                                              font-bold text-gray-900
+                                              tracking-tight">
                                         {value}
                                     </p>
-                                    <p className="text-sm text-gray-500 mt-1">
+                                    <p className="mt-2 text-meta
+                                              text-gray-500 uppercase
+                                              tracking-wider">
                                         {label}
                                     </p>
                                 </div>
@@ -252,18 +296,24 @@ export default function HomePage() {
             </section>
 
             {/* ── FEATURED PROPERTIES ───────────────────── */}
-            <section className="py-16 bg-gray-50">
+            <section className="py-16 bg-white">
                 <div className="max-w-7xl mx-auto
                         px-4 sm:px-6 lg:px-8">
 
                     <div className="flex items-end
-                          justify-between mb-8">
+                          justify-between mb-10 gap-4">
                         <div>
-                            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">
-                                Featured properties
+                            <span className="eyebrow">
+                                Featured
+                            </span>
+                            <h2 className="mt-3 text-2xl sm:text-3xl
+                                       font-bold text-gray-900
+                                       tracking-tight">
+                                Hand-picked rentals
                             </h2>
-                            <p className="text-gray-500 mt-1">
-                                Hand-picked rentals across Ghana
+                            <p className="text-gray-500 mt-2 max-w-md">
+                                A short list, refreshed when
+                                new properties go live.
                             </p>
                         </div>
                         <button
@@ -272,10 +322,11 @@ export default function HomePage() {
                                 gap-1 text-brand-green
                                 hover:text-brand-dark
                                 font-medium text-sm
-                                transition-colors"
-                        >
+                                transition-colors group">
                             View all
-                            <ArrowRight className="h-4 w-4"/>
+                            <ArrowRight className="h-4 w-4
+                                              transition-transform
+                                              group-hover:translate-x-0.5"/>
                         </button>
                     </div>
 
@@ -320,93 +371,93 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* ── HOW IT WORKS ──────────────────────────── */}
-            <section className="py-16 bg-white">
+            {/* ── HOW IT WORKS ────────────────────────────
+                Numbered editorial layout. Step numbers
+                are oversized cream-coloured numerals —
+                they sit behind the icons rather than
+                above them, breaking the centred-icon loop.
+            ────────────────────────────────────────────── */}
+            <section className="py-20 surface-cream">
                 <div className="max-w-7xl mx-auto
                         px-4 sm:px-6 lg:px-8">
 
-                    <div className="text-center mb-12">
-                        <h2 className="text-2xl sm:text-3xl
-                           font-bold text-gray-900">
-                            How SmartRent works
+                    <div className="mb-14">
+                        <span className="eyebrow">
+                            How it works
+                        </span>
+                        <h2 className="mt-3 text-2xl sm:text-3xl
+                                   font-bold text-gray-900
+                                   tracking-tight max-w-xl">
+                            Three steps from search to keys.
                         </h2>
-                        <p className="text-gray-500 mt-2 max-w-xl
-                          mx-auto">
-                            Renting a home in Ghana has never been
-                            this simple
-                        </p>
                     </div>
 
                     <Stagger
                         className="grid grid-cols-1
-                          md:grid-cols-3 gap-8"
+                          md:grid-cols-3 gap-6"
                         itemDelay={0.08}
                     >
                         {[
                             {
                                 step: '01',
-                                title: 'Search and browse',
+                                title: 'Search & browse',
                                 description:
                                     'Filter by city, price, bedrooms ' +
-                                    'and property type. View photos ' +
-                                    'and details instantly.',
+                                    'and type. View photos and details ' +
+                                    'instantly.',
                                 icon: Search,
-                                color: 'bg-blue-50 text-blue-600',
                             },
                             {
                                 step: '02',
-                                title: 'Book securely',
+                                title: 'Book your dates',
                                 description:
-                                    'Select your dates and book ' +
-                                    'online. Your booking is confirmed ' +
-                                    'instantly after payment.',
+                                    'Pick a move-in date and confirm. ' +
+                                    'Your booking is held while you pay.',
                                 icon: CheckCircle,
-                                color: 'bg-green-50 text-green-600',
                             },
                             {
                                 step: '03',
-                                title: 'Pay with ease',
+                                title: 'Pay your way',
                                 description:
-                                    'Pay securely via Mobile Money, ' +
-                                    'debit or credit card through ' +
-                                    'Paystack. No hidden fees.',
+                                    'Mobile Money, debit or credit card ' +
+                                    'via Paystack. No hidden fees.',
                                 icon: Shield,
-                                color: 'bg-purple-50 text-purple-600',
                             },
-                        ].map(({
-                                   step,
-                                   title,
-                                   description,
-                                   icon: Icon,
-                                   color,
-                               }) => (
+                        ].map(({ step, title, description, icon: Icon }) => (
                             <StaggerItem key={step}>
-                                <div className="relative text-center p-6">
-                                    {/* Step number */}
-                                    <div className="text-6xl font-black
-                                    text-gray-100 mb-4
-                                    leading-none">
+                                <div className="relative panel-padded
+                                              h-full overflow-hidden">
+                                    {/* Oversized step numeral */}
+                                    <span
+                                        aria-hidden="true"
+                                        className="absolute
+                                                   -top-3 right-4
+                                                   text-7xl font-bold
+                                                   text-gray-900/[0.04]
+                                                   tracking-tighter
+                                                   leading-none
+                                                   select-none">
                                         {step}
+                                    </span>
+                                    <div className="relative">
+                                        <div className="inline-flex items-center
+                                                    justify-center w-10 h-10
+                                                    rounded-btn
+                                                    bg-white
+                                                    border border-gray-200
+                                                    mb-5">
+                                            <Icon className="h-5 w-5
+                                                       text-brand-green"/>
+                                        </div>
+                                        <h3 className="text-card-title
+                                                   text-gray-900 mb-2">
+                                            {title}
+                                        </h3>
+                                        <p className="text-meta text-gray-600
+                                                  leading-relaxed">
+                                            {description}
+                                        </p>
                                     </div>
-
-                                    {/* Icon */}
-                                    <div className={`
-                                        inline-flex items-center
-                                        justify-center w-14 h-14
-                                        rounded-2xl mb-4 -mt-8
-                                        ${color}
-                                    `}>
-                                        <Icon className="h-7 w-7"/>
-                                    </div>
-
-                                    <h3 className="text-lg font-semibold
-                                   text-gray-900 mb-2">
-                                        {title}
-                                    </h3>
-                                    <p className="text-gray-500 text-sm
-                                  leading-relaxed">
-                                        {description}
-                                    </p>
                                 </div>
                             </StaggerItem>
                         ))}
@@ -415,58 +466,95 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* ── WHY SMARTRENT ─────────────────────────── */}
-            <section className="py-16 bg-gray-50">
+            {/* ── WHY SMARTRENT — editorial split ───────
+                Replaces the icon-row + CTA stack with
+                one editorial left / split right layout.
+                Left column carries the rationale, right
+                column carries the trust strip.
+            ────────────────────────────────────────────── */}
+            <section className="py-20 bg-white">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                    <div className="grid grid-cols-1 lg:grid-cols-12
+                                  gap-12 lg:gap-16">
 
-                        {/* Left — text */}
-                        <div>
-                            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6">
-                                Why thousands choose SmartRent
+                        {/* Left — eyebrow + headline + reason list */}
+                        <div className="lg:col-span-7">
+                            <span className="eyebrow">
+                                Why SmartRent
+                            </span>
+                            <h2 className="mt-3 text-2xl sm:text-3xl
+                                       font-bold text-gray-900
+                                       tracking-tight max-w-xl">
+                                Built for the way renting
+                                <span className="block">
+                                    actually works in Ghana.
+                                </span>
                             </h2>
 
-                            <div className="space-y-4">
+                            <div className="mt-10 divide-y divide-gray-100">
                                 {[
                                     {
                                         icon: Shield,
                                         title: 'Verified properties',
                                         desc:
-                                            'Every listing is verified by ' +
-                                            'our team before going live.',
+                                            'Every listing is reviewed by ' +
+                                            'our team before going live. ' +
+                                            'No fake photos, no inflated ' +
+                                            'availability.',
                                     },
                                     {
                                         icon: Clock,
                                         title: 'Instant booking',
                                         desc:
-                                            'Book and get confirmed in ' +
-                                            'minutes — no waiting.',
+                                            'Book and get a confirmed ' +
+                                            'reference within minutes — ' +
+                                            'no waiting on WhatsApp.',
                                     },
                                     {
                                         icon: CheckCircle,
                                         title: 'Secure payments',
                                         desc:
                                             'Powered by Paystack — Ghana\'s ' +
-                                            'most trusted payment platform.',
+                                            'most trusted payment platform. ' +
+                                            'Mobile Money or card.',
                                     },
                                     {
                                         icon: Star,
                                         title: 'Real reviews',
                                         desc:
-                                            'Read honest reviews from ' +
-                                            'verified tenants.',
+                                            'Honest reviews from verified ' +
+                                            'tenants — never edited, never ' +
+                                            'removed.',
                                     },
-                                ].map(({icon: Icon, title, desc}) => (
-                                    <div key={title} className="flex items-start gap-4">
-                                        <div className="flex-shrink-0 w-10 h-10 bg-brand-light rounded-lg flex items-center justify-center">
-                                            <Icon className="h-5 w-5 text-brand-green"/>
+                                ].map(({ icon: Icon, title, desc }, i) => (
+                                    <div
+                                        key={title}
+                                        className="flex items-start
+                                                   gap-5 py-5">
+                                        <span className="text-meta
+                                                      text-gray-400
+                                                      w-6 flex-shrink-0
+                                                      pt-1">
+                                            0{i + 1}
+                                        </span>
+                                        <div className="flex-shrink-0
+                                                      w-9 h-9
+                                                      rounded-btn
+                                                      border border-gray-200
+                                                      flex items-center
+                                                      justify-center">
+                                            <Icon className="h-4 w-4
+                                                       text-gray-700"/>
                                         </div>
-                                        <div>
-                                            <h4 className="font-semibold text-gray-900 text-sm">
+                                        <div className="flex-1 min-w-0">
+                                            <h4 className="font-semibold
+                                                       text-gray-900 text-sm">
                                                 {title}
                                             </h4>
-                                            <p className="text-gray-500 text-sm mt-0.5">
+                                            <p className="text-meta
+                                                      text-gray-500 mt-1
+                                                      leading-relaxed">
                                                 {desc}
                                             </p>
                                         </div>
@@ -475,99 +563,88 @@ export default function HomePage() {
                             </div>
                         </div>
 
-                        {/* Right — CTA cards */}
-                        <div className="space-y-4">
+                        {/* Right — CTA stack */}
+                        <div className="lg:col-span-5 space-y-5">
 
-                            {/* Tenant CTA */}
+                            {/* Tenant CTA — primary */}
                             {!isAuthenticated && (
-                                <div className="card bg-gradient-to-r from-brand-green to-brand-dark text-white border-0">
-                                    <h3 className="text-lg font-bold mb-2">
+                                <div className="panel-padded
+                                                bg-brand-green
+                                                text-white
+                                                border-0
+                                                shadow-card-hover">
+                                    <p className="text-meta
+                                              uppercase tracking-[0.18em]
+                                              text-white/70">
+                                        For tenants
+                                    </p>
+                                    <h3 className="mt-3 text-2xl
+                                               font-semibold
+                                               leading-snug">
                                         Ready to find your home?
                                     </h3>
-                                    <p className="text-white/80 text-sm mb-4">
-                                        Create a free account and start
-                                        browsing thousands of properties.
+                                    <p className="mt-2 text-meta
+                                              text-white/80">
+                                        Free to register. No listing fees,
+                                        no booking fees.
                                     </p>
                                     <Button
                                         onClick={() => navigate('/register')}
-                                        className="bg-white text-brand-green hover:bg-gray-100 focus:ring-white"
-                                    >
-                                        Get started free
+                                        className="mt-6 bg-white
+                                                   text-brand-green
+                                                   hover:bg-gray-100
+                                                   focus-visible:ring-white">
+                                        Create a free account
                                         <ArrowRight className="h-4 w-4"/>
                                     </Button>
                                 </div>
                             )}
 
-                            {/* ── BECOME A LANDLORD ────────────────
-                                Placeholder for future landlord
-                                onboarding flow. When implemented
-                                this will:
-                                1. Take user to a landlord application form
-                                2. They upload property documents
-                                3. Admin reviews and approves
-                                4. Role is promoted to LANDLORD
-                            ──────────────────────────────────── */}
-                            <div className="card border-2 border-dashed border-brand-green/40 bg-brand-light/30">
-                                <div className="flex items-start justify-between gap-4">
-                                    <div>
-                                        <div className="flex items-center gap-2 mb-2">
-                                            <Building2 className="h-5 w-5 text-brand-green"/>
-                                            <h3 className="font-bold text-gray-900">
-                                                Own a property?
-                                            </h3>
-                                        </div>
-                                        <p className="text-gray-500 text-sm mb-4">
-                                            List your property on SmartRent
-                                            and reach thousands of tenants
-                                            across Ghana.
-                                        </p>
-                                        <Button
-                                            variant="secondary"
-                                            disabled
-                                            title="Coming soon — contact support@smartrent.com"
-                                            className="opacity-70"
-                                        >
-                                            Become a landlord
-                                            <Badge
-                                                variant="warning"
-                                                label="Coming soon"
-                                                className="ml-2"
-                                            />
-                                        </Button>
-                                    </div>
-                                </div>
-
-                                <p className="text-xs text-gray-400 mt-4">
-                                    Currently becoming a landlord requires
-                                    admin approval. Email{' '}
+                            {/* Landlord — coming soon panel */}
+                            <div className="panel-padded">
+                                <p className="text-meta
+                                          uppercase tracking-[0.18em]
+                                          text-gray-500">
+                                    For landlords
+                                </p>
+                                <h3 className="mt-3 text-xl
+                                           font-semibold text-gray-900">
+                                    Own a property?
+                                </h3>
+                                <p className="mt-2 text-meta
+                                          text-gray-500">
+                                    Landlord onboarding is invite-only while
+                                    we expand the verification team.
+                                </p>
+                                <p className="mt-5 text-meta text-gray-500">
+                                    Email{' '}
                                     <a
                                         href="mailto:support@smartrent.com"
-                                        className="text-brand-green hover:underline"
-                                    >
+                                        className="text-brand-green
+                                                   hover:text-brand-dark
+                                                   font-medium">
                                         support@smartrent.com
-                                    </a>{' '}
-                                    to get started.
+                                    </a>
+                                    {' '}to apply.
                                 </p>
                             </div>
 
                             {/* Already a landlord — show dashboard link */}
                             {isLandlord && (
-                                <div className="card bg-brand-light
-                                border-brand-green/20">
+                                <div className="panel-padded
+                                                bg-brand-light
+                                                border-brand-green/20">
                                     <h3 className="font-semibold
-                                 text-gray-900 mb-1">
+                                               text-gray-900 mb-1">
                                         Welcome back, Landlord!
                                     </h3>
-                                    <p className="text-gray-500
-                                text-sm mb-3">
-                                        Manage your properties and
-                                        view bookings.
+                                    <p className="text-meta text-gray-500
+                                              mb-4">
+                                        Manage your properties and view bookings.
                                     </p>
                                     <Button
                                         onClick={() =>
-                                            navigate('/landlord/dashboard')
-                                        }
-                                    >
+                                            navigate('/landlord/dashboard')}>
                                         Go to dashboard
                                         <ArrowRight className="h-4 w-4"/>
                                     </Button>
@@ -581,37 +658,45 @@ export default function HomePage() {
                 </div>
             </section>
 
-            {/* ── FINAL CTA ─────────────────────────────── */}
+            {/* ── FINAL CTA ───────────────────────────────
+                Quiet ink strip with a single line of copy.
+                Single CTA, more breathing room.
+            ────────────────────────────────────────────── */}
             {!isAuthenticated && (
-                <section className="py-16 bg-gray-900 text-white">
-                    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                        <h2 className="text-2xl sm:text-3xl font-bold mb-4">
-                            Start your search today
-                        </h2>
-                        <p className="text-gray-400 mb-8 text-sm sm:text-base">
-                            Join thousands of Ghanaians who found
-                            their home on SmartRent.
-                            Free to register, no hidden fees.
-                        </p>
-                        <div className="flex flex-col
-                            sm:flex-row gap-3
-                            justify-center">
-                            <Button
-                                onClick={() => navigate('/register')}
-                                size="lg"
-                            >
-                                Create free account
-                                <ArrowRight className="h-5 w-5"/>
-                            </Button>
-                            <Button
-                                onClick={() => navigate('/properties')}
-                                variant="secondary"
-                                size="lg"
-                                className="bg-white/10 border-white/20
-                           text-white hover:bg-white/20"
-                            >
-                                Browse properties
-                            </Button>
+                <section className="surface-ink">
+                    <div className="max-w-5xl mx-auto px-4 sm:px-6
+                                  lg:px-8 py-20">
+                        <div className="grid grid-cols-1 md:grid-cols-12
+                                      items-end gap-10">
+                            <div className="md:col-span-8">
+                                <p className="eyebrow text-white/60">
+                                    Start your search
+                                </p>
+                                <h2 className="mt-3 text-3xl sm:text-4xl
+                                           font-bold tracking-tight
+                                           text-white leading-[1.1]">
+                                    Join thousands of Ghanaians
+                                    who found their home on SmartRent.
+                                </h2>
+                                <p className="mt-4 text-meta
+                                          text-white/60 max-w-lg">
+                                    Free to register. No hidden fees.
+                                    Cancel anytime.
+                                </p>
+                            </div>
+                            <div className="md:col-span-4
+                                          flex md:justify-end">
+                                <Button
+                                    onClick={() => navigate('/register')}
+                                    size="lg"
+                                    className="bg-white
+                                               text-gray-900
+                                               hover:bg-gray-100
+                                               focus-visible:ring-white">
+                                    Create free account
+                                    <ArrowRight className="h-4 w-4"/>
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 </section>
