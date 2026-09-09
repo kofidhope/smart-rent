@@ -2,6 +2,8 @@ package com.kofi.userservice.service;
 
 import com.kofi.userservice.config.AuthClient;
 import com.kofi.userservice.dto.*;
+import com.kofi.userservice.exception.DuplicateUserException;
+import com.kofi.userservice.exception.LoginFailedException;
 import com.kofi.userservice.model.Role;
 import com.kofi.userservice.model.User;
 import com.kofi.userservice.repository.UserRepository;
@@ -23,11 +25,11 @@ public class UserService {
     public UserResponse register(RegistrationRequest request) {
         //check if email exist
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email Already Exists");
+            throw new DuplicateUserException("Email Already Exists");
         }
         //check if phone number exist
         if (userRepository.existsByPhone(request.getPhoneNumber())) {
-            throw new RuntimeException("Phone Number Already In Use");
+            throw new DuplicateUserException("Phone Number Already In Use");
         }
 
         User user = User.builder()
@@ -45,14 +47,14 @@ public class UserService {
 
     public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new LoginFailedException("User not found"));
         //check password
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Password Do Not Match");
+            throw new LoginFailedException("Password Do Not Match");
         }
         // check if user is enabled
         if (!user.isEnabled()){
-            throw new RuntimeException("User is Disabled");
+            throw new LoginFailedException("User is Disabled");
         }
         // call auth service for tokens
         GenerateTokenRequest tokenRequest = new GenerateTokenRequest();
@@ -65,19 +67,19 @@ public class UserService {
 
     public UserResponse getUserById(UUID id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new com.kofi.userservice.exception.UserNotFoundException("User not found"));
         return mapToResponse(user);
     }
 
     public UserResponse getUserByEmail(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new com.kofi.userservice.exception.UserNotFoundException("User not found"));
         return mapToResponse(user);
     }
 
     public UserResponse updateUser(UUID userId, UpdateUserRequest request) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new com.kofi.userservice.exception.UserNotFoundException("User not found"));
 
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
@@ -88,7 +90,7 @@ public class UserService {
 
     public void changePassword(UUID userId, ChangePasswordRequest request) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new com.kofi.userservice.exception.UserNotFoundException("User not found"));
 
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
             throw new RuntimeException("Current password is incorrect");
@@ -107,7 +109,7 @@ public class UserService {
 
     public void deleteUser(UUID userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new com.kofi.userservice.exception.UserNotFoundException("User not found"));
         user.setEnabled(false);
         userRepository.save(user);
     }
