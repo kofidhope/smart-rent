@@ -27,7 +27,7 @@ import java.util.List;
  *
  * Constraints preserved from the existing event-driven path:
  *   - Failures do NOT throw — a broken retry must not crash the scheduler thread.
- *   - Phone numbers are masked in logs (CLAUDE.md — sensitive data).
+ *   - Phone numbers are masked in logs (sensitive data).
  *   - Idempotency is the responsibility of NotificationService.sendAndLog in the
  *     Kafka path; retries here are for individual log rows, not new events.
  */

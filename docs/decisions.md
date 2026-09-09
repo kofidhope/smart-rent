@@ -21,8 +21,8 @@
 **Description**: Authentication uses JWT tokens stored in httpOnly cookies, with validation performed at the API gateway layer.
 
 **Evidence from Repository**:
-- CLAUDE.md: "Frontend stores httpOnly cookies only; JavaScript never reads tokens."
-- CLAUDE.md: "Gateway's JwtAuthenticationFilter reads the access_token httpOnly cookie first"
+- "Frontend stores httpOnly cookies only; JavaScript never reads tokens."
+- "Gateway's JwtAuthenticationFilter reads the access_token httpOnly cookie first"
 - user-service/login endpoint sets cookies (visible in controllers)
 - auth-service/refresh endpoint handles cookie-based token rotation
 - services/api.js implements refresh queue for handling 401 responses
@@ -39,7 +39,7 @@
 **Description**: The API gateway validates JWT and injects trusted headers (X-User-Id, X-User-Role, X-User-Email, X-Internal-Secret) that services validate to establish trust.
 
 **Evidence from Repository**:
-- CLAUDE.md detailed explanation of trust model with gateway-secret handshake
+- detailed explanation of trust model with gateway-secret handshake
 - api-gateway/src/main/java/com/dhopecode/config/JwtAuthenticationFilter.java (implied)
 - Each service has GatewayAuthFilter once-per-request filter
 - FeignClientInterceptor propagates headers between services
@@ -87,7 +87,7 @@
 - Each service's application.yml references its specific database URL
 - init-db/init.sql contains six CREATE DATABASE statements
 - Services use Flyway (except user-service which uses Hibernate ddl-auto)
-- CLAUDE.md Database section: "One PostgreSQL instance, six databases"
+- Database section: "One PostgreSQL instance, six databases"
 
 **Consequences**:
 - Strong encapsulation and loose coupling
@@ -102,7 +102,7 @@
 
 **Evidence from Repository**:
 - api-gateway/ directory present in repository
-- CLAUDE.md: "api-gateway/ Reactive edge (Spring Cloud Gateway)"
+- "api-gateway/ Reactive edge (Spring Cloud Gateway)"
 - README.md Infrastructure section shows gateway as entrypoint
 - docker-compose.yml would include gateway service (implied)
 - Routes are sourced from config-server's Git repo (not local application.yml)
