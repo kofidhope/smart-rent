@@ -4,8 +4,10 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.Transformation;
 import com.cloudinary.utils.ObjectUtils;
 import com.kofi.property_service.dto.PropertyImageResponse;
-import com.kofi.property_service.exception.ResourceNotFoundException;
 import com.kofi.property_service.exception.ConflictException;
+import com.kofi.property_service.exception.PropertyBusinessException;
+import com.kofi.property_service.exception.PropertyUploadException;
+import com.kofi.property_service.exception.UnauthorizedOwnerException;
 import com.kofi.property_service.model.Property;
 import com.kofi.property_service.model.PropertyImage;
 import com.kofi.property_service.repository.PropertyImageRepository;
@@ -52,14 +54,14 @@ public class PropertyImageService {
                 .orElseThrow(() -> new ResourceNotFoundException("Property not found: " + propertyId));
 
         if (!property.getOwnerId().equals(ownerId)) {
-            throw new ConflictException("You do not own this property");
+            throw new UnauthorizedOwnerException("You do not own this property");
         }
 
         // Enforce max image limit
         long currentCount = imageRepository.countByPropertyId(propertyId);
 
         if (currentCount >= MAX_IMAGES) {
-            throw new ConflictException("Maximum " + MAX_IMAGES +
+            throw new PropertyBusinessException("Maximum " + MAX_IMAGES +
                             " images allowed per property. " +
                             "Delete an image before uploading.");
         }
@@ -143,7 +145,7 @@ public class PropertyImageService {
                 .orElseThrow(() -> new ResourceNotFoundException("Property not found: " + propertyId));
 
         if (!property.getOwnerId().equals(ownerId)) {
-            throw new ConflictException("You do not own this property");
+            throw new UnauthorizedOwnerException("You do not own this property");
         }
 
         PropertyImage image = imageRepository
@@ -180,7 +182,7 @@ public class PropertyImageService {
                 .orElseThrow(() -> new ResourceNotFoundException("Property not found: " + propertyId));
 
         if (!property.getOwnerId().equals(ownerId)) {
-            throw new ConflictException("You do not own this property");
+            throw new UnauthorizedOwnerException("You do not own this property");
         }
 
         PropertyImage image = imageRepository
@@ -221,15 +223,14 @@ public class PropertyImageService {
     // -------------------------------------------------------
 
     private void validateImageFile(MultipartFile file) {
-
         if (file == null || file.isEmpty()) {
-            throw new ConflictException("File cannot be empty");
+            throw new PropertyBusinessException("File cannot be empty");
         }
 
         // Max 5MB
         long maxSize = 5L * 1024 * 1024;
         if (file.getSize() > maxSize) {
-            throw new ConflictException("File size cannot exceed 5MB. " + "Current size: " +
+            throw new PropertyBusinessException("File size cannot exceed 5MB. " + "Current size: " +
                             (file.getSize() / 1024 / 1024)
                             + "MB");
         }
@@ -239,7 +240,7 @@ public class PropertyImageService {
                 || (!contentType.equals("image/jpeg")
                 && !contentType.equals("image/png")
                 && !contentType.equals("image/webp"))) {
-            throw new ConflictException(
+            throw new PropertyBusinessException(
                     "Only JPG, PNG And WebP "  + "images are allowed");
         }
     }
@@ -263,7 +264,7 @@ public class PropertyImageService {
             );
         } catch (IOException e) {
             log.error("Cloudinary upload failed: {}", e.getMessage());
-            throw new RuntimeException("Image upload failed: " + e.getMessage());
+            throw new PropertyUploadException("Image upload failed: " + e.getMessage(), e);
         }
     }
 

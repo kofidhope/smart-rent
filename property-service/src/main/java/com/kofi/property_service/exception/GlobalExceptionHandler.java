@@ -13,15 +13,21 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    // ── 400 Validation errors ─────────────────────────────
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
-        String message = ex.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .map(e -> e.getField() + ": " + e.getDefaultMessage())
-                .findFirst()
-                .orElse("Validation failed");
+    // ── 400 Bad Request ──────────────────────────────────────
+    @ExceptionHandler({MethodArgumentNotValidException.class, PropertyBusinessException.class})
+    public ResponseEntity<ApiError> handleBadRequest(Exception ex, HttpServletRequest request) {
+        String message;
+        if (ex instanceof MethodArgumentNotValidException) {
+            MethodArgumentNotValidException mavenEx = (MethodArgumentNotValidException) ex;
+            message = mavenEx.getBindingResult()
+                    .getFieldErrors()
+                    .stream()
+                    .map(e -> e.getField() + ": " + e.getDefaultMessage())
+                    .findFirst()
+                    .orElse("Validation failed");
+        } else {
+            message = ex.getMessage();
+        }
 
         return ResponseEntity
                 .badRequest()
@@ -81,6 +87,17 @@ public class GlobalExceptionHandler {
     }
 
     // ── 500 Internal Server Error ─────────────────────────
+    @ExceptionHandler(PropertyUploadException.class)
+    public ResponseEntity<ApiError> handleUploadError(PropertyUploadException ex, HttpServletRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(ApiError.of(
+                        500,
+                        "Internal Server Error",
+                        ex.getMessage(),
+                        request.getRequestURI()));
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneral(Exception ex, HttpServletRequest request) {
         log.error("Unexpected error — path: {} error: {}", request.getRequestURI(), ex.getMessage(), ex);
