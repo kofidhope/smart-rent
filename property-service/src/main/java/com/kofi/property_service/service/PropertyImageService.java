@@ -69,31 +69,46 @@ public class PropertyImageService {
 
         // Upload to Cloudinary
         String publicId = cloudinaryFolder + "/" + propertyId + "/" + UUID.randomUUID();
+        String imageUrl = null;
+        String returnedPublicId = null;
 
-        Map uploadResult = uploadToCloudinary(file, publicId);
+        try {
+            Map uploadResult = uploadToCloudinary(file, publicId);
 
-        String imageUrl = (String) uploadResult.get("secure_url");
-        String returnedPublicId = (String) uploadResult.get("public_id");
+            imageUrl = (String) uploadResult.get("secure_url");
+            returnedPublicId = (String) uploadResult.get("public_id");
 
-        // First image becomes primary automatically
-        boolean isPrimary = currentCount == 0;
+            // First image becomes primary automatically
+            boolean isPrimary = currentCount == 0;
 
-        // Display order is current count
-        // so new image goes to the end
-        PropertyImage image = PropertyImage.builder()
-                .propertyId(propertyId)
-                .imageUrl(imageUrl)
-                .publicId(returnedPublicId)
-                .isPrimary(isPrimary)
-                .displayOrder((int) currentCount)
-                .build();
+            // Display order is current count
+            // so new image goes to the end
+            PropertyImage image = PropertyImage.builder()
+                    .propertyId(propertyId)
+                    .imageUrl(imageUrl)
+                    .publicId(returnedPublicId)
+                    .isPrimary(isPrimary)
+                    .displayOrder((int) currentCount)
+                    .build();
 
-        PropertyImage saved = imageRepository.save(image);
+            PropertyImage saved = imageRepository.save(image);
 
-        log.info("Image uploaded — propertyId: {} " + "imageId: {} isPrimary: {}",
-                propertyId, saved.getId(), isPrimary);
+            log.info("Image uploaded — propertyId: {} " + "imageId: {} isPrimary: {}",
+                    propertyId, saved.getId(), isPrimary);
 
-        return toResponse(saved);
+            return toResponse(saved);
+        } catch (Exception e) {
+            // If Cloudinary upload succeeded but DB save failed, cleanup Cloudinary resource
+            if (returnedPublicId != null) {
+                try {
+                    deleteFromCloudinary(returnedPublicId);
+                    log.info("Cleaned up orphaned Cloudinary resource: {}", returnedPublicId);
+                } catch (Exception cleanupEx) {
+                    log.error("Failed to cleanup Cloudinary resource {} after upload failure: {}", returnedPublicId, cleanupEx.getMessage());
+                }
+            }
+            throw e; // Re-throw original exception
+        }
     }
 
     // -------------------------------------------------------
