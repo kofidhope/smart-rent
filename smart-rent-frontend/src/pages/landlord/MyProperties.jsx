@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   Plus,
-  Building2,
   Edit,
   Trash2,
   CalendarDays,
@@ -14,6 +13,7 @@ import Badge from '../../components/ui/Badge'
 import Button from '../../components/ui/Button'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import EmptyState from '../../components/ui/EmptyState'
+import ImagePlaceholder from '../../components/ui/ImagePlaceholder'
 import ConfirmDialog from '../../components/ui/ConfirmDialog'
 
 export default function MyProperties() {
@@ -82,7 +82,7 @@ export default function MyProperties() {
 
         {properties.length === 0 ? (
             <EmptyState
-              icon={Building2}
+              image={<ImagePlaceholder title="No properties yet" type="building" />}
               title="No properties yet"
               description="Add your first property to start receiving bookings"
               actionLabel="Add property"
@@ -112,12 +112,18 @@ export default function MyProperties() {
                           <div className="w-full h-full
                                   flex flex-col
                                   items-center
-                                  justify-center
-                                  text-gray-300">
-                            <Building2 className="h-10 w-10 mb-1" />
-                            <span className="text-xs">
-                                No image
-                            </span>
+                                  justify-center">
+                            {/* Use Unsplash Source for real property photography placeholder */}
+                            <img
+                                src={`https://source.unsplash.com/random/800x600?${property.type?.toLowerCase() || 'building'},house`}
+                                alt={property.title}
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                                onError={(e) => {
+                                    // Fallback to abstract property image if specific search fails
+                                    e.target.src = 'https://source.unsplash.com/random/800x600?real-estate,property';
+                                }}
+                            />
                           </div>
                       )}
                       <div className="absolute top-2 right-2">

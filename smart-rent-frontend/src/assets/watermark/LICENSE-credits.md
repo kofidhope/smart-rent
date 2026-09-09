@@ -1,16 +1,20 @@
 # Watermark assets
 
-These four house silhouettes are hand-authored SVGs created for SmartRent.
-They are released under the project's standard license (proprietary, all rights reserved)
-and are not derived from any third-party artwork.
+The watermark now uses rotating real property photography from Unsplash instead of 
+hand-authored SVGs. The previous SVG assets (`house-1.svg` through `house-4.svg`) 
+have been retired in favor of dynamically loaded property photography.
 
-- `house-1.svg` — classic pitched-roof cottage with chimney
-- `house-2.svg` — modern flat-roof duplex (two units)
-- `house-3.svg` — two-story colonial with attached garage
-- `house-4.svg` — single-story bungalow with veranda and low-pitch roof
+Current implementation sources random property photography from Unsplash with the following categories:
+- House / residential properties
+- Building / architectural shots  
+- Apartment / multi-unit dwellings
+- Villa / premium properties
 
-To swap any of these for photographic watermarks later:
-1. Replace the SVG with a `.jpg` / `.webp` at the same path.
-2. Update the `IMAGES` array in `src/components/home/RotatingHouseWatermark.jsx`.
-3. Confirm license clearance (Unsplash / Pexels / Storyset are all OK for
-   commercial use without attribution, but keep this file's record updated).
+All images are sourced from Unsplash and are free to use under the Unsplash license
+(https://unsplash.com/license), which permits commercial use without attribution
+(though attribution is appreciated where possible).
+
+To customize the property types shown in the watermark:
+1. Modify the property type queries in `src/components/home/RotatingHouseWatermark.jsx`
+2. Optionally pass a `properties` prop to specify particular property types
+3. The component automatically handles fallback to general property searches if specific queries fail

@@ -194,7 +194,7 @@ export default function MyPayments() {
                                 || payment.id.slice(0, 16)}
                           </p>
                           <p className="text-xl font-bold
-                                  text-gray-900 mt-0.5">
+                                  text-gray-900 mt-1">
                             GHS {payment.amount
                                 ? payment.amount.toLocaleString()
                                 : '—'}
@@ -209,7 +209,7 @@ export default function MyPayments() {
                                 pt-3 border-t
                                 border-gray-100">
                         <div className="flex items-center
-                                  gap-1.5 text-meta
+                                  gap-2 text-meta
                                   text-gray-500">
                           <CreditCard className="h-3.5 w-3.5" />
                           <span className="capitalize">
@@ -217,7 +217,7 @@ export default function MyPayments() {
                           </span>
                         </div>
                         <div className="flex items-center
-                                  gap-1.5 text-meta
+                                  gap-2 text-meta
                                   text-gray-500">
                           <Clock className="h-3.5 w-3.5" />
                           <span>

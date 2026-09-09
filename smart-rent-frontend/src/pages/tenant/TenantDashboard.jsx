@@ -196,7 +196,7 @@ export default function TenantDashboard() {
                                 text-gray-900">
                           Booking #{booking.id.slice(0, 8)}
                         </p>
-                        <p className="text-meta text-gray-500 mt-0.5">
+                        <p className="text-meta text-gray-500 mt-1">
                           {booking.startDate} →{' '}
                           {booking.endDate}
                         </p>
@@ -230,7 +230,7 @@ export default function TenantDashboard() {
             <h3 className="font-semibold text-gray-900 tracking-tight">
               Find a property
             </h3>
-            <p className="text-meta text-gray-500 mt-1.5">
+            <p className="text-meta text-gray-500 mt-2">
               Browse and book your next home.
             </p>
           </button>
@@ -247,7 +247,7 @@ export default function TenantDashboard() {
             <h3 className="font-semibold text-gray-900 tracking-tight">
               Payment history
             </h3>
-            <p className="text-meta text-gray-500 mt-1.5">
+            <p className="text-meta text-gray-500 mt-2">
               View all your payment records.
             </p>
           </button>

@@ -11,6 +11,7 @@ import Button from './Button'
 
 export default function EmptyState({
                                         icon: Icon,
+                                        image,
                                         title,
                                         description,
                                         actionLabel,
@@ -19,7 +20,7 @@ export default function EmptyState({
                                     }) {
     return (
         <div className={`empty-state ${className}`}>
-            {Icon && <Icon className="empty-state-icon" />}
+            {image ? image : Icon && <Icon className="empty-state-icon" />}
             {title && <h3 className="empty-state-title">{title}</h3>}
             {description && (
                 <p className="empty-state-text">{description}</p>

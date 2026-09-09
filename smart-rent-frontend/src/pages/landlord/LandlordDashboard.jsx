@@ -9,6 +9,7 @@ import Button from '../../components/ui/Button'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import MotionFadeUp from '../../components/ui/MotionFadeUp'
 import EmptyState from '../../components/ui/EmptyState'
+import ImagePlaceholder from '../../components/ui/ImagePlaceholder'
 
 export default function LandlordDashboard() {
   const { user } = useAuth()
@@ -164,7 +165,7 @@ export default function LandlordDashboard() {
 
           {properties.length === 0 ? (
               <EmptyState
-                  icon={Building2}
+                  image={<ImagePlaceholder title="No properties yet" type="building" />}
                   title="No properties yet"
                   description="List your first property to start receiving bookings"
                   actionLabel="Add your first property"
@@ -189,7 +190,7 @@ export default function LandlordDashboard() {
                                 text-gray-900">
                           {property.title}
                         </p>
-                        <p className="text-meta text-gray-500 mt-0.5">
+                        <p className="text-meta text-gray-500 mt-1">
                           {property.city} ·{' '}
                           GHS {property.price.toLocaleString()}
                           /month
@@ -232,7 +233,7 @@ export default function LandlordDashboard() {
                           {payment.paystackReference
                               || payment.id.slice(0, 12)}
                         </p>
-                        <p className="text-meta text-gray-500 mt-0.5">
+                        <p className="text-meta text-gray-500 mt-1">
                           {new Date(
                               payment.paidAt || payment.createdAt
                           ).toLocaleDateString()}

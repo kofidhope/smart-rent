@@ -8,7 +8,6 @@ import {
     Clock,
     Star,
     ArrowRight,
-    Building2,
     Users,
     CheckCircle,
     Sparkles,
@@ -19,8 +18,9 @@ import PropertyCard from '../../components/property/PropertyCard'
 import Button from '../../components/ui/Button'
 import LoadingSpinner from '../../components/ui/LoadingSpinner'
 import EmptyState from '../../components/ui/EmptyState'
+import ImagePlaceholder from '../../components/ui/ImagePlaceholder'
 import {Stagger, StaggerItem} from '../../components/ui/Stagger'
-import RotatingHouseWatermark from '../../components/home/RotatingHouseWatermark'
+import RotatingPropertyWatermark from '../../components/home/RotatingPropertyWatermark'
 
 export default function HomePage() {
     const navigate = useNavigate()
@@ -80,8 +80,8 @@ export default function HomePage() {
                 the eyebrow + price marker.
             ──────────────────────────────────────── */}
             <section className="hero-property relative min-h-[680px]
-                                overflow-hidden bg-white border-b border-gray-100">
-                <RotatingHouseWatermark variant="hero" />
+                                overflow-hidden surface-cream border-b border-gray-100">
+                <RotatingPropertyWatermark variant="hero" />
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8
                               relative z-10 min-h-[680px] py-16 sm:py-24">
                     <div className="grid grid-cols-1 lg:grid-cols-12
@@ -349,7 +349,7 @@ export default function HomePage() {
                         </Stagger>
                     ) : (
                         <EmptyState
-                            icon={Building2}
+                            image={<ImagePlaceholder title="No properties yet" type="building" />}
                             title="No properties yet"
                             description="Check back soon for new listings"
                             actionLabel="Browse properties"

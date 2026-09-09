@@ -45,16 +45,33 @@ export default function PropertyDetailPage() {
   // for any number of days, so we normalise to months.
   const calculateTotal = () => {
     if (!startDate || !endDate || !property) return null
+
     const start = new Date(startDate)
     const end = new Date(endDate)
-    const nights = Math.ceil((end - start) / (1000 * 60 * 60 * 24))
-    if (nights <= 0) return null
-    const months = nights / 30
-    return {
-      nights,
-      months,
-      total: (property.price * months).toFixed(2),
+
+    // Total days between dates
+    const days = Math.ceil((end - start) / (1000 * 60 * 60 * 24))
+
+    if (days <= 0) return null
+
+    // Enforce minimum 30 days
+    // A rental property is not a hotel
+    if (days < 30) {
+      return {
+        days,
+        months: null,
+        total: null,
+        error: 'Minimum rental period is 30 days'
+      }
     }
+
+    // Round to whole months
+    // 45 days = 1.5 months = GHS 977 × 1.5
+    const months = Math.round((days / 30) * 10) / 10
+
+    const total = (property.price * months).toFixed(2)
+
+    return { days, months, total, error: null }
   }
 
   const priceCalc = calculateTotal()
@@ -226,7 +243,7 @@ export default function PropertyDetailPage() {
                           <div className="absolute bottom-3
                                     left-1/2
                                     -translate-x-1/2
-                                    flex gap-1.5">
+                                    flex gap-2">
                             {images.map((_, i) => (
                                 <button
                                     key={i}
@@ -261,9 +278,18 @@ export default function PropertyDetailPage() {
               ) : (
                   <div className="h-64 sm:h-80 flex
                               flex-col items-center
-                              justify-center text-gray-300">
-                    <Building2 className="h-16 w-16 mb-2" />
-                    <span className="text-sm">No photos yet</span>
+                              justify-center">
+                    {/* Use Unsplash Source for real property photography placeholder */}
+                    <img
+                        src={`https://source.unsplash.com/random/1200x800?${property?.type?.toLowerCase() || 'real-estate'},house`}
+                        alt={`${property?.title || 'Property'} — placeholder`}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        onError={(e) => {
+                            // Fallback to abstract property image if specific search fails
+                            e.target.src = 'https://source.unsplash.com/random/1200x800?real-estate,property';
+                        }}
+                    />
                   </div>
               )}
 
@@ -293,6 +319,7 @@ export default function PropertyDetailPage() {
                               alt=""
                               className="w-full h-full
                                  object-cover"
+                              loading="lazy"
                           />
                         </button>
                     ))}
@@ -339,7 +366,7 @@ export default function PropertyDetailPage() {
                 <div className="bg-white p-4 text-center">
                   <BedDouble className="h-5 w-5
                                       text-gray-400
-                                      mx-auto mb-1.5" />
+                                      mx-auto mb-2" />
                   <p className="text-base font-semibold
                               text-gray-900">
                     {property.bedrooms}
@@ -351,7 +378,7 @@ export default function PropertyDetailPage() {
                 </div>
                 <div className="bg-white p-4 text-center">
                   <Bath className="h-5 w-5 text-gray-400
-                                 mx-auto mb-1.5" />
+                                 mx-auto mb-2" />
                   <p className="text-base font-semibold
                               text-gray-900">
                     {property.bathrooms}
@@ -363,7 +390,7 @@ export default function PropertyDetailPage() {
                 </div>
                 <div className="bg-white p-4 text-center">
                   <User className="h-5 w-5 text-gray-400
-                                 mx-auto mb-1.5" />
+                                 mx-auto mb-2" />
                   <p className="text-base font-semibold
                               text-gray-900 truncate">
                     {property.ownerName}
@@ -442,21 +469,23 @@ export default function PropertyDetailPage() {
                           })}
                       />
 
-                      {/* Start date */}
-                      <DatePicker
-                          id="startDate"
-                          label="Move-in date"
-                          selected={startDate ? new Date(startDate) : null}
-                          onChange={(date) => {
-                            setValue('startDate',
-                                date?.toISOString().split('T')[0] || '',
-                                { shouldDirty: true, shouldValidate: true })
-                          }}
-                          minDate={new Date()}
-                          placeholderText="Select move-in date"
-                          error={errors.startDate?.message}
-                          required
-                      />
+                      {/* Date fields - side by side on larger screens */}
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+                        {/* Start date */}
+                        <DatePicker
+                            id="startDate"
+                            label="Move-in date"
+                            selected={startDate ? new Date(startDate) : null}
+                            onChange={(date) => {
+                              setValue('startDate',
+                                  date?.toISOString().split('T')[0] || '',
+                                  { shouldDirty: true, shouldValidate: true })
+                            }}
+                            minDate={new Date()}
+                            placeholderText="Select move-in date"
+                            error={errors.startDate?.message}
+                            required
+                        />
 
                       {/* End date */}
                       <DatePicker
@@ -475,35 +504,48 @@ export default function PropertyDetailPage() {
                           placeholderText="Select move-out date"
                           error={errors.endDate?.message}
                           required
-                      />
+                        />
+                      </div>
 
-                      {/* Price breakdown — quieter
-                          background, tighter numbers */}
+                      {/* Price breakdown — quieter background, tighter numbers */}
                       {priceCalc && (
-                          <div className="bg-gray-50 rounded-card
-                                    p-4 text-sm space-y-2">
-                            <div className="flex justify-between
-                                      text-gray-600">
-                              <span>
-                                GHS {property.price.toLocaleString()}
-                                {' '}×{' '}{(priceCalc.months)
-                                  .toFixed(1)} months
-                              </span>
-                              <span className="text-gray-400">
-                                {priceCalc.nights} days
-                              </span>
-                            </div>
-                            <div className="flex justify-between
-                                      font-semibold
-                                      text-gray-900
-                                      border-t border-gray-200
-                                      pt-2 mt-2">
-                              <span>Total</span>
-                              <span className="text-brand-green
-                                            tracking-tight">
-                                GHS {priceCalc.total}
-                              </span>
-                            </div>
+                          <div className="bg-gray-50 rounded-xl p-4 text-sm space-y-2">
+                            {priceCalc.error ? (
+                                // Show error for bookings under 30 days
+                                <div className="flex items-center gap-2 text-warning-text">
+                                  <span className="text-warning-icon">⚠</span>
+                                  <span>{priceCalc.error}</span>
+                                </div>
+                            ) : (
+                                <>
+                                  <div className="flex justify-between text-gray-600">
+                                    <span>Duration</span>
+                                    <span>
+                                      {priceCalc.days} days
+                                      ({priceCalc.months} months)
+                                    </span>
+                                  </div>
+
+                                  <div className="flex justify-between
+                                    text-gray-600">
+                                    <span>Monthly rate</span>
+                                    <span>
+                                     GHS {property.price.toLocaleString()}
+                                    </span>
+                                  </div>
+
+                                  <div className="border-t border-gray-200
+                                    pt-2 flex justify-between
+                                     font-semibold text-gray-900">
+                                    <span>Total</span>
+                                    <span className="text-brand-green">
+                                      GHS {Number(priceCalc.total)
+                                        .toLocaleString()}
+                                    </span>
+                                  </div>
+                                </>
+                            )}
+
                           </div>
                       )}
 
@@ -512,13 +554,15 @@ export default function PropertyDetailPage() {
                           <Button
                               type="submit"
                               fullWidth
-                              size="lg"
                               loading={booking}
+                              // Disable if dates not selected or error
+                              disabled={
+                                  !startDate ||
+                                  !endDate ||
+                                  (priceCalc && priceCalc.error !== null)
+                              }
                           >
-                            {booking
-                                ? 'Processing...'
-                                : 'Book now'
-                            }
+                            {booking ? 'Processing...' : 'Book now'}
                           </Button>
                       ) : isAuthenticated ? (
                           <p className="text-meta text-center
@@ -544,26 +588,35 @@ export default function PropertyDetailPage() {
 
                     </form>
 
-                    {/* Trust signals — quietly under the
-                        form, not competing with the CTA */}
-                    <div className="mt-6 pt-5 border-t
-                                border-gray-100 space-y-2.5">
-                      {[
-                        'Secure payment via Paystack',
-                        'Instant booking confirmation',
-                        'SMS notification on success',
-                      ].map(item => (
-                          <div
-                              key={item}
-                              className="flex items-center
-                                 gap-2 text-meta
-                                 text-gray-500">
-                            <CheckCircle className="h-3.5 w-3.5
-                                             text-brand-green
-                                             flex-shrink-0" />
-                            {item}
+                    {/* Trust signals — enhanced with better visual hierarchy */}
+                    <div className="mt-8 pt-6 border-t border-gray-200 space-y-4">
+                      <h3 className="text-sm font-semibold text-gray-900 mb-2">
+                        Why book with SmartRent?
+                      </h3>
+                      <div className="space-y-3">
+                        {[
+                          {
+                            icon: CheckCircle,
+                            text: 'Secure payment via Paystack',
+                            color: 'text-brand-green'
+                          },
+                          {
+                            icon: CheckCircle,
+                            text: 'Instant booking confirmation',
+                            color: 'text-brand-green'
+                          },
+                          {
+                            icon: CheckCircle,
+                            text: 'SMS notification on success',
+                            color: 'text-brand-green'
+                          },
+                        ].map(({ icon: Icon, text, color }) => (
+                          <div key={text} className="flex items-center gap-3">
+                            <Icon className={`h-4 w-4 ${color} flex-shrink-0`} />
+                            <p className="text-meta text-gray-600">{text}</p>
                           </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   </>
               )}

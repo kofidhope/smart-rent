@@ -29,7 +29,7 @@ function FormField({ label, required, error, htmlFor, children }) {
         {children}
         {error && (
           <p role="alert" className="error-text">
-            <span className="w-1.5 h-1.5 rounded-full bg-danger-icon flex-shrink-0 mt-0.5" />
+            <span className="w-2 h-2 rounded-full bg-danger-icon flex-shrink-0 mt-1" />
             {error}
           </p>
         )}

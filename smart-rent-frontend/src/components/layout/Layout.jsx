@@ -82,7 +82,7 @@ export default function Layout() {
                                        font-medium text-gray-500 mb-4">
                                 Product
                             </h3>
-                            <ul className="space-y-2.5 text-sm text-gray-500">
+                            <ul className="space-y-3 text-sm text-gray-500">
                                 <li>
                                     <a href="/properties" className="hover:text-brand-green transition-colors">
                                         Browse properties
@@ -106,7 +106,7 @@ export default function Layout() {
                                        font-medium text-gray-500 mb-4">
                                 Support
                             </h3>
-                            <ul className="space-y-2.5 text-sm text-gray-500">
+                            <ul className="space-y-3 text-sm text-gray-500">
                                 <li>
                                     <a
                                         href="mailto:support@smartrent.com"

@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   CalendarDays,
-  Building2,
   ExternalLink,
   X,
 } from 'lucide-react'
@@ -128,8 +127,15 @@ export default function MyBookings() {
                                     rounded-btn flex
                                     items-center justify-center
                                     flex-shrink-0">
-                            <Building2 className="h-5 w-5
-                                           text-gray-400" />
+                            <img
+                                src="https://source.unsplash.com/random/150x150?building,house"
+                                alt="Property"
+                                className="w-full h-full object-cover"
+                                loading="lazy"
+                                onError={(e) => {
+                                    e.target.src = 'https://source.unsplash.com/random/150x150?real-estate,property';
+                                }}
+                            />
                           </div>
                           <div>
                             <p className="font-semibold
@@ -137,11 +143,11 @@ export default function MyBookings() {
                               Booking #{booking.id.slice(0, 8)}
                             </p>
                             <p className="text-meta text-gray-500
-                                    mt-0.5">
+                                    mt-1">
                               {booking.startDate} → {booking.endDate}
                             </p>
                             <p className="text-sm font-semibold
-                                    text-gray-900 mt-1.5
+                                    text-gray-900 mt-2
                                     tracking-tight">
                               GHS {booking.totalPrice
                                 .toLocaleString()}
