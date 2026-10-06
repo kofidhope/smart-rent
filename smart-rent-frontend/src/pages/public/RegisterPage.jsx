@@ -91,7 +91,7 @@ export default function RegisterPage() {
             <div className="flex items-start gap-3 p-4 rounded-btn
                           bg-info-bg border border-info-border
                           mb-6">
-              <div className="flex-shrink-0 w-4 h-4 mt-1
+              <div className="flex-shrink-0 w-4 h-4 mt-0.5
                             rounded-full bg-info-icon
                             flex items-center justify-center">
                 <span className="text-white text-xs font-bold">i</span>
@@ -121,7 +121,6 @@ export default function RegisterPage() {
                     placeholder="Kofi"
                     leftIcon={User}
                     error={errors.firstName?.message}
-                    helper="Your preferred name for your profile"
                     {...register('firstName', {
                       required: 'First name is required',
                       minLength: {value: 2, message: 'At least 2 characters',},
@@ -133,7 +132,6 @@ export default function RegisterPage() {
                     type="text"
                     placeholder="Mensah"
                     error={errors.lastName?.message}
-                    helper="Your family name or surname"
                     {...register('lastName', {
                       required: 'Last name is required',
                       minLength: {value: 2, message: 'At least 2 characters',},
@@ -149,7 +147,6 @@ export default function RegisterPage() {
                   placeholder="kofi@example.com"
                   leftIcon={Mail}
                   error={errors.email?.message}
-                  helper="We'll use this to verify your account and send notifications"
                   {...register('email', {
                     required: 'Email is required',
                     pattern: {
@@ -185,7 +182,6 @@ export default function RegisterPage() {
                     placeholder="At least 8 characters"
                     leftIcon={Lock}
                     error={errors.password?.message}
-                    helper="Must contain 8+ characters, uppercase, lowercase and a number"
                     className="pr-10"
                     {...register('password', {
                       required: 'Password is required',
@@ -229,7 +225,6 @@ export default function RegisterPage() {
                     placeholder="Repeat your password"
                     leftIcon={Lock}
                     error={errors.confirmPassword?.message}
-                    helper="Must match the password above"
                     className="pr-10"
                     {...register('confirmPassword', {
                       required: 'Please confirm your password',

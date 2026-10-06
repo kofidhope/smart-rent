@@ -50,23 +50,13 @@ export default function PropertyCard({ property }) {
                         className="w-full h-full object-cover
                        transition-transform duration-300
                        group-hover:scale-105"
-                        loading="lazy"
                     />
                 ) : (
                     <div className="w-full h-full flex flex-col
                           items-center justify-center
                           text-gray-300 bg-gray-50">
-                        {/* Use Unsplash Source for real property photography placeholder */}
-                        <img
-                            src={`https://source.unsplash.com/random/800x600?${property.type?.toLowerCase() || 'building'},house`}
-                            alt={`${property.title} — placeholder`}
-                            className="w-full h-full object-cover"
-                            loading="lazy"
-                            onError={(e) => {
-                                // Fallback to abstract property image if specific search fails
-                                e.target.src = 'https://source.unsplash.com/random/800x600?real-estate,property';
-                            }}
-                        />
+                        <Building2 className="h-10 w-10 mb-2" />
+                        <span className="text-meta">No photo</span>
                     </div>
                 )}
 
@@ -75,23 +65,11 @@ export default function PropertyCard({ property }) {
                     <Badge status={property.status} />
                 </div>
 
-                {/* Verification badge */}
-                {property.isVerified && (
-                    <div className="absolute top-3 left-3
-                              z-10">
-                        <Badge variant="outline" className="bg-success-text/10
-                              border-success-text/20 text-success-text">
-                            Verified
-                        </Badge>
-                    </div>
-                )}
-
-                {/* Type pill — enhanced styling */}
+                {/* Type pill — quiet, glass-like */}
                 <div className="absolute top-3 right-3">
                     <span className="badge bg-white/90 backdrop-blur-sm
-                           text-gray-900 border border-white/30
-                           shadow-sm font-medium px-2.5 py-0.5
-                           rounded-md">
+                           text-gray-700 border border-white/40
+                           shadow-sm">
                         {property.type.charAt(0) +
                             property.type.slice(1).toLowerCase()}
                     </span>
@@ -104,7 +82,7 @@ export default function PropertyCard({ property }) {
                 {/* Price — FIRST, most important info.
                     Tracking-tight so big numbers don't
                     dominate horizontally. */}
-                <div className="flex items-baseline gap-2">
+                <div className="flex items-baseline gap-1.5">
                     <span className="text-2xl font-bold
                            text-gray-900
                            tracking-tight">
@@ -122,7 +100,7 @@ export default function PropertyCard({ property }) {
                 </h3>
 
                 {/* Location */}
-                <div className="flex items-center gap-2
+                <div className="flex items-center gap-1.5
                         text-meta text-gray-500">
                     <MapPin className="h-3 w-3 flex-shrink-0" />
                     <span className="line-clamp-1">

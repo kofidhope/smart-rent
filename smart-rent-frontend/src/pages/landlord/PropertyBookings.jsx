@@ -99,7 +99,7 @@ export default function PropertyBookings() {
                           Booking #{booking.id.slice(0, 8)}
                         </p>
                         <p className="text-xs text-gray-500
-                                mt-1">
+                                mt-0.5">
                           {booking.startDate} →{' '}
                           {booking.endDate}
                         </p>

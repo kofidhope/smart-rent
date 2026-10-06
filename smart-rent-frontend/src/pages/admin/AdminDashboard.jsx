@@ -143,7 +143,7 @@ export default function AdminDashboard() {
             <h3 className="font-semibold text-gray-900 tracking-tight">
               Landlord verification
             </h3>
-            <p className="text-meta text-gray-500 mt-2">
+            <p className="text-meta text-gray-500 mt-1.5">
               Review and approve landlord applications.
             </p>
           </button>
@@ -156,7 +156,7 @@ export default function AdminDashboard() {
             <h3 className="font-semibold text-gray-900 tracking-tight">
               User management
             </h3>
-            <p className="text-meta text-gray-500 mt-2">
+            <p className="text-meta text-gray-500 mt-1.5">
               Coming soon
             </p>
           </button>

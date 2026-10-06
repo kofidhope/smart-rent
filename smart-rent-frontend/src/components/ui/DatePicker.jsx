@@ -53,7 +53,7 @@ export default function DatePicker({label, error, selected, onChange, minDate, m
 
             {error && (
                 <p role="alert" className="error-text">
-          <span className="w-2 h-2 rounded-full
+          <span className="w-1.5 h-1.5 rounded-full
                            bg-danger-icon
                            flex-shrink-0" />
                     {error}

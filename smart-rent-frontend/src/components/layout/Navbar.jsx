@@ -116,7 +116,7 @@ export default function Navbar() {
                     </Link>
 
                     {/* Desktop links */}
-                    <div className="hidden md:flex items-center gap-1">
+                    <div className="hidden md:flex items-center gap-0.5">
                         {links.map(({ to, label, icon: Icon }) => {
                             const active = isActive(to)
                             return (
@@ -126,7 +126,7 @@ export default function Navbar() {
                                     aria-current={active ? 'page' : undefined}
                                     className={`
                                         relative flex items-center
-                                        gap-2 px-3 py-2
+                                        gap-1.5 px-3 py-2
                                         rounded-btn text-sm font-medium
                                         transition-colors duration-150
                                         ${active
@@ -155,7 +155,7 @@ export default function Navbar() {
                         {isAuthenticated ? (
                             <>
                                 {/* Avatar circle + name */}
-                                <div className="flex items-center gap-3
+                                <div className="flex items-center gap-2.5
                                               pl-1 pr-3 py-1
                                               rounded-full
                                               border border-gray-200">
@@ -243,8 +243,8 @@ export default function Navbar() {
                                 onClick={() => setMobileOpen(false)}
                                 aria-current={active ? 'page' : undefined}
                                 className={`
-                                    flex items-center gap-3
-                                    px-3 py-3
+                                    flex items-center gap-2.5
+                                    px-3 py-2.5
                                     rounded-btn text-sm font-medium
                                     transition-colors duration-150
                                     ${active
@@ -285,7 +285,7 @@ export default function Navbar() {
                                     onClick={handleLogout}
                                     disabled={loggingOut}
                                     className="w-full flex items-center gap-2
-                                        px-3 py-3 rounded-btn
+                                        px-3 py-2.5 rounded-btn
                                         text-sm font-medium
                                         text-danger-text
                                         hover:bg-danger-bg

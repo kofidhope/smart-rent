@@ -12,7 +12,7 @@ export default function ErrorMessage({message, className = '',}) {
             className={`alert-danger ${className}`}
         >
             <AlertCircle
-                className="h-4 w-4 mt-1 flex-shrink-0"
+                className="h-4 w-4 mt-0.5 flex-shrink-0"
                 aria-hidden="true"
             />
             <span>{message}</span>

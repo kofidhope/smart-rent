@@ -1,4 +1,8 @@
 import {useEffect, useSyncExternalStore} from 'react'
+import house1 from '../../assets/watermark/house-1.svg'
+import house2 from '../../assets/watermark/house-2.svg'
+import house3 from '../../assets/watermark/house-3.svg'
+import house4 from '../../assets/watermark/house-4.svg'
 import {
     subscribe,
     getSnapshot,
@@ -10,8 +14,7 @@ import {
 /**
  * <RotatingHouseWatermark />
  * ---------------------------
- * A purely decorative, crossfading watermark layer that shows rotating
- * real property photography instead of SVG illustrations. Mounts inside a
+ * A purely decorative, crossfading watermark layer that mounts inside a
  * parent that is `relative overflow-hidden`. Multiple instances stay in
  * sync via the shared WatermarkController store, and they all freeze
  * while any one of them is hovered.
@@ -19,20 +22,20 @@ import {
  * Props
  *   variant  - 'hero' | 'band'. Controls position, size, opacity, and
  *              which tint the silhouette uses.
- *   properties - Optional array of property objects to fetch images for.
- *                If not provided, uses default Unsplash property searches.
+ *   images   - Optional array of image URLs. Defaults to the four
+ *              hand-authored SVGs in src/assets/watermark/.
  *   fadeMs   - Optional crossfade duration override. Defaults to the
  *              controller's value (1200ms, or 0ms under reduced motion).
  *
  * Accessibility
  *   - aria-hidden on the container and every <img> (decorative).
- *   - Empty alt="" so screen readers never announce the watermark images.
+ *   - Empty alt="" so screen readers never announce the silhouettes.
  *   - prefers-reduced-motion is honored via the controller (10s interval,
  *     0ms crossfade).
  */
 export default function RotatingHouseWatermark({
     variant = 'hero',
-    properties,
+    images = [house1, house2, house3, house4],
     fadeMs,
 }) {
     if (import.meta.env.DEV && variant !== 'hero' && variant !== 'band') {
@@ -47,15 +50,13 @@ export default function RotatingHouseWatermark({
     // Declare our image count once on mount (and on change). The controller
     // is idempotent — calling this from every instance is safe.
     useEffect(() => {
-        // Use the length of properties array if provided, otherwise default to 4
-        const count = properties ? properties.length : 4
-        setImageCount(count)
-    }, [properties ? properties.length : undefined])
+        setImageCount(images.length)
+    }, [images.length])
 
     const isHero = variant === 'hero'
 
     // Tailwind classes per variant. The `hero` variant uses a large single
-    // image off to the right; the `band` variant uses a tighter,
+    // silhouette off to the right; the `band` variant uses a tighter,
     // repeated tile so the section feels textured without dominating.
     const containerClasses = isHero
         ? 'absolute inset-0 pointer-events-none'
@@ -64,18 +65,18 @@ export default function RotatingHouseWatermark({
     const tintClasses = isHero
         ? // Hero sits on a green-to-gray gradient — use white at low opacity
           // so it reads as part of the existing brand palette.
-          'text-brand-green/20'
+          'text-brand-green'
         : // Band sits on bg-gray-50 — use a soft brand-green tint so the
           // watermark hints at the brand without competing with the text.
-          'text-brand-green/10'
+          'text-brand-green'
 
     const silhouetteLayoutClasses = isHero
-        ? // Big image, right-aligned, vertically centered.
-          'house-watermark-scene absolute inset-0'
-        : // Tiled band: 4 images across the section, low opacity.
+        ? // Big silhouette, right-aligned, vertically centered.
+          'house-watermark-scene absolute'
+        : // Tiled band: 4 silhouettes across the section, low opacity.
           'absolute inset-0 grid grid-cols-2 sm:grid-cols-4 ' +
           'items-center justify-items-center gap-6 ' +
-          'px-6'
+          'px-6 opacity-[0.07]'
 
     return (
         <div
@@ -89,39 +90,43 @@ export default function RotatingHouseWatermark({
               owns the pause/resume calls.
             */}
             <div className={silhouetteLayoutClasses}>
-                {[0, 1, 2, 3].map((i) => {
+                {images.map((src, i) => {
                     const isActive = state.index === i
-                    // Determine which property to show based on index
-                    const propertyIndex = properties && properties.length > 0
-                        ? i % properties.length
-                        : i
-                    const propertyType = properties && properties.length > 0 && properties[propertyIndex]?.type
-                        ? properties[propertyIndex].type.toLowerCase()
-                        : ['house', 'building', 'apartment', 'villa'][i % 4]
-
                     return (
-                        <div key={i} className="relative w-full h-full">
-                            <img
-                                src={`https://source.unsplash.com/random/800x600?${propertyType}`}
-                                alt="Property"
-                                className="w-full h-full object-cover"
-                                loading={i === 0 ? 'eager' : 'lazy'}
-                                onError={(e) => {
-                                    e.target.src = 'https://source.unsplash.com/random/800x600?real-estate,property'
-                                }}
-                                style={{
-                                    opacity: isActive ? 1 : 0,
-                                    transitionDuration: `${
-                                        fadeMs ?? state.fadeMs
-                                    }ms`,
-                                }}
-                                className={`${tintClasses} w-full h-full object-cover transition-opacity ease-smooth ${
-                                    isHero
-                                        ? 'absolute inset-0 house-watermark-image'
-                                        : 'max-h-[140px]'
-                                }`}
-                            />
-                        </div>
+                        <img
+                            key={src}
+                            src={src}
+                            alt=""
+                            draggable="false"
+                            loading={i === 0 ? 'eager' : 'lazy'}
+                            onError={(e) => {
+                                if (
+                                    import.meta.env.DEV &&
+                                    !e.currentTarget.dataset.warned
+                                ) {
+                                    e.currentTarget.dataset.warned = '1'
+                                    // eslint-disable-next-line no-console
+                                    console.warn(
+                                        '[RotatingHouseWatermark] failed to load:',
+                                        src,
+                                    )
+                                }
+                            }}
+                            className={
+                                tintClasses +
+                                ' w-full h-full object-contain ' +
+                                'transition-opacity ease-smooth ' +
+                                (isHero
+                                    ? 'absolute inset-0 house-watermark-image'
+                                    : 'max-h-[140px]')
+                            }
+                            style={{
+                                opacity: isActive ? 1 : 0,
+                                transitionDuration: `${
+                                    fadeMs ?? state.fadeMs
+                                }ms`,
+                            }}
+                        />
                     )
                 })}
             </div>

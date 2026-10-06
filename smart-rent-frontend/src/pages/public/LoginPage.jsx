@@ -109,7 +109,6 @@ export default function LoginPage() {
                   placeholder="kofi@example.com"
                   leftIcon={Mail}
                   error={errors.email?.message}
-                  helper="We'll use this to notify you about bookings and payments"
                   {...register('email', {
                     required: 'Email is required',
                     pattern: {
@@ -127,7 +126,6 @@ export default function LoginPage() {
                     placeholder="Enter your password"
                     leftIcon={Lock}
                     error={errors.password?.message}
-                    helper="Use at least 8 characters for strong security"
                     className="pr-10"
                     {...register('password', {
                       required: 'Password is required',
