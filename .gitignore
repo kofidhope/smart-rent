@@ -12,3 +12,5 @@ Thumbs.db
 *.env
 
 .claude
+tasks
+docs
